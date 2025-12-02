@@ -1,188 +1,111 @@
-:host { display:block; padding:12px 0; font-family: Roboto, "Helvetica Neue", Arial, sans-serif; }
-
 .page {
-  .page-header {
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px;
-    margin-bottom:14px; /* Jarak antara header dan search bar */
+  padding: 20px;
 
-    .title {
-      h2 { margin:0; font-size:24px; font-weight:700; }
-      /* PERBAIKAN: Font Deskripsi Ditingkatkan */
-      .desc {
-        margin:6px 0 0;
-        color:rgba(0,0,0,0.7);
-        font-size:14px; /* DITINGKATKAN DARI 13px */
-      }
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+
+    .title h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
     }
-    /* Controls sekarang sudah ada di HTML di dalam .page-header */
+
+    .desc {
+      margin-top: 4px;
+      color: #666;
+      font-size: 14px;
+    }
+
     .controls {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      /* Hapus margin-bottom: 8px; dari .controls agar jarak ke tabel dikendalikan oleh HTML/Row padding */
+      display: flex;
+      gap: 20px;
+
+      .status-filters mat-chip-listbox {
+        display: flex;
+        gap: 6px;
+      }
+
+      .search-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .search {
+          width: 250px;
+        }
+      }
     }
   }
 
-  /* KONTROL JARAK ANTARA SEARCH/BUTTONS DAN TABEL: tidak ada margin besar, karena padding tabel sudah 12px 6px */
-
-  /* GRID COLUMNS */
   .table-head,
   .row {
     display: grid;
     grid-template-columns:
-      1.4fr  /* Name (with avatar) */
-      1.6fr  /* Email (wider to separate from gender) */
-      0.6fr  /* Gender */
-      1fr    /* Birth Date */
-      1fr    /* Phone */
-      1fr    /* Position */
-      0.8fr  /* Status */
-      1fr    /* Sector */
-      1.6fr  /* Address */
-      0.6fr; /* Action */
-    gap: 12px;
+      180px 220px 90px 140px 140px 130px 120px 120px 200px 70px;
     align-items: center;
-    padding: 12px 6px;
+    padding: 10px 0;
+    font-size: 14px;
   }
 
   .table-head {
-    font-weight:600;
-    color: rgba(0,0,0,0.65);
-    font-size:14px; /* Ditingkatkan sedikit untuk keseimbangan */
+    font-weight: 600;
+    color: #444;
+
+    .sortable {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
   }
 
-  .rows { margin-top:6px; }
+  .rows .row {
+    border-bottom: 1px solid #eee;
 
-  .row {
-    background: #fff;
-    padding: 14px 6px;
-    align-items: center;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-    &:last-child { border-bottom: none; }
+    &:hover {
+      background: #fafafa;
+    }
   }
 
   .name-wrapper {
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-  .avatar {
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background: linear-gradient(135deg,#7b61ff,#4ea0ff);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    font-size:14px;
-    flex: 0 0 40px;
-  }
-
-  /* FINAL FONT PERBAIKAN: NAMA */
-  .name-txt {
-    font-weight:700;
-    font-size:16px;
-    color:#111827;
-  }
-
-  /* FINAL FONT PERBAIKAN: DATA LAINNYA */
-  .col {
-    font-size:15px;
-    font-weight: 500;
-    color: rgba(0,0,0,0.8);
-  }
-
-  /* OVERRIDE: Khusus link Email */
-  .col-email {
-    a {
-      font-size: 15px;
-      color: #1a73e8;
-      text-decoration: none;
-      &:hover { text-decoration: underline; }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
     }
   }
 
   .status-chip {
-    border-radius: 999px;
-    font-weight:700;
-    padding:6px 10px;
-    font-size:13px;
-    height: 28px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .status-active { background: rgba(76,175,80,0.12); color:#2e7d32; border:1px solid rgba(76,175,80,0.2); }
-  .status-inactive { background: rgba(244,67,54,0.06); color:#c62828; border:1px solid rgba(244,67,54,0.12); }
-  .status-pending { background: rgba(255,193,7,0.08); color:#b8860b; border:1px solid rgba(255,193,7,0.12); }
-  .status-default { background: rgba(0,0,0,0.04); color:rgba(0,0,0,0.7); border:1px solid rgba(0,0,0,0.06); }
-
-  .edit-link {
-    color:#6a1b9a;
-    text-decoration:none;
-    font-weight:600;
-    &:hover { text-decoration: underline; }
+    font-size: 12px;
+    padding: 4px 10px;
   }
 
-  .empty { padding:24px; color:rgba(0,0,0,0.6); text-align:center; }
+  .status-active { background: #e5f8e8; color: #2b8a3e; }
+  .status-inactive { background: #fdecea; color: #d32f2f; }
+  .status-pending { background: #fff8e1; color: #f9a825; }
 
-  mat-divider { margin:0; }
-
-  mat-paginator { margin-top: 18px; }
-}
-
-/* responsive */
-@media (max-width: 1000px) {
-  .table-head, .row {
-    grid-template-columns:
-      1.4fr  /* name */
-      1.6fr  /* email */
-      0.6fr  /* gender */
-      0.9fr  /* birth */
-      0.9fr  /* phone */
-      0.9fr  /* position */
-      0.8fr  /* status */
-      1fr    /* sector */
-      1.6fr  /* address */
-      0.6fr;
+  .empty {
+    padding: 40px;
+    text-align: center;
+    color: #777;
+    font-size: 15px;
   }
-}
 
-@media (max-width: 760px) {
-  .table-head, .row {
-    grid-template-columns:
-      1.6fr  /* name */
-      1.6fr  /* email */
-      0.7fr  /* gender */
-      0.9fr  /* birth */
-      0.9fr  /* phone */
-      1fr    /* position */
-      0.8fr  /* status */
-      0.7fr; /* action */
-  }
-  .col-sector, .col-address { display:none; }
-}
-
-.table-head .col.sortable { cursor: pointer; user-select: none; display:flex; align-items:center; gap:6px; }
-.table-head .sortable { cursor: pointer; user-select: none; display:flex; align-items:center; gap:6px; }
-
-/* Styling Search Field */
-.controls { display:flex; gap:12px; align-items:center; }
-.search { width:360px; min-width:160px; }
-
-.search {
-  ::ng-deep .mat-mdc-form-field-wrapper { padding-bottom: 0.5em !important; }
-  ::ng-deep .mat-mdc-text-field-wrapper {
-    height: 40px;
-    .mat-mdc-form-field-flex { align-items: center; height: 40px; }
-  }
-  ::ng-deep .mat-mdc-form-field-infix {
-    padding: 0 !important;
-    min-height: 24px;
-    padding-left: 8px !important;
+  mat-paginator {
+    margin-top: 10px;
   }
 }

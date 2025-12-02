@@ -1,115 +1,120 @@
 <section class="page">
+
+    <!-- Header Top -->
     <div class="page-header">
         <div class="title">
             <h2>Users</h2>
-            <p class="desc">List of all members. Use search to find members (server-side search), click headers to sort, and use paginator for navigation.</p>
+            <p class="desc">
+                List of all members. Use search to find members (server-side), click headers to sort, and use paginator.
+            </p>
         </div>
 
         <div class="controls">
-            <button mat-flat-button color="primary" routerLink="/members/new">
-                <mat-icon>person_add</mat-icon> Add user
-            </button>
+            <!-- SEARCH + BUTTON -->
+            <div class="search-actions">
+                <mat-form-field appearance="outline" class="search">
+                    <mat-icon matPrefix>search</mat-icon>
+                    <input matInput [formControl]="search" placeholder="Search members..." />
+                </mat-form-field>
+
+                <button mat-flat-button color="primary" routerLink="/members/new">
+                    <mat-icon>person_add</mat-icon>&nbsp; Add user
+                </button>
+            </div>
+
         </div>
     </div>
 
-    <div class="search-row">
-        <mat-form-field appearance="standard" class="search-minimal">
-            <mat-icon matPrefix>search</mat-icon>
-            <input matInput [formControl]="search" placeholder="Search members..." />
-        </mat-form-field>
+    <!-- FILTER -->
+    <div class="status-filters">
+        <mat-chip-listbox selectable="" aria-label="Status filter">
+            <mat-chip-option (click)="setStatusFilter(undefined)" [selected]="statusFilter===undefined">All</mat-chip-option>
+            <mat-chip-option (click)="setStatusFilter('Active')"   [selected]="statusFilter==='Active'"   class="status-active">Active</mat-chip-option>
+            <mat-chip-option (click)="setStatusFilter('Inactive')" [selected]="statusFilter==='Inactive'" class="status-inactive">Inactive</mat-chip-option>
+            <mat-chip-option (click)="setStatusFilter('Pending')"  [selected]="statusFilter==='Pending'"  class="status-pending">Pending</mat-chip-option>
+        </mat-chip-listbox>
     </div>
 
-    <div *ngIf="error" class="error-box">{{ error }}</div>
-
-    <div class="table-content-wrapper"> <div class="table-head">
+    <!-- Table Header -->
+    <div class="table-head">
         <div class="col col-name">Name</div>
-
         <div class="col col-email sortable" (click)="sortToggle('email')">
-            Email
-            <mat-icon *ngIf="sortField === 'email' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'email' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Email <mat-icon *ngIf="sortField==='email'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-gender sortable" (click)="sortToggle('gender')">
-            Gender
-            <mat-icon *ngIf="sortField === 'gender' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'gender' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Gender <mat-icon *ngIf="sortField==='gender'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-birth sortable" (click)="sortToggle('birthDate')">
-            Birth Date
-            <mat-icon *ngIf="sortField === 'birthDate' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'birthDate' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Birth Date <mat-icon *ngIf="sortField==='birthDate'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-phone sortable" (click)="sortToggle('phone')">
-            Phone
-            <mat-icon *ngIf="sortField === 'phone' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'phone' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Phone <mat-icon *ngIf="sortField==='phone'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-position sortable" (click)="sortToggle('positionName')">
-            Position
-            <mat-icon *ngIf="sortField === 'positionName' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'positionName' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Position <mat-icon *ngIf="sortField==='positionName'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-status sortable" (click)="sortToggle('status')">
-            Status
-            <mat-icon *ngIf="sortField === 'status' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'status' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Status <mat-icon *ngIf="sortField==='status'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-sector sortable" (click)="sortToggle('sectorName')">
-            Sector
-            <mat-icon *ngIf="sortField === 'sectorName' && sortDir === 'asc'">arrow_upward</mat-icon>
-            <mat-icon *ngIf="sortField === 'sectorName' && sortDir === 'desc'">arrow_downward</mat-icon>
+            Sector <mat-icon *ngIf="sortField==='sectorName'">{{ sortDir==='asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
         </div>
-
         <div class="col col-address">Address</div>
         <div class="col col-action">Action</div>
     </div>
 
-        <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
-        <ng-container *ngIf="paged$ | async as page">
-            <div *ngIf="page.content.length === 0" class="empty">No users found.</div>
+    <!-- Table Rows -->
+    <ng-container *ngIf="paged$ | async as page">
+        <div *ngIf="page.content.length===0" class="empty">
+            No users found.
+        </div>
 
-            <div class="rows">
-                <div class="row" *ngFor="let m of page.content">
-                    <div class="col col-name">
-                        <div class="name-wrapper">
-                            <div class="avatar">{{ initials(m) }}</div>
-                            <div class="name-txt">{{ m.firstName }} {{ m.lastName }}</div>
-                        </div>
-                    </div>
+        <div class="rows">
+            <div class="row" *ngFor="let m of page.content">
 
-                    <div class="col col-email">{{ m.email || '-' }}</div>
-                    <div class="col col-gender">{{ m.gender || '-' }}</div>
-                    <div class="col col-birth">
-                        <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
-                        <span *ngIf="!m.birthDate">-</span>
+                <div class="col col-name">
+                    <div class="name-wrapper">
+                        <div class="avatar">{{ initials(m) }}</div>
+                        <div class="name-txt">{{ m.firstName }} {{ m.lastName }}</div>
                     </div>
-                    <div class="col col-phone">{{ m.phone || '-' }}</div>
-                    <div class="col col-position">{{ m.positionName || '-' }}</div>
-                    <div class="col col-status">
-                        <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">{{ m.status || '-' }}</mat-chip>
-                    </div>
-                    <div class="col col-sector">{{ m.sectorName || '-' }}</div>
-                    <div class="col col-address">{{ m.address || '-' }}</div>
-                    <div class="col col-action"><a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a></div>
                 </div>
 
-                <mat-divider *ngIf="page.content.length>0"></mat-divider>
-            </div>
-        </ng-container>
-    </div>
+                <div class="col col-email">{{ m.email || '-' }}</div>
+                <div class="col col-gender">{{ m.gender || '-' }}</div>
 
-    <mat-paginator
-            [length]="(paged$ | async)?.totalElements || 0"
-            [pageIndex]="(paged$ | async)?.number || 0"
-            [pageSize]="(paged$ | async)?.size || 20"
-            [pageSizeOptions]="[5, 10, 20, 50]"
-            (page)="onPageEvent($event)">
-    </mat-paginator>
+                <div class="col col-birth">
+                    <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
+                    <span *ngIf="!m.birthDate">-</span>
+                </div>
+
+                <div class="col col-phone">{{ m.phone || '-' }}</div>
+                <div class="col col-position">{{ m.positionName || '-' }}</div>
+
+                <div class="col col-status">
+                    <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">
+                        {{ m.status || '-' }}
+                    </mat-chip>
+                </div>
+
+                <div class="col col-sector">{{ m.sectorName || '-' }}</div>
+                <div class="col col-address">{{ m.address || '-' }}</div>
+
+                <div class="col col-action">
+                    <a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <mat-paginator
+                [length]="page.totalElements"
+                [pageIndex]="page.number"
+                [pageSize]="page.size"
+                [pageSizeOptions]="[5,10,20,50]"
+                (page)="onPageEvent($event)">
+        </mat-paginator>
+    </ng-container>
+
 </section>
