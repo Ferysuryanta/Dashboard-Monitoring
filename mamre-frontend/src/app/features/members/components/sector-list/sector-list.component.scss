@@ -1,27 +1,147 @@
-.sector-page {
-  max-width: 1100px;
-  margin: 18px auto;
-  padding: 8px;
+:host {
+  display: block;
+  padding: 18px;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f7f9fc;
+  min-height: 100vh;
+}
 
-  .toolbar {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom: 12px;
-    h2 { margin:0; }
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+
+    .title {
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a202c;
+      }
+      .desc {
+        margin: 6px 0 0;
+        color: rgba(0,0,0,0.7);
+        font-size: 14px;
+      }
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+
+      button {
+        height: 40px;
+        font-weight: 600;
+      }
+    }
   }
 
+  /* WRAPPER TABEL DENGAN BOX-SHADOW */
+  .table-content-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* MAT-TABLE STYLING */
   .sector-table {
-    width:100%;
-    margin-bottom: 8px;
-    th { text-align:left; font-weight:600; }
-    td { vertical-align: middle; }
+    width: 100%;
+    border-collapse: collapse;
+
+    .mat-header-row {
+      height: 48px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mat-row {
+      height: auto;
+      min-height: 54px;
+      border-bottom: 1px solid #edf2f7;
+      transition: background 0.2s;
+      &:hover {
+        background: #fcfdfe;
+      }
+    }
+
+    .mat-header-cell {
+      color: #4a5568;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 20px;
+    }
+
+    .mat-cell {
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    /* Override cell widths */
+    .mat-column-code { max-width: 100px; flex: 0 0 100px; }
+    .mat-column-name { max-width: 200px; flex: 0 0 200px; }
+    .mat-column-description { flex: 1; }
+
+    /* KOLOM AKSI: RATA TENGAH */
+    .mat-column-actions {
+      max-width: 120px;
+      flex: 0 0 120px;
+      text-align: center;
+    }
+
+    /* Font Name yang menonjol */
+    .name-txt {
+      font-weight: 700;
+      color: #2d3748;
+    }
+
+    /* Action Buttons */
+    .col-actions {
+      button {
+        margin-left: 4px;
+      }
+    }
   }
 
   .loading-card {
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 120px;
+    background: #ffffff;
+    border: none;
+    box-shadow: none;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    color: #718096;
+    text-align: center;
+    font-size: 16px;
+    background: #ffffff;
+    border-radius: 0 0 12px 12px;
+  }
+
+  mat-paginator {
+    margin-top: 18px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+
+    ::ng-deep .mat-mdc-paginator-container { padding: 0; }
   }
 }

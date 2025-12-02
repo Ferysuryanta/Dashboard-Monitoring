@@ -1,0 +1,1 @@
+{"ast":null,"code":"export function normalizeListResponse(res) {\n  if (!res) return [];\n  if (Array.isArray(res)) return res;\n  if (typeof res === 'object' && 'content' in res && Array.isArray(res.content)) {\n    return res.content;\n  }\n  return [];\n}","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

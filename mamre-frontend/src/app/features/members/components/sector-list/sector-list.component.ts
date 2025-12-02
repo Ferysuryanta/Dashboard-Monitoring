@@ -9,6 +9,7 @@ import { SectorService, SectorOption } from 'src/app/core/services/sector.servic
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {SectorFormComponent} from "../sector-form/sector-form.component";
 import {MatCard} from "@angular/material/card";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
     selector: 'app-sector-list',
@@ -21,7 +22,8 @@ import {MatCard} from "@angular/material/card";
         MatPaginatorModule,
         MatDialogModule,
         MatProgressSpinnerModule,
-        MatCard
+        MatCard,
+        MatTooltip
     ],
     templateUrl: './sector-list.component.html',
     styleUrls: ['./sector-list.component.scss']

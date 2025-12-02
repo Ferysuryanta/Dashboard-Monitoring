@@ -1,6 +1,6 @@
 <div class="dashboard-root">
     <div class="header-section">
-        <h1>Welcome <span>Dashboard Mamre GBKP</span></h1>
+        <h1>Welcome to <span>Dashboard Mamre GBKP</span></h1>
         <div class="top-actions">
             <button mat-stroked-button (click)="goSectors()">
                 <mat-icon>account_tree</mat-icon> Sectors
@@ -74,14 +74,14 @@
             </mat-card>
 
             <mat-card class="chart-card">
-                <div class="card-title">By sector</div>
+                <div class="card-title">sector</div>
                 <div class="chart-area">
                     <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card" *ngIf="attendanceSummary && summary.totalMembers > 0">
-                <div class="card-title">Attendance Summary ({{ attendanceSummary.month }})</div>
+                <div class="card-title">Attendance({{ attendanceSummary.month }})</div>
                 <div class="chart-area">
                     <canvas baseChart
                             id="attendanceChartCanvas"

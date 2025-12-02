@@ -6,21 +6,22 @@
         </div>
 
         <div class="controls">
-            <mat-form-field appearance="outline" class="search">
-                <mat-icon matPrefix>search</mat-icon>
-                <input matInput [formControl]="search" placeholder="Search members..." />
-            </mat-form-field>
-
             <button mat-flat-button color="primary" routerLink="/members/new">
                 <mat-icon>person_add</mat-icon> Add user
             </button>
         </div>
     </div>
 
+    <div class="search-row">
+        <mat-form-field appearance="standard" class="search-minimal">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput [formControl]="search" placeholder="Search members..." />
+        </mat-form-field>
+    </div>
+
     <div *ngIf="error" class="error-box">{{ error }}</div>
 
-    <!-- table head (clickable sorts) -->
-    <div class="table-head">
+    <div class="table-content-wrapper"> <div class="table-head">
         <div class="col col-name">Name</div>
 
         <div class="col col-email sortable" (click)="sortToggle('email')">
@@ -69,47 +70,46 @@
         <div class="col col-action">Action</div>
     </div>
 
-    <mat-divider></mat-divider>
+        <mat-divider></mat-divider>
 
-    <!-- rows from paged$ -->
-    <ng-container *ngIf="paged$ | async as page">
-        <div *ngIf="page.content.length === 0" class="empty">No users found.</div>
+        <ng-container *ngIf="paged$ | async as page">
+            <div *ngIf="page.content.length === 0" class="empty">No users found.</div>
 
-        <div class="rows">
-            <div class="row" *ngFor="let m of page.content">
-                <div class="col col-name">
-                    <div class="name-wrapper">
-                        <div class="avatar">{{ initials(m) }}</div>
-                        <div class="name-txt">{{ m.firstName }} {{ m.lastName }}</div>
+            <div class="rows">
+                <div class="row" *ngFor="let m of page.content">
+                    <div class="col col-name">
+                        <div class="name-wrapper">
+                            <div class="avatar">{{ initials(m) }}</div>
+                            <div class="name-txt">{{ m.firstName }} {{ m.lastName }}</div>
+                        </div>
                     </div>
+
+                    <div class="col col-email">{{ m.email || '-' }}</div>
+                    <div class="col col-gender">{{ m.gender || '-' }}</div>
+                    <div class="col col-birth">
+                        <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
+                        <span *ngIf="!m.birthDate">-</span>
+                    </div>
+                    <div class="col col-phone">{{ m.phone || '-' }}</div>
+                    <div class="col col-position">{{ m.positionName || '-' }}</div>
+                    <div class="col col-status">
+                        <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">{{ m.status || '-' }}</mat-chip>
+                    </div>
+                    <div class="col col-sector">{{ m.sectorName || '-' }}</div>
+                    <div class="col col-address">{{ m.address || '-' }}</div>
+                    <div class="col col-action"><a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a></div>
                 </div>
 
-                <div class="col col-email">{{ m.email || '-' }}</div>
-                <div class="col col-gender">{{ m.gender || '-' }}</div>
-                <div class="col col-birth">
-                    <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
-                    <span *ngIf="!m.birthDate">-</span>
-                </div>
-                <div class="col col-phone">{{ m.phone || '-' }}</div>
-                <div class="col col-position">{{ m.positionName || '-' }}</div>
-                <div class="col col-status">
-                    <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">{{ m.status || '-' }}</mat-chip>
-                </div>
-                <div class="col col-sector">{{ m.sectorName || '-' }}</div>
-                <div class="col col-address">{{ m.address || '-' }}</div>
-                <div class="col col-action"><a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a></div>
+                <mat-divider *ngIf="page.content.length>0"></mat-divider>
             </div>
+        </ng-container>
+    </div>
 
-            <mat-divider *ngIf="page.content.length>0"></mat-divider>
-        </div>
-
-        <!-- material paginator (server-side) -->
-        <mat-paginator
-                [length]="page.totalElements || 0"
-                [pageIndex]="page.number || 0"
-                [pageSize]="page.size || 20"
-                [pageSizeOptions]="[5, 10, 20, 50]"
-                (page)="onPageEvent($event)">
-        </mat-paginator>
-    </ng-container>
+    <mat-paginator
+            [length]="(paged$ | async)?.totalElements || 0"
+            [pageIndex]="(paged$ | async)?.number || 0"
+            [pageSize]="(paged$ | async)?.size || 20"
+            [pageSizeOptions]="[5, 10, 20, 50]"
+            (page)="onPageEvent($event)">
+    </mat-paginator>
 </section>
