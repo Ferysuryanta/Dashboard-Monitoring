@@ -1,0 +1,70 @@
+<mat-sidenav-container class="layout-shell">
+    <mat-sidenav #sidenav mode="side" class="app-sidenav" [opened]="isSidenavOpen">
+        <div class="sidenav-header">
+            <div class="brand">
+                <div class="brand-avatar">M</div>
+                <div class="brand-text">
+                    <h3>Mamre</h3>
+                </div>
+            </div>
+        </div>
+
+        <mat-nav-list>
+            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+                <mat-icon>dashboard</mat-icon>
+                <span>Dashboard</span>
+            </a>
+
+            <a mat-list-item routerLink="/members" routerLinkActive="active-link">
+                <mat-icon>groups</mat-icon>
+                <span>Anggota</span>
+            </a>
+
+            <a mat-list-item routerLink="/members/new" routerLinkActive="active-link">
+                <mat-icon>person_add</mat-icon>
+                <span>Tambah Anggota</span>
+            </a>
+
+            <a mat-list-item routerLink="/sectors" routerLinkActive="active-link">
+                <mat-icon>account_tree</mat-icon>
+                <span>Sectors</span>
+            </a>
+
+            <a mat-list-item routerLink="/positions" routerLinkActive="active-link">
+                <mat-icon>work</mat-icon>
+                <span>Positions</span>
+            </a>
+        </mat-nav-list>
+
+        <div class="sidenav-footer">
+            <button mat-button (click)="toggleSidebar()" class="collapse-btn" aria-label="Toggle sidebar">
+                <mat-icon>{{ isSidenavOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+                <span *ngIf="isSidenavOpen">Collapse</span>
+            </button>
+        </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <mat-toolbar class="app-header mat-elevation-z2">
+            <div class="left-group">
+                <button mat-icon-button (click)="toggleSidebar()" aria-label="Toggle menu">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <span class="title">Dashboard Mamre</span>
+            </div>
+
+            <div class="right-group">
+                <button mat-icon-button matTooltip="Notifications" aria-label="Notifications">
+                    <mat-icon>notifications</mat-icon>
+                </button>
+
+                <!-- profile menu / avatar -->
+                <div class="avatar-small" (click)="onProfileClick()" role="button" aria-label="User menu">F</div>
+            </div>
+        </mat-toolbar>
+
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

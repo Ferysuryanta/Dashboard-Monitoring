@@ -1,0 +1,354 @@
+/* dashboard.component.scss - Versi Inovatif, Mewah, Modern & Elegan */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap');
+
+:host {
+  display: block;
+  // Background keseluruhan dashboard yang lembut
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+  min-height: 100vh;
+  padding-bottom: 50px; // Ruang di bawah
+}
+
+.dashboard-root {
+  max-width: 1500px; /* Lebar maksimum lebih besar */
+  margin: 0 auto; // Hapus margin top/bottom untuk full-bleed di atas
+  padding: 30px 40px; /* Padding samping dan bawah yang nyaman */
+  font-family: 'Poppins', sans-serif; /* Font utama */
+  color: #333; /* Warna teks utama */
+}
+
+/* --- Global Card Styling & Animasi --- */
+mat-card {
+  border-radius: 20px; /* Sudut sangat membulat */
+  background-color: rgba(255, 255, 255, 0.9); /* Sedikit transparan (glassmorphism effect) */
+  backdrop-filter: blur(8px); /* Efek blur untuk glassmorphism */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Shadow elegan */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(90deg, #6a5af9, #b06bf5);
+    border-radius: 2px;
+  }
+}
+
+mat-divider {
+  margin: 20px 0;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-top: 20px;
+
+  h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    color: #2c3e50;
+    letter-spacing: -0.5px;
+    span { color: #6a5af9; }
+  }
+
+  .top-actions {
+    display: flex;
+    gap: 12px;
+
+    button {
+      height: 50px;
+      padding: 0 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+
+      &.mat-stroked-button {
+        border: 2px solid #dcdcdc;
+        color: #555;
+        background-color: rgba(255, 255, 255, 0.7);
+        &:hover {
+          border-color: #6a5af9;
+          color: #6a5af9;
+          background-color: rgba(106, 90, 249, 0.1);
+        }
+      }
+    }
+    mat-icon { margin-right: 10px; font-size: 22px; }
+  }
+}
+
+/* --- Summary Grid (5 Cards) --- */
+.summary-grid {
+  margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 KOLOM */
+  gap: 28px;
+}
+
+.stat-card {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 180px;
+  z-index: 1;
+
+  .stat-left { z-index: 2; }
+
+  .stat-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .stat-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #2c3e50;
+    line-height: 1;
+    margin-top: 5px;
+  }
+
+  .stat-icon-overlay {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 55px;
+    opacity: 0.8;
+    z-index: 2;
+    /* Warna untuk 5 Kartu */
+    &.total { color: #6a5af9; }
+    &.active { color: #20c997; }
+    &.sectors { color: #ffb703; }
+    &.positions { color: #e63946; }
+    &.attendance { color: #3b82f6; } /* Warna Biru */
+  }
+
+  .stat-icon-bg {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    font-size: 140px;
+    opacity: 0.07;
+    z-index: 0;
+
+    &.total { color: #6a5af9; }
+    &.active { color: #20c997; }
+    &.sectors { color: #ffb703; }
+    &.positions { color: #e63946; }
+    &.attendance { color: #3b82f6; }
+  }
+}
+
+/* --- Charts Row (3 Charts) --- */
+.charts-row {
+  display: grid;
+  /* Pembagian 2:1:1 untuk Membership Growth (bar/line), By Sector (donut), Attendance (donut) */
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+
+  .chart-card {
+    padding: 30px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-area {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    /* Memastikan canvas mengisi area */
+    canvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+/* --- Recent Members & Quick Stats Row --- */
+.recent-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Anggota baru 2/3, Quick Stats 1/3 */
+  gap: 30px;
+
+  .recent-card { padding: 30px; }
+  .activity-card { padding: 30px; }
+
+  /* Styling List Anggota */
+  mat-list-item {
+    height: 80px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0 5px;
+    transition: background-color 0.2s;
+    &:hover { background-color: #f5f5f5; border-radius: 8px; }
+  }
+  .avatar-large {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, #6a5af9, #b06bf5);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 22px; margin-right: 15px;
+    box-shadow: 0 4px 8px rgba(106, 90, 249, 0.3);
+  }
+  .member-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .member-name { font-weight: 600; color: #333; font-size: 16px; }
+  .member-meta { font-size: 13px; color: #777; }
+
+
+  /* Quick Stats Grid */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 10px;
+  }
+  .q-item {
+    padding: 18px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s;
+    &:hover { background-color: #f1f3f6; }
+  }
+  .q-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #6a5af9;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.2;
+  }
+  .q-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #777;
+    margin-top: 5px;
+  }
+
+  .placeholder-text {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+
+/* --- Responsive Adjustments --- */
+
+/* Tablet & Large Mobile (1400px ke bawah) */
+@media (max-width: 1400px) {
+  /* Ubah 5 kolom kartu menjadi 2 kolom */
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Ubah 3 chart menjadi 1 kolom */
+  .charts-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ubah Recent dan Quick Stats menjadi 1 kolom (stack) */
+  .recent-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .q-item {
+    .q-value { font-size: 24px; }
+  }
+}
+
+/* Mobile Portrait (768px ke bawah) */
+@media (max-width: 768px) {
+  .dashboard-root {
+    padding: 15px 15px;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    h1 { font-size: 32px; }
+
+    .top-actions {
+      width: 100%;
+      flex-wrap: wrap;
+      button {
+        flex: 1 1 auto; /* Memungkinkan tombol menyesuaikan lebar */
+        height: 45px;
+        padding: 0 15px;
+      }
+    }
+  }
+
+  /* Tetap 1 kolom untuk semua grid utama */
+  .summary-grid, .charts-row, .recent-row {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  .stat-card {
+    min-height: 140px;
+    .stat-value { font-size: 40px; }
+    .stat-icon-overlay { font-size: 45px; }
+    .stat-icon-bg { font-size: 120px; bottom: -15px; right: -15px; }
+  }
+
+  /* Quick stats kembali menjadi 2 kolom (atau 1 jika terlalu sempit) */
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Mobile Sempit (480px ke bawah) */
+@media (max-width: 480px) {
+  .quick-grid {
+    grid-template-columns: 1fr; /* Quick stats jadi 1 kolom penuh */
+  }
+  .avatar-large {
+    width: 40px; height: 40px; font-size: 18px;
+  }
+}

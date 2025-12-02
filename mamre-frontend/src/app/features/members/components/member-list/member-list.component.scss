@@ -1,0 +1,146 @@
+:host { display:block; padding:12px 0; font-family: Roboto, "Helvetica Neue", Arial, sans-serif; }
+
+.page {
+  .page-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:14px;
+
+    .title {
+      h2 { margin:0; font-size:24px; font-weight:700; }
+      .desc { margin:6px 0 0; color:rgba(0,0,0,0.6); font-size:13px; }
+    }
+    .actions { display:flex; align-items:center; }
+  }
+
+  /* grid columns tuned for spacing between email and gender */
+  .table-head,
+  .row {
+    display: grid;
+    grid-template-columns:
+      1.4fr  /* Name (with avatar) */
+      1.6fr  /* Email (wider to separate from gender) */
+      0.6fr  /* Gender */
+      1fr    /* Birth Date */
+      1fr    /* Phone */
+      1fr    /* Position */
+      0.8fr  /* Status */
+      1fr    /* Sector */
+      1.6fr  /* Address */
+      0.6fr; /* Action */
+    gap: 12px;
+    align-items: center;
+    padding: 12px 6px;
+  }
+
+  .table-head {
+    font-weight:600;
+    color: rgba(0,0,0,0.65);
+    font-size:13px;
+  }
+
+  .rows { margin-top:6px; }
+
+  .row {
+    background: #fff;
+    padding: 14px 6px;
+    align-items: center;
+  }
+
+  .name-wrapper {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .avatar {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background: linear-gradient(135deg,#7b61ff,#4ea0ff);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:14px;
+    flex: 0 0 40px;
+  }
+
+  .name-txt .fullname { font-weight:700; font-size:15px; color:#111827; }
+
+  .email-txt { color: rgba(0,0,0,0.7); font-size:14px; }
+
+  .col-birth, .col-phone, .col-position, .col-sector, .col-address { font-size:14px; color: rgba(0,0,0,0.8); }
+
+  .status-chip {
+    border-radius: 999px;
+    font-weight:700;
+    padding:6px 10px;
+    font-size:13px;
+  }
+  .status-active { background: rgba(76,175,80,0.12); color:#2e7d32; border:1px solid rgba(76,175,80,0.2); }
+  .status-inactive { background: rgba(244,67,54,0.06); color:#c62828; border:1px solid rgba(244,67,54,0.12); }
+  .status-pending { background: rgba(255,193,7,0.08); color:#b8860b; border:1px solid rgba(255,193,7,0.12); }
+  .status-default { background: rgba(0,0,0,0.04); color:rgba(0,0,0,0.7); border:1px solid rgba(0,0,0,0.06); }
+
+  .edit-link { color:#6a1b9a; text-decoration:none; font-weight:600; }
+
+  .empty { padding:24px; color:rgba(0,0,0,0.6); text-align:center; }
+
+  mat-divider { margin:0; }
+}
+
+/* responsive */
+@media (max-width: 1000px) {
+  .table-head, .row {
+    grid-template-columns:
+      1.4fr  /* name */
+      1.6fr  /* email */
+      0.6fr  /* gender */
+      0.9fr  /* birth */
+      0.9fr  /* phone */
+      0.9fr  /* position */
+      0.8fr  /* status */
+      1fr    /* sector */
+      1.6fr  /* address */
+      0.6fr;
+  }
+}
+
+@media (max-width: 760px) {
+  /* compact: hide address & maybe sector to keep layout */
+  .table-head, .row {
+    grid-template-columns:
+      1.6fr  /* name */
+      1.6fr  /* email */
+      0.7fr  /* gender */
+      0.9fr  /* birth */
+      0.9fr  /* phone */
+      1fr    /* position */
+      0.8fr  /* status */
+      0.7fr; /* action */
+  }
+  .col-sector, .col-address { display:none; }
+}
+
+.table-head .col.sortable { cursor: pointer; user-select: none; display:flex; align-items:center; gap:6px; }
+
+.pager {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 6px;
+  gap:12px;
+  margin-top:12px;
+
+  .pager-left, .pager-middle, .pager-right { display:flex; align-items:center; gap:8px; }
+  select { padding:6px 8px; border-radius:6px; border:1px solid rgba(0,0,0,0.12); }
+}
+
+.table-head .sortable { cursor: pointer; user-select: none; display:flex; align-items:center; gap:6px; }
+mat-paginator { margin-top: 18px; }
+.controls { display:flex; gap:12px; align-items:center; margin-bottom: 8px; }
+.search { width:360px; min-width:160px; }

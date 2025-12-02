@@ -1,0 +1,42 @@
+<mat-card class="member-card mat-elevation-z2">
+    <div class="card-grid">
+        <div class="left">
+            <div class="avatar" aria-hidden="true">{{ initial }}</div>
+        </div>
+
+        <div class="center">
+            <div class="header">
+                <div class="name">{{ fullName }}</div>
+                <div class="meta">
+                    <span class="position">{{ member.positionName || '-' }}</span>
+                    <span class="dot">•</span>
+                    <span class="sector">{{ member.sectorName || '-' }}</span>
+                </div>
+                <div class="sub">
+                    <span class="gender">{{ member.gender || '-' }}</span>
+                    <span class="dot">•</span>
+                    <span class="joined">Joined: {{ member.joinedDate ? (member.joinedDate | date:'mediumDate') : '-' }}</span>
+                </div>
+            </div>
+
+            <div class="details">
+                <div class="row"><div class="label">Email</div><div class="value">{{ member.email || '-' }}</div></div>
+                <div class="row"><div class="label">Telepon</div><div class="value">{{ member.phone || '-' }}</div></div>
+                <div class="row address"><div class="label">Alamat</div><div class="value">{{ member.address || '-' }}</div></div>
+            </div>
+        </div>
+
+        <div class="right">
+            <mat-chip class="status" [ngClass]="member.status?.toLowerCase()">{{ member.status || '—' }}</mat-chip>
+
+            <div class="actions">
+                <a mat-icon-button color="primary" [routerLink]="['/members', member.id, 'edit']" matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                </a>
+                <button mat-icon-button matTooltip="More" aria-label="more">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</mat-card>

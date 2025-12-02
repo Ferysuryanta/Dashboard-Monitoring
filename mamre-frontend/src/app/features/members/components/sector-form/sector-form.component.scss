@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  min-width: 320px;
+  max-width: 720px;
+}
+
+.content-wrapper {
+  padding: 6px 12px;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+}
+
+.sector-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .full {
+    width: 100%;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+
+    .btn-label {
+      margin-left: 8px;
+    }
+
+    mat-progress-spinner {
+      margin-right: 8px;
+    }
+  }
+}
+
+/* responsive tweak for small screens */
+@media (max-width: 480px) {
+  :host {
+    min-width: 280px;
+  }
+}
+
+.snack-success { background: #1b873f !important; color: white !important; }
+.snack-error   { background: #d32f2f !important; color: white !important; }
