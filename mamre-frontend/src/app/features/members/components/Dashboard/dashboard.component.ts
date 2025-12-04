@@ -232,7 +232,6 @@ export class DashboardComponent implements OnInit {
     loadAll() {
         this.loading = true;
 
-        // Panggil getSummary dan update chart setelahnya
         this.svc.getSummary().subscribe(sum => {
             this.summary = sum || this.summary;
             this.updateAttendanceChartData(); // Panggil setelah summary load
@@ -240,7 +239,6 @@ export class DashboardComponent implements OnInit {
             console.error('summary err', err);
         });
 
-        // Panggil getAttendanceSummary dan update chart setelahnya
         this.svc.getAttendanceSummary().subscribe((summary: AttendanceSummaryDto | null) => {
             if (summary) {
                 this.attendanceSummary = summary;

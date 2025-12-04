@@ -18,6 +18,7 @@ import { AttendanceService } from 'src/app/core/services/attendance.service';
 import { AttendanceDto } from '../../models/attendance.model';
 import { PageModel } from '../../models/page.model';
 import {MatNativeDateModule} from "@angular/material/core";
+import {Router} from "@angular/router";
 
 interface FilterParams {
     page?: number;
@@ -52,6 +53,7 @@ interface FilterParams {
 export class AttendanceListComponent implements OnInit, AfterViewInit {
     private attendanceService = inject(AttendanceService);
     private fb = inject(FormBuilder);
+    private router= inject(Router);
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -178,5 +180,12 @@ export class AttendanceListComponent implements OnInit, AfterViewInit {
                 console.error('Gagal menghapus data', err);
             }
         });
+    }
+
+    /**
+     * Navigasi ke halaman form tambah kehadiran
+     */
+    goToAddAttendance(): void {
+        this.router.navigate(['/attendance/new']);
     }
 }
