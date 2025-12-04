@@ -1,0 +1,54 @@
+<section class="activity-list">
+    <div class="header">
+        <h3>Activity & Program</h3>
+        <div class="actions">
+            <mat-form-field appearance="outline" class="search">
+                <mat-icon matPrefix>search</mat-icon>
+                <input matInput [formControl]="search" placeholder="Search activities..." />
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" routerLink="/activities/new">
+                <mat-icon>add</mat-icon> New
+            </button>
+        </div>
+    </div>
+
+    <mat-card>
+        <div class="table-head">
+            <div>Title</div>
+            <div>Schedule</div>
+            <div>Status</div>
+            <div>Docs</div>
+            <div>Actions</div>
+        </div>
+
+        <div *ngIf="data$ | async as page">
+            <div *ngIf="page.content.length === 0" class="empty">No activities found.</div>
+
+            <div class="rows" *ngFor="let a of page.content">
+                <div class="cell title">{{ a.title }}</div>
+                <div class="cell schedule">
+                    {{ a.dateStart | date:'shortDate' }}
+                    <span *ngIf="a.dateEnd"> - {{ a.dateEnd | date:'shortDate' }}</span>
+                </div>
+
+                <div class="cell status">
+                    <mat-chip [ngClass]="statusClass(a.status)">{{ a.status }}</mat-chip>
+                </div>
+
+                <div class="cell docs">{{ a.documents?.length || 0 }}</div>
+
+                <div class="cell actions">
+                    <button mat-icon-button (click)="view(a)"><mat-icon>visibility</mat-icon></button>
+                    <button mat-icon-button (click)="edit(a)"><mat-icon>edit</mat-icon></button>
+                </div>
+            </div>
+
+            <mat-paginator [length]="page.totalElements"
+                           [pageSize]="page.size"
+                           [pageIndex]="page.number"
+                           (page)="onPageChange($event)">
+            </mat-paginator>
+        </div>
+    </mat-card>
+</section>

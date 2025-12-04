@@ -1,0 +1,17 @@
+# Ignore IDE folders
+.idea/
+backend/.idea/
+mamre-frontend/.idea/
+
+# Ignore backend build
+backend/target/
+backend/uploads/
+
+# Ignore Angular build & dependencies
+mamre-frontend/node_modules/
+mamre-frontend/.angular/
+mamre-frontend/dist/
+
+# System files
+.DS_Store
+Thumbs.db

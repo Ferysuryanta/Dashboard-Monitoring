@@ -1,0 +1,53 @@
+.activity-form-card {
+  padding: 20px;
+  border-radius: 8px;
+
+  .header { margin-bottom: 12px; h3 { margin: 0; } }
+
+  .row1 { margin-bottom: 12px; }
+  .row2 {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    mat-form-field { flex: 1; min-width: 180px; }
+  }
+
+  .full { width: 100%; }
+
+  .docs-upload {
+    margin-top: 12px;
+    .upload-label { font-weight: 600; margin-bottom: 8px; display: block; }
+    .upload-controls { display:flex; gap:12px; align-items:center; margin-bottom:8px; .hint { color: #666; font-size: 13px; } }
+
+    .files-preview, .existing-files {
+      border: 1px dashed #e6e6e6;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+
+      mat-icon { color: #666; }
+      .file-name { flex: 1; word-break: break-all; font-size: 14px; }
+      button { margin-left: 8px; }
+    }
+
+    .existing-title { font-size: 13px; color: #444; margin-bottom: 6px; }
+  }
+
+  .actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+
+    button { min-width: 90px; }
+  }
+}

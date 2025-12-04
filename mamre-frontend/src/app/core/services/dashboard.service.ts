@@ -2,9 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {DashboardSummary} from "../../features/members/models/dashboard.model";
 
-
+export interface DashboardSummary {
+    totalMembers: number;
+    activeMembers: number;
+    sectors: number;
+    positions: number;
+}
 
 export interface MembersTrendPoint { month: string; count: number; }
 export interface SectorDistribution { sector: string; count: number; }
@@ -18,8 +22,11 @@ export class DashboardService {
     constructor(private http: HttpClient) {}
 
     getSummary(): Observable<DashboardSummary> {
-        return this.http.get<DashboardSummary>(`${this.base}/summary-stats`).pipe(
-            catchError(err => { console.error('dashboard.getSummary', err); return of({ totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 }); })
+        return this.http.get<DashboardSummary>(`${this.base}/summary`).pipe(
+            catchError(err => {
+                console.error('dashboard.getSummary', err);
+                return of({ totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 });
+            })
         );
     }
 
@@ -40,24 +47,13 @@ export class DashboardService {
             .pipe(catchError(err => { console.error('dashboard.getRecentActivities', err); return of([] as RecentActivity[]); }));
     }
 
-    // new: attendance summary (month format YYYY-MM)
     getAttendanceSummary(month?: string): Observable<AttendanceSummary | null> {
-        // build typed options object so TS picks overload returning Observable<T>
         const options: { params?: HttpParams } = {};
-        if (month) {
-            options.params = new HttpParams().set('month', month);
-        }
-
+        if (month) options.params = new HttpParams().set('month', month);
         return this.http.get<AttendanceSummary>(`${this.base}/attendance/summary`, options)
-            .pipe(
-                catchError(err => {
-                    console.error('dashboard.getAttendanceSummary', err);
-                    return of(null);
-                })
-            );
+            .pipe(catchError(err => { console.error('dashboard.getAttendanceSummary', err); return of(null); }));
     }
 
-    // new: count by sector (list)
     getCountBySector(): Observable<{ sector: string; count: number }[] | null> {
         return this.http.get<{ sector: string; count: number }[]>(`${this.base}/members/count-by-sector`)
             .pipe(catchError(err => { console.error('dashboard.getCountBySector', err); return of(null); }));

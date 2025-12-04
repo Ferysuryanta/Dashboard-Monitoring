@@ -14,7 +14,12 @@ import { PositionListComponent } from "./features/members/components/positions-l
 import { PositionFormComponent } from "./features/members/components/positions-form/position-form.component";
 import {DashboardComponent} from "./features/members/components/Dashboard/dashboard.component";
 
-// Dashboard
+import {ActivityListComponent} from "./features/members/components/activity-list/activity-list.component";
+import {ActivityDetailComponent} from "./features/members/components/activity-detail/activity-detail.component";
+import {ActivityFormComponent} from "./features/members/components/activity-form/activity-form.component";
+import {AttendanceListComponent} from "./features/members/components/attendance-list/attendance-list.component";
+import {AttendanceFormComponent} from "./features/members/components/attendance-form/attendance-form.component";
+
 
 export const routes: Routes = [
     {
@@ -40,6 +45,18 @@ export const routes: Routes = [
             { path: 'positions', component: PositionListComponent },
             { path: 'positions/new', component: PositionFormComponent },
             { path: 'positions/:id/edit', component: PositionFormComponent },
+
+            // 📋 Activities
+            { path: 'activities/new', component: ActivityFormComponent },
+            { path: 'activities/:id', component: ActivityDetailComponent },
+            { path: 'activities/:id/edit', component: ActivityFormComponent },
+            { path: 'activities', component: ActivityListComponent },
+
+            // Attendance
+            { path: 'attendance', component: AttendanceListComponent },
+            { path: 'attendance/new', component: AttendanceFormComponent },
+            // { path: 'attendance/:id', component: ActivityDetailComponent },
+            { path: 'attendance/:id/edit', component: AttendanceFormComponent },
         ]
     },
 

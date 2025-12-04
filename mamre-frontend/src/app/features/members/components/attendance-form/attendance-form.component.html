@@ -1,0 +1,71 @@
+<div class="attendance-form-root">
+    <div class="top-row">
+        <h1>Absensi Kehadiran Member</h1>
+        <div class="summary-card card" *ngIf="attendanceSummary">
+            <h3>Summary Bulan Ini ({{ attendanceSummary.month }})</h3>
+            <div class="summary-detail">
+                <span>Total Kehadiran: <strong>{{ attendanceSummary.totalAttendances }}</strong></span>
+                <span>Anggota Unik: <strong>{{ attendanceSummary.uniqueMembers }}</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="form-grid">
+        <mat-card class="form-card">
+            <mat-card-header>
+                <mat-card-title>Input Kehadiran Baru</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup]="attendanceForm" (ngSubmit)="submitAttendance()">
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Tanggal Kehadiran</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="date">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="attendanceForm.get('date')?.hasError('required')">Tanggal wajib diisi.</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>ID/Nama Member</mat-label>
+                        <input matInput formControlName="memberId" placeholder="Masukkan ID atau Nama Member">
+                        <mat-hint>Cth: UUID member atau nama lengkap</mat-hint>
+                        <mat-error *ngIf="attendanceForm.get('memberId')?.hasError('required')">ID Member wajib diisi.</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Keterangan</mat-label>
+                        <textarea matInput formControlName="notes" placeholder="Contoh: Ibadah Rutin"></textarea>
+                    </mat-form-field>
+
+                    <div class="form-actions">
+                        <button mat-flat-button color="primary" type="submit" [disabled]="attendanceForm.invalid || isSaving">
+                            <mat-icon *ngIf="!isSaving">add</mat-icon>
+                            <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+                            {{ isSaving ? 'Menyimpan...' : 'Simpan Kehadiran' }}
+                        </button>
+                    </div>
+
+                </form>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="recent-list-card">
+            <mat-card-header>
+                <mat-card-title>Daftar Kehadiran Terbaru</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p *ngIf="recentAttendance.length === 0">Tidak ada data kehadiran terbaru.</p>
+                <mat-list>
+                    <mat-list-item *ngFor="let item of recentAttendance">
+                        <mat-icon matListItemIcon>person_check</mat-icon>
+                        <div matListItemTitle>{{ item.memberName }}</div>
+                        <div matListItemLine>{{ item.date | date:'mediumDate' }} - {{ item.notes }}</div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

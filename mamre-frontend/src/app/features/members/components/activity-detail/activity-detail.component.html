@@ -1,0 +1,31 @@
+<mat-card *ngIf="activity">
+    <div class="top">
+        <h2>{{ activity.title }}</h2>
+
+        <div class="meta">
+            {{ activity.dateStart | date:'fullDate' }}
+            <span *ngIf="activity.dateEnd"> - {{ activity.dateEnd | date:'fullDate' }}</span>
+        </div>
+
+        <mat-chip [ngClass]="activity.status.toLowerCase()">{{ activity.status }}</mat-chip>
+    </div>
+
+    <div class="desc" [innerHTML]="activity.description"></div>
+
+    <div class="docs">
+        <h4>Documents</h4>
+        <ul>
+            <li *ngFor="let d of activity.documents">
+                <a [href]="d.url" target="_blank">{{ d.name }}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <button mat-button (click)="back()">Back</button>
+
+        <button mat-flat-button color="primary" [routerLink]="['/activities', activity.id, 'edit']">
+            Edit
+        </button>
+    </div>
+</mat-card>

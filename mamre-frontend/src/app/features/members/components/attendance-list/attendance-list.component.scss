@@ -1,0 +1,75 @@
+/* src/app/features/attendance/attendance-list.component.scss */
+
+.attendance-list-root {
+  padding: 32px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #222;
+  }
+
+  .filter-card {
+    margin-bottom: 25px;
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+
+      mat-form-field {
+        flex-grow: 1;
+        max-width: 250px;
+      }
+    }
+  }
+
+  .data-card {
+    padding: 20px;
+    position: relative;
+  }
+
+  .table-container {
+    position: relative;
+    min-height: 200px;
+  }
+
+  .full-width-table {
+    width: 100%;
+
+    th, td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+  }
+
+  .loading-overlay, .no-data-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    font-size: 16px;
+    color: #555;
+  }
+
+  mat-paginator {
+    background: transparent;
+  }
+}
+
+@media (max-width: 960px) {
+  .filter-card .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+
+    mat-form-field {
+      max-width: 100%;
+    }
+  }
+}

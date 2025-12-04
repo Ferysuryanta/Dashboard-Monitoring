@@ -19,7 +19,6 @@ import { SharedMaterialModule } from './shared/material.module';
         MembersModule,
         AppComponent
     ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: []
 })
 export class AppModule {}

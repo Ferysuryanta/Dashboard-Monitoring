@@ -1,0 +1,206 @@
+:host {
+  display: block;
+  padding: 16px 0;
+}
+
+.activity-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* HEADER: Title, Search, and New Button */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Pastikan responsif pada layar kecil */
+
+  h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Jarak antara Search dan New Button */
+    flex-wrap: wrap;
+
+    .search {
+      width: 250px;
+      min-width: 180px;
+      .mat-form-field-wrapper {
+        padding-bottom: 0.5em; /* Mengurangi padding bawah default Material */
+      }
+    }
+  }
+}
+
+mat-card {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* GRID LAYOUT untuk Tabel */
+.table-head, .rows {
+  display: grid;
+  /* Definisikan kolom Grid */
+  grid-template-columns:
+        3fr    /* Title */
+        1.5fr  /* Schedule */
+        1fr    /* Status */
+        0.5fr  /* Docs */
+        0.5fr; /* Actions */
+  gap: 16px;
+  padding: 12px 16px;
+  align-items: center;
+}
+
+/* TABLE HEADER */
+.table-head {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* TABLE ROWS */
+.rows {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .cell {
+    /* Default styling for all cells */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cell.title {
+    font-weight: 500;
+    color: #3f51b5; /* Highlight Title */
+  }
+
+  .cell.schedule {
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .cell.actions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end; /* Pindahkan tombol ke kanan */
+  }
+}
+
+/* CHIP STATUS (Berdasarkan statusClass di .ts) */
+.cell.status mat-chip {
+  font-size: 11px;
+  font-weight: 600;
+  height: 24px;
+  border-radius: 12px;
+  padding: 0 8px;
+
+  &.status-completed {
+    background-color: #e8f5e9;
+    color: #43a047;
+  }
+  &.status-in-progress {
+    background-color: #fff8e1;
+    color: #ffb300;
+  }
+  &.status-pending {
+    background-color: #e3f2fd;
+    color: #2196f3;
+  }
+  &.status-cancelled {
+    background-color: #ffebee;
+    color: #e53935;
+  }
+  &.status-default {
+    background-color: #eceff1;
+    color: #455a64;
+  }
+}
+
+
+/* Empty State */
+.empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Paginator styling (inside mat-card) */
+mat-paginator {
+  padding: 8px 0;
+}
+
+// =======================================================
+// RESPONSIVE STYLING
+// =======================================================
+
+@media (max-width: 900px) {
+  /* Tablet View: Schedule dipersempit, Docs dihilangkan */
+  .table-head, .rows {
+    grid-template-columns:
+            3fr    /* Title */
+            1.2fr  /* Schedule (dipersempit) */
+            1fr    /* Status */
+            0.5fr; /* Actions */
+  }
+  .cell.docs { display: none; }
+}
+
+@media (max-width: 600px) {
+  /* Mobile View: Header menjadi stack vertikal */
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    .actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+
+      .search {
+        width: 100%;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  /* Mobile View: Jadwal dan Status dipersempit, Docs dihilangkan */
+  .table-head, .rows {
+    grid-template-columns:
+            2.5fr  /* Title */
+            1.5fr  /* Schedule */
+            1fr    /* Status */
+            0.5fr; /* Actions */
+    gap: 8px; /* Mengurangi gap */
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .cell.docs { display: none; }
+  .cell.actions {
+    /* ikon actions saja */
+    button {
+      padding: 0;
+      min-width: 32px;
+    }
+  }
+}

@@ -12,4 +12,5 @@
 # Java
 target/
 *.jar
+*.xml
 

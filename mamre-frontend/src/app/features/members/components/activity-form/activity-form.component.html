@@ -1,0 +1,93 @@
+<mat-card class="activity-form-card">
+    <div class="header">
+        <h3>{{ editMode ? 'Edit Activity' : 'New Activity' }}</h3>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="row1">
+            <mat-form-field appearance="outline" class="full">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title" />
+                <mat-error *ngIf="$any(title).hasError('required')">Title is required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="row1">
+            <mat-form-field appearance="outline" class="full">
+                <mat-label>Description</mat-label>
+                <textarea matInput rows="4" formControlName="description"></textarea>
+            </mat-form-field>
+        </div>
+
+        <div class="row2">
+            <mat-form-field appearance="outline">
+                <mat-label>Start</mat-label>
+                <input matInput [matDatepicker]="ds" formControlName="dateStart" />
+                <mat-datepicker-toggle matSuffix [for]="ds"></mat-datepicker-toggle>
+                <mat-datepicker #ds></mat-datepicker>
+                <mat-error *ngIf="$any(dateStart).hasError('required')">Start date is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>End</mat-label>
+                <input matInput [matDatepicker]="de" formControlName="dateEnd" />
+                <mat-datepicker-toggle matSuffix [for]="de"></mat-datepicker-toggle>
+                <mat-datepicker #de></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status">
+                    <mat-option value="Planned">Planned</mat-option>
+                    <mat-option value="Ongoing">Ongoing</mat-option>
+                    <mat-option value="Completed">Completed</mat-option>
+                    <mat-option value="Cancelled">Cancelled</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="row1">
+            <mat-form-field appearance="outline" class="full">
+                <mat-label>Location</mat-label>
+                <input matInput formControlName="location" />
+            </mat-form-field>
+        </div>
+
+        <div class="docs-upload">
+            <label class="upload-label">Documents</label>
+            <div class="upload-controls">
+                <input id="fileInput" type="file" (change)="onFileSelected($event)" multiple hidden />
+                <button mat-stroked-button type="button" (click)="document.getElementById('fileInput')?.click()">Select files</button>
+                <div class="hint">Selected files will be uploaded after save.</div>
+            </div>
+
+            <div class="files-preview" *ngIf="filesToUpload.length > 0">
+                <div class="file-item" *ngFor="let f of filesToUpload; let i = index">
+                    <mat-icon>insert_drive_file</mat-icon>
+                    <div class="file-name">{{ f.name }}</div>
+                    <button mat-icon-button color="warn" (click)="removeLocalFile(i)" title="Remove">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="existing-files" *ngIf="existingDocs.length > 0">
+                <div class="existing-title">Existing documents</div>
+                <div class="file-item" *ngFor="let d of existingDocs; let i = index">
+                    <mat-icon>description</mat-icon>
+                    <a [href]="d.url" target="_blank">{{ d.name }}</a>
+                    <button mat-icon-button color="warn" (click)="removeExistingDoc(i)" title="Remove">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button mat-button type="button" (click)="cancel()">Cancel</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+                {{ loading ? 'Saving...' : 'Save' }}
+            </button>
+        </div>
+    </form>
+</mat-card>
