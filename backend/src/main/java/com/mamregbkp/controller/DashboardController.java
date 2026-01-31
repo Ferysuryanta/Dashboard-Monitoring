@@ -7,11 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
@@ -48,6 +46,31 @@ public class DashboardController {
     @GetMapping("/recent")
     public ResponseEntity<List<RecentMemberDto>> recentMembers(@RequestParam(defaultValue = "6") int size) {
         return ResponseEntity.ok(dashboardService.getRecentMembers(size));
+    }
+
+    @GetMapping("/gender-distribution")
+    public ResponseEntity<List<GenderDistributionDto>> genderDistribution() {
+        return ResponseEntity.ok(dashboardService.getGenderDistribution());
+    }
+
+    @GetMapping("/status-distribution")
+    public ResponseEntity<List<StatusDistributionDto>> statusDistribution() {
+        return ResponseEntity.ok(dashboardService.getStatusDistribution());
+    }
+
+    @GetMapping("/upcoming-birthdays")
+    public ResponseEntity<List<UpcomingBirthdayDto>> upcomingBirthdays(
+            @RequestParam(defaultValue = "30") int days,
+            @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(dashboardService.getUpcomingBirthdays(days, limit));
+    }
+
+    @GetMapping("/bible-reading-progress")
+    public ResponseEntity<List<BibleReadingProgressDto>> bibleReadingProgress(
+            @RequestParam(defaultValue = "0") int year) {
+        // Jika year = 0, gunakan tahun sekarang
+        int targetYear = year > 0 ? year : java.time.LocalDate.now().getYear();
+        return ResponseEntity.ok(dashboardService.getBibleReadingProgress(targetYear));
     }
 
 }

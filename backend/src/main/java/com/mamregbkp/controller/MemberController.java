@@ -16,7 +16,6 @@ import java.util.UUID;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
 

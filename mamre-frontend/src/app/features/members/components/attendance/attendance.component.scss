@@ -1,0 +1,366 @@
+.page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .title {
+        h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .desc {
+            margin: 4px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    }
+
+    .controls {
+        display: flex;
+        gap: 12px;
+
+        .batch-btn {
+            border-color: #6a5af9;
+            color: #6a5af9;
+        }
+    }
+}
+
+// Stats Row
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-radius: 12px;
+    gap: 16px;
+
+    mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+    }
+
+    &.today {
+        background: linear-gradient(135deg, #6a5af9 0%, #8b7cf9 100%);
+        color: white;
+    }
+    &.week {
+        background: linear-gradient(135deg, #20c997 0%, #38d9a9 100%);
+        color: white;
+    }
+    &.month {
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+        color: white;
+    }
+
+    .stat-info {
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+    }
+}
+
+// Form Card
+.form-card {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    padding: 20px;
+
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.attendance-form, .batch-form {
+    padding-top: 16px;
+
+    .form-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .field-member {
+        flex: 2;
+        min-width: 250px;
+    }
+    .field-date {
+        flex: 1;
+        min-width: 180px;
+    }
+    .field-event {
+        flex: 2;
+        min-width: 200px;
+    }
+    .field-present {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+    }
+    .field-notes {
+        width: 100%;
+    }
+
+    .member-email {
+        color: #888;
+        font-size: 0.85em;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+    }
+}
+
+// Batch Form Member Selection
+.member-selection {
+    margin: 16px 0;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+
+    .selection-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .selection-title {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .selection-actions {
+            display: flex;
+            gap: 8px;
+        }
+    }
+
+    .member-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 4px;
+    }
+
+    .member-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: #999;
+        }
+
+        &:hover {
+            border-color: #6a5af9;
+            background: #f8f6ff;
+        }
+
+        &.selected {
+            border-color: #6a5af9;
+            background: #ede9fe;
+
+            mat-icon {
+                color: #6a5af9;
+            }
+        }
+    }
+}
+
+// Filter Card
+.filter-card {
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    border-radius: 12px;
+
+    .filter-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-field {
+        flex: 1;
+        min-width: 150px;
+        max-width: 250px;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+}
+
+// Table
+.table-wrapper {
+    mat-card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+}
+
+.loading-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.table-card {
+    overflow-x: auto;
+}
+
+.attendance-table {
+    width: 100%;
+
+    th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    td, th {
+        padding: 12px 16px;
+    }
+
+    .member-name {
+        font-weight: 500;
+        color: #1a1a2e;
+    }
+
+    .event-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background: #e8f4fd;
+        color: #2563eb;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+
+    .note-text {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        color: #666;
+    }
+
+    mat-chip {
+        font-size: 0.8rem;
+        min-height: 26px;
+
+        &.present {
+            background: #d1fae5 !important;
+            color: #065f46 !important;
+        }
+        &.absent {
+            background: #fee2e2 !important;
+            color: #991b1b !important;
+        }
+    }
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: #888;
+
+    mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    p {
+        margin: 0;
+        font-size: 1rem;
+    }
+}
+
+mat-paginator {
+    margin-top: 8px;
+    background: transparent;
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .page {
+        padding: 16px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        .controls {
+            justify-content: flex-end;
+        }
+    }
+
+    .filter-card .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+
+        .filter-field {
+            max-width: none;
+        }
+    }
+}

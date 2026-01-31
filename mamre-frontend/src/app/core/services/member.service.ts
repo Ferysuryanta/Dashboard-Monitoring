@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
 import {MemberDto} from "../../features/members/models/member.model";
+import { normalizePageResponse } from '../utils/response-normalizer';
 
 export interface PagedResult<T> {
     content: T[];
@@ -37,7 +38,21 @@ export class MemberService {
         if (search) params = params.append('search', search);
         if (status) params = params.append('status', status);
 
-        return this.http.get<PagedResult<MemberDto>>(this.base, { params }).pipe(
+        return this.http.get<any>(this.base, { params }).pipe(
+            map(res => {
+                // Normalize Spring Boot 3.x pagination response
+                const normalized = normalizePageResponse<MemberDto>(res, size, page);
+                return {
+                    content: normalized.content,
+                    totalElements: normalized.totalElements,
+                    totalPages: normalized.totalPages,
+                    number: normalized.number,
+                    size: normalized.size,
+                    first: normalized.number === 0,
+                    last: normalized.number >= normalized.totalPages - 1,
+                    empty: normalized.content.length === 0
+                } as PagedResult<MemberDto>;
+            }),
             catchError(err => {
                 console.error('[MemberService] getPaged error', err);
                 return throwError(() => err);

@@ -1,14 +1,18 @@
 :host {
   display: block;
-  padding: 18px;
+  padding: 18px 0;
   font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #f7f9fc;
   min-height: 100vh;
+  width: 100%;
 }
 
 .page {
-  max-width: 1100px;
-  margin: 0 auto;
+  /* Full width - tidak dibatasi max-width agar tabel lebih lebar */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 24px;
 
   .page-header {
     display: flex;
@@ -89,14 +93,26 @@
       color: #4a5568;
     }
 
-    /* Override cell widths */
-    .mat-column-code { max-width: 100px; flex: 0 0 100px; }
-    .mat-column-name { max-width: 200px; flex: 0 0 200px; }
-    .mat-column-description { flex: 1; }
+    /* Override cell widths - menggunakan flex untuk distribusi yang lebih baik */
+    .mat-column-code {
+      min-width: 100px;
+      max-width: 150px;
+      flex: 0 0 120px;
+    }
+    .mat-column-name {
+      min-width: 150px;
+      max-width: 300px;
+      flex: 0 0 220px;
+    }
+    .mat-column-description {
+      flex: 1 1 auto;
+      min-width: 200px;
+    }
 
     /* KOLOM AKSI: RATA TENGAH */
     .mat-column-actions {
-      max-width: 120px;
+      min-width: 100px;
+      max-width: 150px;
       flex: 0 0 120px;
       text-align: center;
     }
@@ -143,5 +159,39 @@
     background: #ffffff;
 
     ::ng-deep .mat-mdc-paginator-container { padding: 0; }
+  }
+}
+
+/* Responsive: untuk layar sangat besar, batasi agar tetap readable */
+@media (min-width: 1800px) {
+  .page {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+}
+
+/* Responsive: untuk layar kecil */
+@media (max-width: 768px) {
+  .page {
+    padding: 0 12px;
+
+    .sector-table {
+      .mat-column-code {
+        min-width: 60px;
+        flex: 0 0 80px;
+      }
+      .mat-column-name {
+        min-width: 100px;
+        flex: 0 0 140px;
+      }
+      .mat-column-description {
+        min-width: 120px;
+      }
+      .mat-column-actions {
+        min-width: 80px;
+        flex: 0 0 90px;
+      }
+    }
   }
 }

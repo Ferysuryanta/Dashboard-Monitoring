@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { MemberService } from '../../../../core/services/member.service';
@@ -22,7 +24,8 @@ import { MemberDto } from '../../models/member.model';
     imports: [
         CommonModule, RouterModule, ReactiveFormsModule,
         MatFormFieldModule, MatInputModule, MatSelectModule,
-        MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule
+        MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule,
+        MatDatepickerModule, MatNativeDateModule
     ],
     templateUrl: './member-form.component.html',
     styleUrls: ['./member-form.component.scss']

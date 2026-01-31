@@ -48,7 +48,7 @@ public class Member {
     @JoinColumn(name = "position_id")
     private Position position;
 
-    @Column(name = "status")
+    @Column(name = "status", length = 20)
     private String status = "ACTIVE";
 
     @Column(name = "joined_date")

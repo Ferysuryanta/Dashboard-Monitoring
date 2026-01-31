@@ -35,6 +35,27 @@ mat-card {
   }
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .card-title {
+    margin-bottom: 0;
+  }
+
+  .chart-action-btn {
+    color: #6a5af9;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
 .card-title {
   font-family: 'Montserrat', sans-serif;
   font-size: 22px;
@@ -196,6 +217,172 @@ mat-divider {
   }
 }
 
+/* --- Charts Row Secondary (Gender, Status, Birthdays) --- */
+.charts-row-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 30px;
+  margin-bottom: 40px;
+
+  .chart-card-small {
+    padding: 25px;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chart-area-small {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    min-height: 250px;
+    canvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .birthday-card {
+    padding: 25px;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .title-icon {
+        color: #ec4899;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .birthday-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 280px;
+    }
+
+    .birthday-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+      border-left: 4px solid transparent;
+
+      &:hover {
+        background-color: #f0f0f0;
+        transform: translateX(5px);
+      }
+
+      &.birthday-today {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left-color: #f59e0b;
+        animation: pulse 2s infinite;
+      }
+
+      &.birthday-soon {
+        background-color: #fef3c7;
+        border-left-color: #f59e0b;
+      }
+
+      &.birthday-week {
+        background-color: #dbeafe;
+        border-left-color: #3b82f6;
+      }
+
+      &.birthday-later {
+        border-left-color: #9ca3af;
+      }
+    }
+
+    .birthday-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ec4899, #f472b6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .birthday-info {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .birthday-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .birthday-meta {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .birthday-badge {
+      background-color: #6a5af9;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .placeholder-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      color: #999;
+      text-align: center;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #ddd;
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin: 0;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+}
+
 /* --- Recent Members & Quick Stats Row --- */
 .recent-row {
   display: grid;
@@ -290,6 +477,11 @@ mat-divider {
     grid-template-columns: 1fr !important;
   }
 
+  /* Charts Row Secondary menjadi 1 kolom */
+  .charts-row-secondary {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Ubah Recent dan Quick Stats menjadi 1 kolom (stack) */
   .recent-row {
     grid-template-columns: 1fr !important;
@@ -324,7 +516,7 @@ mat-divider {
   }
 
   /* Tetap 1 kolom untuk semua grid utama */
-  .summary-grid, .charts-row, .recent-row {
+  .summary-grid, .charts-row, .charts-row-secondary, .recent-row {
     grid-template-columns: 1fr !important;
     gap: 20px;
   }

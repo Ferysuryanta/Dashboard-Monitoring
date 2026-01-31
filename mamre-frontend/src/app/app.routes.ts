@@ -14,6 +14,12 @@ import { PositionListComponent } from "./features/members/components/positions-l
 import { PositionFormComponent } from "./features/members/components/positions-form/position-form.component";
 import {DashboardComponent} from "./features/members/components/Dashboard/dashboard.component";
 
+// Bible Reading
+import { BibleReadingComponent } from "./features/members/components/bible-reading/bible-reading.component";
+
+// Attendance
+import { AttendanceComponent } from "./features/members/components/attendance/attendance.component";
+
 // Dashboard
 
 export const routes: Routes = [
@@ -40,6 +46,12 @@ export const routes: Routes = [
             { path: 'positions', component: PositionListComponent },
             { path: 'positions/new', component: PositionFormComponent },
             { path: 'positions/:id/edit', component: PositionFormComponent },
+
+            // 📖 Bible Reading
+            { path: 'bible-reading', component: BibleReadingComponent },
+
+            // 📋 Attendance
+            { path: 'attendance', component: AttendanceComponent },
         ]
     },
 
