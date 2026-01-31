@@ -82,12 +82,66 @@
             </div>
 
             <div class="right-group">
-                <button mat-icon-button matTooltip="Notifications" aria-label="Notifications">
-                    <mat-icon>notifications</mat-icon>
+                <!-- Notifications -->
+                <button mat-icon-button matTooltip="Notifications" aria-label="Notifications" [matMenuTriggerFor]="notificationMenu">
+                    <mat-icon [matBadge]="unreadNotifications" matBadgeColor="warn" [matBadgeHidden]="unreadNotifications === 0">notifications</mat-icon>
                 </button>
 
-                <!-- profile menu / avatar -->
-                <div class="avatar-small" (click)="onProfileClick()" role="button" aria-label="User menu">F</div>
+                <mat-menu #notificationMenu="matMenu" class="notification-menu">
+                    <div class="menu-header">
+                        <span>Notifications</span>
+                        <button mat-button color="primary" *ngIf="unreadNotifications > 0">Mark all read</button>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="notification-list">
+                        <div class="notification-item" *ngIf="unreadNotifications === 0">
+                            <mat-icon>check_circle</mat-icon>
+                            <span>No new notifications</span>
+                        </div>
+                        <!-- Sample notifications -->
+                        <button mat-menu-item class="notification-item" *ngIf="unreadNotifications > 0">
+                            <mat-icon color="primary">event</mat-icon>
+                            <div class="notification-content">
+                                <span class="notification-title">Sunday Service Reminder</span>
+                                <span class="notification-time">Today at 09:00</span>
+                            </div>
+                        </button>
+                    </div>
+                </mat-menu>
+
+                <!-- Profile Menu -->
+                <div class="avatar-small" [matMenuTriggerFor]="profileMenu" role="button" aria-label="User menu">
+                    {{ currentUser?.initials || 'U' }}
+                </div>
+
+                <mat-menu #profileMenu="matMenu" class="profile-menu">
+                    <div class="profile-header" mat-menu-item [disabled]="true">
+                        <div class="profile-avatar">{{ currentUser?.initials || 'U' }}</div>
+                        <div class="profile-info">
+                            <span class="profile-name">{{ currentUser?.fullName || 'User' }}</span>
+                            <span class="profile-email">{{ currentUser?.email || 'user@mamre.church' }}</span>
+                            <span class="profile-role">{{ currentUser?.role || 'Admin' }}</span>
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item routerLink="/profile">
+                        <mat-icon>person</mat-icon>
+                        <span>My Profile</span>
+                    </button>
+                    <button mat-menu-item routerLink="/settings">
+                        <mat-icon>settings</mat-icon>
+                        <span>Settings</span>
+                    </button>
+                    <button mat-menu-item routerLink="/activity-log">
+                        <mat-icon>history</mat-icon>
+                        <span>Activity Log</span>
+                    </button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="onLogout()" class="logout-item">
+                        <mat-icon color="warn">logout</mat-icon>
+                        <span>Logout</span>
+                    </button>
+                </mat-menu>
             </div>
         </mat-toolbar>
 

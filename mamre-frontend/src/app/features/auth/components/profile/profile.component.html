@@ -1,0 +1,226 @@
+<div class="profile-page">
+    <div class="page-header">
+        <h2>👤 My Profile</h2>
+        <p class="desc">Manage your account settings and preferences</p>
+    </div>
+
+    <div class="profile-content">
+        <!-- Profile Card -->
+        <mat-card class="profile-card">
+            <div class="profile-header-card">
+                <div class="avatar-large">{{ getUserInitials() }}</div>
+                <div class="profile-info">
+                    <h3>{{ user?.fullName || 'User' }}</h3>
+                    <p class="email">{{ user?.email }}</p>
+                    <span class="role-badge" [ngClass]="getRoleBadgeClass()">
+                        {{ formatRole(user?.role) }}
+                    </span>
+                </div>
+            </div>
+        </mat-card>
+
+        <!-- Tabs Section -->
+        <mat-card class="settings-card">
+            <mat-tab-group animationDuration="200ms">
+                <!-- Profile Tab -->
+                <mat-tab label="Profile">
+                    <div class="tab-content">
+                        <h4>Personal Information</h4>
+                        <p class="tab-desc">Update your personal details</p>
+
+                        <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
+                            <div class="form-row">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Username</mat-label>
+                                    <input matInput formControlName="username" placeholder="Username">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Full Name</mat-label>
+                                    <input matInput formControlName="fullName" placeholder="Enter full name">
+                                    <mat-error *ngIf="profileControls['fullName'].hasError('required')">Name is required</mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput formControlName="email" type="email" placeholder="Enter email">
+                                    <mat-error *ngIf="profileControls['email'].hasError('required')">Email is required</mat-error>
+                                    <mat-error *ngIf="profileControls['email'].hasError('email')">Invalid email format</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Phone</mat-label>
+                                    <input matInput formControlName="phone" placeholder="Enter phone number">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-actions">
+                                <button mat-flat-button color="primary" type="submit" [disabled]="isSavingProfile || profileForm.invalid">
+                                    <mat-spinner *ngIf="isSavingProfile" diameter="18"></mat-spinner>
+                                    <mat-icon *ngIf="!isSavingProfile">save</mat-icon>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </mat-tab>
+
+                <!-- Security Tab -->
+                <mat-tab label="Security">
+                    <div class="tab-content">
+                        <h4>Change Password</h4>
+                        <p class="tab-desc">Ensure your account is using a strong password</p>
+
+                        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
+                            <mat-form-field appearance="outline" class="full-width">
+                                <mat-label>Current Password</mat-label>
+                                <input matInput formControlName="currentPassword"
+                                       [type]="hideCurrentPassword ? 'password' : 'text'"
+                                       placeholder="Enter current password">
+                                <button mat-icon-button matSuffix type="button"
+                                        (click)="hideCurrentPassword = !hideCurrentPassword"
+                                        [attr.aria-label]="hideCurrentPassword ? 'Show password' : 'Hide password'">
+                                    <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
+                                <mat-error *ngIf="passwordControls['currentPassword'].hasError('required')">
+                                    Current password is required
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="full-width">
+                                <mat-label>New Password</mat-label>
+                                <input matInput formControlName="newPassword"
+                                       [type]="hideNewPassword ? 'password' : 'text'"
+                                       placeholder="Enter new password">
+                                <button mat-icon-button matSuffix type="button"
+                                        (click)="hideNewPassword = !hideNewPassword"
+                                        [attr.aria-label]="hideNewPassword ? 'Show password' : 'Hide password'">
+                                    <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
+                                <mat-error *ngIf="passwordControls['newPassword'].hasError('required')">
+                                    New password is required
+                                </mat-error>
+                                <mat-error *ngIf="passwordControls['newPassword'].hasError('minlength')">
+                                    Password must be at least 6 characters
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="full-width">
+                                <mat-label>Confirm New Password</mat-label>
+                                <input matInput formControlName="confirmPassword"
+                                       [type]="hideConfirmPassword ? 'password' : 'text'"
+                                       placeholder="Confirm new password">
+                                <button mat-icon-button matSuffix type="button"
+                                        (click)="hideConfirmPassword = !hideConfirmPassword"
+                                        [attr.aria-label]="hideConfirmPassword ? 'Show password' : 'Hide password'">
+                                    <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
+                                <mat-error *ngIf="passwordControls['confirmPassword'].hasError('required')">
+                                    Please confirm your password
+                                </mat-error>
+                                <mat-error *ngIf="passwordControls['confirmPassword'].hasError('mismatch')">
+                                    Passwords do not match
+                                </mat-error>
+                            </mat-form-field>
+
+                            <div class="form-actions">
+                                <button mat-flat-button color="primary" type="submit"
+                                        [disabled]="isSavingPassword || passwordForm.invalid">
+                                    <mat-spinner *ngIf="isSavingPassword" diameter="18"></mat-spinner>
+                                    <mat-icon *ngIf="!isSavingPassword">vpn_key</mat-icon>
+                                    Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </mat-tab>
+
+                <!-- Preferences Tab -->
+                <mat-tab label="Preferences">
+                    <div class="tab-content">
+                        <h4>Notification Settings</h4>
+                        <p class="tab-desc">Configure how you want to receive notifications</p>
+
+                        <form [formGroup]="preferencesForm" (ngSubmit)="onSavePreferences()">
+                            <div class="preference-section">
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-label">Enable Notifications</span>
+                                        <span class="preference-desc">Receive in-app notifications</span>
+                                    </div>
+                                    <mat-slide-toggle formControlName="notificationsEnabled" color="primary">
+                                    </mat-slide-toggle>
+                                </div>
+
+                                <mat-divider></mat-divider>
+
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-label">Email Notifications</span>
+                                        <span class="preference-desc">Receive notifications via email</span>
+                                    </div>
+                                    <mat-slide-toggle formControlName="emailNotifications" color="primary">
+                                    </mat-slide-toggle>
+                                </div>
+
+                                <mat-divider></mat-divider>
+
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-label">Attendance Reminder</span>
+                                        <span class="preference-desc">Get reminded for Sunday service</span>
+                                    </div>
+                                    <mat-slide-toggle formControlName="attendanceReminder" color="primary">
+                                    </mat-slide-toggle>
+                                </div>
+
+                                <mat-divider></mat-divider>
+
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-label">Bible Reading Reminder</span>
+                                        <span class="preference-desc">Daily reminder to read the Bible</span>
+                                    </div>
+                                    <mat-slide-toggle formControlName="bibleReadingReminder" color="primary">
+                                    </mat-slide-toggle>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-top: 32px;">Display Settings</h4>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Language</mat-label>
+                                    <mat-select formControlName="language">
+                                        <mat-option value="id">Indonesia</mat-option>
+                                        <mat-option value="en">English</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Theme</mat-label>
+                                    <mat-select formControlName="theme">
+                                        <mat-option value="light">Light</mat-option>
+                                        <mat-option value="dark">Dark</mat-option>
+                                        <mat-option value="auto">Auto (System)</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-actions">
+                                <button mat-flat-button color="primary" type="submit"
+                                        [disabled]="isSavingPreferences">
+                                    <mat-spinner *ngIf="isSavingPreferences" diameter="18"></mat-spinner>
+                                    <mat-icon *ngIf="!isSavingPreferences">save</mat-icon>
+                                    Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+    </div>
+</div>

@@ -28,5 +28,11 @@ app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
 
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:bWFtcmVDaHVyY2hTZWNyZXRLZXlGb3JKV1RBdXRoZW50aWNhdGlvbk11c3RCZUxvbmdFbm91Z2g=}
+  expiration: ${JWT_EXPIRATION:3600000}      # 1 hour in milliseconds
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # 7 days in milliseconds
+
 server:
   port: ${SERVER_PORT:8080}

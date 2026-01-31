@@ -224,6 +224,150 @@ mat-nav-list {
   box-sizing: border-box;
 }
 
+/* Profile Menu Styling */
+::ng-deep .profile-menu {
+  min-width: 280px !important;
+
+  .profile-header {
+    padding: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    cursor: default !important;
+    opacity: 1 !important;
+    height: auto !important;
+    line-height: normal !important;
+
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .profile-name {
+        font-weight: 600;
+        font-size: 15px;
+        color: #1e293b;
+      }
+
+      .profile-email {
+        font-size: 13px;
+        color: #64748b;
+      }
+
+      .profile-role {
+        font-size: 11px;
+        color: #6366f1;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 2px;
+      }
+    }
+  }
+
+  .mat-mdc-menu-item {
+    height: 44px;
+
+    mat-icon {
+      color: #64748b;
+      margin-right: 12px;
+    }
+
+    &:hover mat-icon {
+      color: #475569;
+    }
+  }
+
+  .logout-item {
+    color: #dc2626;
+
+    mat-icon {
+      color: #dc2626 !important;
+    }
+
+    &:hover {
+      background: #fef2f2;
+    }
+  }
+}
+
+/* Notification Menu Styling */
+::ng-deep .notification-menu {
+  min-width: 320px !important;
+  max-width: 360px !important;
+
+  .menu-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1e293b;
+    }
+
+    button {
+      font-size: 12px;
+    }
+  }
+
+  .notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+
+    &.mat-mdc-menu-item {
+      height: auto;
+      min-height: 60px;
+      white-space: normal;
+    }
+
+    mat-icon {
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .notification-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .notification-title {
+        font-size: 14px;
+        color: #1e293b;
+        font-weight: 500;
+      }
+
+      .notification-time {
+        font-size: 12px;
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
 /* responsive: collapse sidebar on small screens */
 @media (max-width: 900px) {
   .app-sidenav {

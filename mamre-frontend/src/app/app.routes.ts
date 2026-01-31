@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app-layout.component';
 
+// Auth
+import { LoginComponent } from './features/auth/components/login/login.component';
+import { RegisterComponent } from './features/auth/components/register/register.component';
+import { ProfileComponent } from './features/auth/components/profile/profile.component';
+import { AuthGuard, GuestGuard } from './core/guards/auth.guard';
+
 // Members
 import { MemberListComponent } from './features/members/components/member-list/member-list.component';
 import { MemberFormComponent } from './features/members/components/member-form/member-form.component';
@@ -22,12 +28,26 @@ import { BibleReadingReportComponent } from "./features/members/components/bible
 import { AttendanceComponent } from "./features/members/components/attendance/attendance.component";
 import { AttendanceReportComponent } from "./features/members/components/attendance-report/attendance-report.component";
 
-// Dashboard
-
 export const routes: Routes = [
+    // 🔐 Login Page (Guest only - redirect if already logged in)
+    {
+        path: 'login',
+        component: LoginComponent,
+        canActivate: [GuestGuard]
+    },
+
+    // 📝 Register Page (Guest only)
+    {
+        path: 'register',
+        component: RegisterComponent,
+        canActivate: [GuestGuard]
+    },
+
+    // 📱 Main App Layout (Protected routes)
     {
         path: '',
         component: AppLayoutComponent,
+        // canActivate: [AuthGuard], // Uncomment to enable auth protection
         children: [
 
             // 🔥 Dashboard as default page
@@ -56,6 +76,10 @@ export const routes: Routes = [
             // 📋 Attendance
             { path: 'attendance', component: AttendanceComponent },
             { path: 'attendance-report', component: AttendanceReportComponent },
+
+            // 👤 Profile & Settings
+            { path: 'profile', component: ProfileComponent },
+            { path: 'settings', component: ProfileComponent }, // Redirect to profile for now
         ]
     },
 
