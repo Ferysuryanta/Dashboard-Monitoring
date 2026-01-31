@@ -92,6 +92,7 @@ export class AttendanceComponent implements OnInit {
         attendDate: [new Date(), Validators.required],
         event: ['Ibadah Minggu', Validators.required],
         present: [true],
+        kolpiAmount: [0],
         note: ['']
     });
 
@@ -199,6 +200,7 @@ export class AttendanceComponent implements OnInit {
             attendDate: new Date(attendance.attendDate),
             event: attendance.event || 'Ibadah Minggu',
             present: attendance.present,
+            kolpiAmount: attendance.kolpiAmount || 0,
             note: attendance.note
         });
         this.showForm = true;
@@ -222,6 +224,7 @@ export class AttendanceComponent implements OnInit {
             attendDate: this.formatDate(formValue.attendDate),
             event: formValue.event,
             present: formValue.present ?? true,
+            kolpiAmount: formValue.kolpiAmount ?? 0,
             note: formValue.note
         };
 

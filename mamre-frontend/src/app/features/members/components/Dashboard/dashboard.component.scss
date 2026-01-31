@@ -6,8 +6,8 @@
   display: block;
   // Background keseluruhan dashboard yang lembut
   background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
-  min-height: 100vh;
   padding-bottom: 50px; // Ruang di bawah
+  box-sizing: border-box;
 }
 
 .dashboard-root {
@@ -16,6 +16,8 @@
   padding: 30px 40px; /* Padding samping dan bawah yang nyaman */
   font-family: 'Poppins', sans-serif; /* Font utama */
   color: #333; /* Warna teks utama */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* --- Global Card Styling & Animasi --- */

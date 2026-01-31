@@ -1,0 +1,147 @@
+<section class="page">
+    <div class="page-header">
+        <div class="title">
+            <h2>📋 Laporan Kehadiran Bulanan per Sektor</h2>
+            <p class="desc">Laporan kehadiran mingguan dengan data kolekte untuk {{ getMonthLabel() }} {{ selectedYear }}</p>
+        </div>
+        <div class="controls">
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Bulan</mat-label>
+                <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onFilterChange()">
+                    <mat-option *ngFor="let m of months" [value]="m.value">{{ m.label }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Tahun</mat-label>
+                <mat-select [(ngModel)]="selectedYear" (selectionChange)="onFilterChange()">
+                    <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-stroked-button color="primary" (click)="exportToExcel()">
+                <mat-icon>download</mat-icon> Export
+            </button>
+            <button mat-stroked-button (click)="printReport()">
+                <mat-icon>print</mat-icon> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Card -->
+    <mat-card class="report-card">
+        <div class="report-header">
+            <h3>LAPORAN KEHADIRAN BULANAN</h3>
+            <p class="report-period">{{ getMonthLabel() }}'{{ selectedYear.toString().slice(-2) }}</p>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Loading -->
+        <div class="loading-container" *ngIf="loading">
+            <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+            <span>Memuat data...</span>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container" *ngIf="!loading">
+            <table class="report-table">
+                <thead>
+                    <tr class="header-row-main">
+                        <th rowspan="2" class="th-fixed">Hari/Tgl</th>
+                        <ng-container *ngFor="let sector of reportData">
+                            <th colspan="4" class="th-sector" [ngClass]="'sector-' + (reportData.indexOf(sector) % 5)">
+                                {{ sector.sectorName | uppercase }}
+                            </th>
+                        </ng-container>
+                    </tr>
+                    <tr class="header-row-sub">
+                        <ng-container *ngFor="let sector of reportData">
+                            <th class="th-sub">Jml Anggota</th>
+                            <th class="th-sub">Hadir</th>
+                            <th class="th-sub">Jlh.Kolekte</th>
+                            <th class="th-sub">% Kehadiran</th>
+                        </ng-container>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Week 1-4 Rows -->
+                    <tr *ngFor="let weekNum of [1, 2, 3, 4]" class="data-row">
+                        <td class="td-week">MINGGU {{ weekNum }}</td>
+                        <ng-container *ngFor="let sector of reportData; let i = index">
+                            <ng-container *ngIf="getWeekData(sector, weekNum) as week">
+                                <td [ngClass]="'sector-bg-' + (i % 5)">{{ sector.totalMembers }}</td>
+                                <td [ngClass]="'sector-bg-' + (i % 5)">{{ week.attendedCount || '-' }}</td>
+                                <td [ngClass]="'sector-bg-' + (i % 5)">{{ week.kolpiAmount > 0 ? formatCurrency(week.kolpiAmount) : '-' }}</td>
+                                <td [ngClass]="['sector-bg-' + (i % 5), getPercentageClass(week.attendancePercentage)]">
+                                    {{ week.attendancePercentage > 0 ? (week.attendancePercentage | number:'1.0-0') + '%' : '-' }}
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="!getWeekData(sector, weekNum)">
+                                <td [ngClass]="'sector-bg-' + (i % 5)">{{ sector.totalMembers }}</td>
+                                <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                                <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                                <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+
+                    <!-- Total Row -->
+                    <tr class="total-row">
+                        <td class="td-week"><strong>Total</strong></td>
+                        <ng-container *ngFor="let sector of reportData; let i = index">
+                            <td [ngClass]="'sector-bg-' + (i % 5)"><strong>{{ sector.totalMembers }}</strong></td>
+                            <td [ngClass]="'sector-bg-' + (i % 5)"><strong>{{ sector.totalAttended }}</strong></td>
+                            <td [ngClass]="'sector-bg-' + (i % 5)"><strong>{{ sector.totalKolpiAmount > 0 ? formatCurrency(sector.totalKolpiAmount) : '-' }}</strong></td>
+                            <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                        </ng-container>
+                    </tr>
+
+                    <!-- Average Row -->
+                    <tr class="average-row">
+                        <td class="td-week"><strong>Average</strong></td>
+                        <ng-container *ngFor="let sector of reportData; let i = index">
+                            <td [ngClass]="'sector-bg-' + (i % 5)">{{ sector.totalMembers }}</td>
+                            <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                            <td [ngClass]="'sector-bg-' + (i % 5)">-</td>
+                            <td [ngClass]="['sector-bg-' + (i % 5), getPercentageClass(sector.averageAttendancePercentage)]">
+                                <strong>{{ sector.averageAttendancePercentage > 0 ? (sector.averageAttendancePercentage | number:'1.0-0') + '%' : '-' }}</strong>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-section" *ngIf="!loading && reportData.length > 0">
+            <h4>Ringkasan</h4>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Total Anggota:</span>
+                    <span class="summary-value">{{ getGrandTotalMembers() }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Kehadiran:</span>
+                    <span class="summary-value">{{ getGrandTotalAttended() }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Kolekte:</span>
+                    <span class="summary-value">{{ formatCurrency(getGrandTotalKolpi()) }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Rata-rata Kehadiran:</span>
+                    <span class="summary-value" [ngClass]="getPercentageClass(getGrandAveragePercentage())">
+                        {{ getGrandAveragePercentage() | number:'1.0-0' }}%
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend" *ngIf="!loading && reportData.length > 0">
+            <h4>Rumus:</h4>
+            <p class="formula">% Kehadiran = (Jumlah Hadir / Jumlah Anggota) × 100</p>
+        </div>
+    </mat-card>
+</section>

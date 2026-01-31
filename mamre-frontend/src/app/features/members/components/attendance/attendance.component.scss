@@ -2,6 +2,8 @@
     padding: 24px;
     max-width: 1400px;
     margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .page-header {
@@ -124,6 +126,10 @@
     .field-event {
         flex: 2;
         min-width: 200px;
+    }
+    .field-kolpi {
+        flex: 1;
+        min-width: 150px;
     }
     .field-present {
         display: flex;
@@ -296,6 +302,12 @@
         white-space: nowrap;
         display: inline-block;
         color: #666;
+    }
+
+    .kolpi-amount {
+        font-weight: 600;
+        color: #059669;
+        font-size: 0.9rem;
     }
 
     mat-chip {

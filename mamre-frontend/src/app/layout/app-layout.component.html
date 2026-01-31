@@ -3,41 +3,64 @@
         <div class="sidenav-header">
             <div class="brand">
                 <div class="brand-avatar">M</div>
-                <div class="brand-text">
+                <div class="brand-text" *ngIf="isSidenavOpen">
                     <h3>Mamre</h3>
                 </div>
             </div>
         </div>
 
         <mat-nav-list>
+            <!-- Main -->
             <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
                 <mat-icon>dashboard</mat-icon>
-                <span>Dashboard</span>
+                <span *ngIf="isSidenavOpen">Dashboard</span>
             </a>
 
             <a mat-list-item routerLink="/members" routerLinkActive="active-link">
                 <mat-icon>groups</mat-icon>
-                <span>Anggota</span>
+                <span *ngIf="isSidenavOpen">Members</span>
             </a>
+
+            <!-- Divider: Attendance -->
+            <div class="nav-section-label" *ngIf="isSidenavOpen">Attendance</div>
+            <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
 
             <a mat-list-item routerLink="/attendance" routerLinkActive="active-link">
                 <mat-icon>event_available</mat-icon>
-                <span>Kehadiran</span>
+                <span *ngIf="isSidenavOpen">Attendance</span>
             </a>
+
+            <a mat-list-item routerLink="/attendance-report" routerLinkActive="active-link">
+                <mat-icon>bar_chart</mat-icon>
+                <span *ngIf="isSidenavOpen">Attendance Report</span>
+            </a>
+
+            <!-- Divider: Bible Reading -->
+            <div class="nav-section-label" *ngIf="isSidenavOpen">Bible Reading</div>
+            <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
 
             <a mat-list-item routerLink="/bible-reading" routerLinkActive="active-link">
                 <mat-icon>menu_book</mat-icon>
-                <span>Baca Alkitab</span>
+                <span *ngIf="isSidenavOpen">Bible Reading</span>
             </a>
 
+            <a mat-list-item routerLink="/bible-reading-report" routerLinkActive="active-link">
+                <mat-icon>assessment</mat-icon>
+                <span *ngIf="isSidenavOpen">Reading Report</span>
+            </a>
+
+            <!-- Divider: Settings -->
+            <div class="nav-section-label" *ngIf="isSidenavOpen">Settings</div>
+            <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
+
             <a mat-list-item routerLink="/sectors" routerLinkActive="active-link">
-                <mat-icon>account_tree</mat-icon>
-                <span>Sectors</span>
+                <mat-icon>location_on</mat-icon>
+                <span *ngIf="isSidenavOpen">Sectors</span>
             </a>
 
             <a mat-list-item routerLink="/positions" routerLinkActive="active-link">
-                <mat-icon>work</mat-icon>
-                <span>Positions</span>
+                <mat-icon>badge</mat-icon>
+                <span *ngIf="isSidenavOpen">Positions</span>
             </a>
         </mat-nav-list>
 

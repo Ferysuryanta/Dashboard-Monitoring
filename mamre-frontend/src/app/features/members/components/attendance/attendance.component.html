@@ -79,6 +79,12 @@
                     </mat-select>
                 </mat-form-field>
 
+                <mat-form-field appearance="outline" class="field-kolpi">
+                    <mat-label>Jumlah Kolekte (Rp)</mat-label>
+                    <input matInput type="number" formControlName="kolpiAmount" min="0" placeholder="0">
+                    <span matPrefix>Rp&nbsp;</span>
+                </mat-form-field>
+
                 <div class="field-present">
                     <mat-checkbox formControlName="present" color="primary">
                         Hadir
@@ -225,6 +231,16 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="kolpiAmount">
+                    <th mat-header-cell *matHeaderCellDef>Kolekte</th>
+                    <td mat-cell *matCellDef="let a">
+                        <span class="kolpi-amount" *ngIf="a.kolpiAmount > 0">
+                            {{ a.kolpiAmount | currency:'IDR':'symbol':'1.0-0' }}
+                        </span>
+                        <span *ngIf="!a.kolpiAmount || a.kolpiAmount === 0">-</span>
+                    </td>
+                </ng-container>
+
                 <ng-container matColumnDef="note">
                     <th mat-header-cell *matHeaderCellDef>Catatan</th>
                     <td mat-cell *matCellDef="let a">
@@ -244,8 +260,8 @@
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="['attendDate', 'memberName', 'event', 'present', 'note', 'actions']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['attendDate', 'memberName', 'event', 'present', 'note', 'actions'];"></tr>
+                <tr mat-header-row *matHeaderRowDef="['attendDate', 'memberName', 'event', 'present', 'kolpiAmount', 'note', 'actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['attendDate', 'memberName', 'event', 'present', 'kolpiAmount', 'note', 'actions'];"></tr>
             </table>
 
             <div *ngIf="attendances.length === 0" class="empty-state">

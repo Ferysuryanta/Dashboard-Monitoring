@@ -1,14 +1,13 @@
 <section class="page">
     <div class="page-header">
         <div class="title">
-            <h2>Jabatan</h2>
-            <p class="desc">Kelola data jabatan yang tersedia. Gunakan tombol 'Tambah Jabatan' untuk menambahkan data baru.</p>
+            <h2>💼 Positions</h2>
+            <p class="desc">Manage available positions. Use the 'Add Position' button to create new positions.</p>
         </div>
 
         <div class="controls">
             <button mat-flat-button color="primary" (click)="openAdd()">
-                <mat-icon>add</mat-icon>
-                Tambah Jabatan
+                <mat-icon>add</mat-icon> Add Position
             </button>
         </div>
     </div>
@@ -19,30 +18,30 @@
         </mat-card>
 
         <div *ngIf="!loading && data.length === 0" class="empty-state">
-            <p>Tidak ada jabatan. Klik "Tambah Jabatan" untuk menambahkan.</p>
+            <p>No positions found. Click "Add Position" to create one.</p>
         </div>
 
         <table mat-table [dataSource]="data" class="position-table" *ngIf="!loading && data.length > 0">
             <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef class="col-name">Nama</th>
+                <th mat-header-cell *matHeaderCellDef class="col-name">Name</th>
                 <td mat-cell *matCellDef="let e" class="col-name">
                     <span class="name-txt">{{ e.name }}</span>
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef class="col-description">Deskripsi</th>
+                <th mat-header-cell *matHeaderCellDef class="col-description">Description</th>
                 <td mat-cell *matCellDef="let e" class="col-description">{{ e.description || '-' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="col-actions">Aksi</th>
+                <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
                 <td mat-cell *matCellDef="let e" class="col-actions">
                     <button mat-icon-button color="primary" (click)="openEdit(e)" matTooltip="Edit">
                         <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button color="warn" (click)="remove(e)" matTooltip="Hapus">
-                        <mat-icon>delete</mat-icon>
+                    <button mat-icon-button color="warn" (click)="remove(e)" matTooltip="Delete">
+                        <mat-icon>delete_outline</mat-icon>
                     </button>
                 </td>
             </ng-container>

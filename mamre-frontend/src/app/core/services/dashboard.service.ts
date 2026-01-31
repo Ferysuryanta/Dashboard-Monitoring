@@ -15,6 +15,37 @@ export interface StatusDistribution { status: string; count: number; }
 export interface UpcomingBirthday { id: string; name: string; birthDate: string; daysUntil: number; sectorName?: string; positionName?: string; }
 export interface BibleReadingProgress { month: string; targetDays: number; completedDays: number; percentage: number; }
 
+// Laporan Bulanan Baca Alkitab per Sektor (MAMRE BACA ALKITAB)
+export interface SectorBibleReadingReport {
+    sectorId: number | null;
+    sectorName: string;
+    totalMembers: number;
+    membersWhoRead: number;
+    averagePercentage: number;
+    category: string;
+    description: string;
+}
+
+// Laporan Kehadiran Mingguan per Sektor
+export interface WeeklyAttendance {
+    weekNumber: number;
+    totalMembers: number;
+    attendedCount: number;
+    kolpiAmount: number;
+    attendancePercentage: number;
+}
+
+// Laporan Kehadiran Bulanan per Sektor
+export interface SectorAttendanceReport {
+    sectorId: number | null;
+    sectorName: string;
+    totalMembers: number;
+    weeklyData: WeeklyAttendance[];
+    totalAttended: number;
+    totalKolpiAmount: number;
+    averageAttendancePercentage: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
     private base = '/api/dashboard';
@@ -96,5 +127,31 @@ export class DashboardService {
         }
         return this.http.get<BibleReadingProgress[]>(`${this.base}/bible-reading-progress`, options)
             .pipe(catchError(err => { console.error('dashboard.getBibleReadingProgress', err); return of([]); }));
+    }
+
+    // new: sector bible reading report - Laporan Bulanan MAMRE Baca Alkitab per Sektor
+    getSectorBibleReadingReport(year?: number, month?: number): Observable<SectorBibleReadingReport[]> {
+        let params = new HttpParams();
+        if (year) {
+            params = params.set('year', String(year));
+        }
+        if (month) {
+            params = params.set('month', String(month));
+        }
+        return this.http.get<SectorBibleReadingReport[]>(`${this.base}/sector-bible-reading-report`, { params })
+            .pipe(catchError(err => { console.error('dashboard.getSectorBibleReadingReport', err); return of([]); }));
+    }
+
+    // new: sector attendance report - Laporan Kehadiran Bulanan per Sektor (dengan data mingguan & kolekte)
+    getSectorAttendanceReport(year?: number, month?: number): Observable<SectorAttendanceReport[]> {
+        let params = new HttpParams();
+        if (year) {
+            params = params.set('year', String(year));
+        }
+        if (month) {
+            params = params.set('month', String(month));
+        }
+        return this.http.get<SectorAttendanceReport[]>(`${this.base}/sector-attendance-report`, { params })
+            .pipe(catchError(err => { console.error('dashboard.getSectorAttendanceReport', err); return of([]); }));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -260,6 +261,170 @@ public class DashboardServiceImpl implements DashboardService {
                 result.add(new BibleReadingProgressDto(monthLabel, targetDays, completedDays));
             }
         }
+
+        return result;
+    }
+
+    @Override
+    public List<SectorBibleReadingReportDto> getSectorBibleReadingReport(int year, int month) {
+        List<SectorBibleReadingReportDto> result = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        // Default to current year and month if not specified
+        int targetYear = year > 0 ? year : today.getYear();
+        int targetMonth = (month > 0 && month <= 12) ? month : today.getMonthValue();
+
+        YearMonth ym = YearMonth.of(targetYear, targetMonth);
+        LocalDate startDate = ym.atDay(1);
+        LocalDate endDate = ym.atEndOfMonth();
+
+        // If current month, use today as end date
+        if (ym.equals(YearMonth.from(today))) {
+            endDate = today;
+        }
+
+        // Get all sectors
+        List<com.mamregbkp.model.Sector> sectors = sectorRepository.findAll();
+
+        // Get all member IDs who read in the date range
+        List<UUID> memberIdsWhoRead;
+        try {
+            memberIdsWhoRead = bibleReadingRepository.findDistinctMemberIdsByDateRange(startDate, endDate);
+        } catch (Exception e) {
+            memberIdsWhoRead = new ArrayList<>();
+        }
+
+        // Convert to Set for faster lookup
+        Set<UUID> memberIdsWhoReadSet = new HashSet<>(memberIdsWhoRead);
+
+        // Get all members with their sector
+        List<Member> allMembers = memberRepository.findAll();
+
+        // Group members by sector
+        Map<Long, List<Member>> membersBySector = allMembers.stream()
+                .filter(m -> m.getSector() != null)
+                .collect(Collectors.groupingBy(m -> m.getSector().getId()));
+
+        int totalAllMembers = 0;
+        int totalAllMembersWhoRead = 0;
+
+        for (com.mamregbkp.model.Sector sector : sectors) {
+            List<Member> sectorMembers = membersBySector.getOrDefault(sector.getId(), new ArrayList<>());
+            int totalMembers = sectorMembers.size();
+
+            // Count how many members in this sector have read
+            int membersWhoRead = (int) sectorMembers.stream()
+                    .filter(m -> memberIdsWhoReadSet.contains(m.getId()))
+                    .count();
+
+            totalAllMembers += totalMembers;
+            totalAllMembersWhoRead += membersWhoRead;
+
+            result.add(new SectorBibleReadingReportDto(
+                    sector.getId(),
+                    sector.getName(),
+                    totalMembers,
+                    membersWhoRead
+            ));
+        }
+
+        // Sort by sector name
+        result.sort(Comparator.comparing(SectorBibleReadingReportDto::getSectorName));
+
+        // Add total row at the end (optional - can be identified by sectorId = null)
+        SectorBibleReadingReportDto totalRow = new SectorBibleReadingReportDto(
+                null,
+                "Total",
+                totalAllMembers,
+                totalAllMembersWhoRead
+        );
+        result.add(totalRow);
+
+        return result;
+    }
+
+    @Override
+    public List<SectorAttendanceReportDto> getSectorAttendanceReport(int year, int month) {
+        List<SectorAttendanceReportDto> result = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        // Default to current year and month if not specified
+        int targetYear = year > 0 ? year : today.getYear();
+        int targetMonth = (month > 0 && month <= 12) ? month : today.getMonthValue();
+
+        YearMonth ym = YearMonth.of(targetYear, targetMonth);
+
+        // Get all sectors
+        List<com.mamregbkp.model.Sector> sectors = sectorRepository.findAll();
+
+        // Get all members grouped by sector
+        List<Member> allMembers = memberRepository.findAll();
+        Map<Long, List<Member>> membersBySector = allMembers.stream()
+                .filter(m -> m.getSector() != null)
+                .collect(Collectors.groupingBy(m -> m.getSector().getId()));
+
+        for (com.mamregbkp.model.Sector sector : sectors) {
+            List<Member> sectorMembers = membersBySector.getOrDefault(sector.getId(), new ArrayList<>());
+            int totalMembers = sectorMembers.size();
+
+            // Calculate weekly data (4 weeks in a month)
+            List<WeeklyAttendanceDto> weeklyData = new ArrayList<>();
+
+            for (int week = 1; week <= 4; week++) {
+                // Calculate week start and end dates
+                LocalDate weekStart;
+                LocalDate weekEnd;
+
+                if (week == 1) {
+                    weekStart = ym.atDay(1);
+                    weekEnd = ym.atDay(Math.min(7, ym.lengthOfMonth()));
+                } else if (week == 2) {
+                    weekStart = ym.atDay(8);
+                    weekEnd = ym.atDay(Math.min(14, ym.lengthOfMonth()));
+                } else if (week == 3) {
+                    weekStart = ym.atDay(15);
+                    weekEnd = ym.atDay(Math.min(21, ym.lengthOfMonth()));
+                } else {
+                    weekStart = ym.atDay(22);
+                    weekEnd = ym.atEndOfMonth();
+                }
+
+                // Only count if dates are in the past or today
+                int attendedCount = 0;
+                BigDecimal kolpiAmount = BigDecimal.ZERO;
+
+                if (!weekStart.isAfter(today)) {
+                    try {
+                        // Count distinct members who attended
+                        attendedCount = (int) attendanceRepository.countDistinctMembersBySectorAndDateRange(
+                                sector.getId(), weekStart, weekEnd);
+
+                        // Sum kolpi amount
+                        kolpiAmount = attendanceRepository.sumKolpiBySectorAndDateRange(
+                                sector.getId(), weekStart, weekEnd);
+                        if (kolpiAmount == null) {
+                            kolpiAmount = java.math.BigDecimal.ZERO;
+                        }
+                    } catch (Exception e) {
+                        attendedCount = 0;
+                    }
+                }
+
+                weeklyData.add(new WeeklyAttendanceDto(week, totalMembers, attendedCount, kolpiAmount));
+            }
+
+            result.add(new SectorAttendanceReportDto(
+                    sector.getId(),
+                    sector.getName(),
+                    totalMembers,
+                    weeklyData
+            ));
+        }
+
+        // Sort by sector name
+        result.sort(Comparator.comparing(SectorAttendanceReportDto::getSectorName));
 
         return result;
     }

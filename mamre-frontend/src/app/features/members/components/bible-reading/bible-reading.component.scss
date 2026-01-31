@@ -3,8 +3,8 @@
   padding: 18px 0;
   font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #f7f9fc;
-  min-height: 100vh;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .page {
@@ -12,6 +12,8 @@
   max-width: 100%;
   margin: 0;
   padding: 0 24px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
   .page-header {
     display: flex;
@@ -159,11 +161,15 @@
 
 /* Table */
 .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
   .table-card {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     padding: 0;
+    min-width: 100%;
   }
 
   .loading-card {
@@ -177,6 +183,7 @@
 
 .reading-table {
   width: 100%;
+  table-layout: auto;
 
   .mat-header-cell {
     font-weight: 700;

@@ -1,37 +1,40 @@
 :host {
   display: block;
-  padding: 18px 0;
-  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f7f9fc;
+  padding: 24px;
+  font-family: 'Inter', Roboto, "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+  background: #f8fafc;
   min-height: 100vh;
-  width: 100%;
 }
 
 .page {
-  /* Full width - tidak dibatasi max-width agar tabel lebih lebar */
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0 24px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
 
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 0 4px;
 
     .title {
       h2 {
         margin: 0;
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 700;
-        color: #1a202c;
+        color: #1e293b;
+        letter-spacing: -0.5px;
       }
       .desc {
-        margin: 6px 0 0;
-        color: rgba(0,0,0,0.7);
+        margin: 8px 0 0;
+        color: #64748b;
         font-size: 14px;
+        line-height: 1.5;
+        max-width: 600px;
       }
     }
 
@@ -40,9 +43,19 @@
       gap: 12px;
       align-items: center;
 
-      button {
-        height: 40px;
+      button[mat-flat-button] {
+        padding: 0 20px;
+        height: 42px;
+        border-radius: 8px;
         font-weight: 600;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.25);
+        transition: all 0.2s ease;
+
+        &:hover {
+          box-shadow: 0 4px 8px rgba(99, 102, 241, 0.35);
+          transform: translateY(-1px);
+        }
       }
     }
   }
@@ -51,7 +64,7 @@
   .table-content-wrapper {
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     border: 1px solid #e2e8f0;
   }
@@ -61,72 +74,102 @@
     width: 100%;
     border-collapse: collapse;
 
-    .mat-header-row {
-      height: 48px;
+    .mat-mdc-header-row {
+      height: 52px;
       background: #f8fafc;
       border-bottom: 1px solid #e2e8f0;
     }
 
-    .mat-row {
+    .mat-mdc-row {
       height: auto;
-      min-height: 54px;
-      border-bottom: 1px solid #edf2f7;
-      transition: background 0.2s;
+      min-height: 60px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: all 0.2s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
       &:hover {
-        background: #fcfdfe;
+        background: #f8fafc;
       }
     }
 
-    .mat-header-cell {
-      color: #4a5568;
-      font-size: 14px;
-      font-weight: 700;
+    .mat-mdc-header-cell {
+      color: #475569;
+      font-size: 13px;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       padding: 0 20px;
     }
 
-    .mat-cell {
-      padding: 12px 20px;
-      font-size: 15px;
-      font-weight: 500;
-      color: #4a5568;
+    .mat-mdc-cell {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #475569;
     }
 
-    /* Override cell widths - menggunakan flex untuk distribusi yang lebih baik */
+    /* Column widths */
     .mat-column-code {
       min-width: 100px;
       max-width: 150px;
       flex: 0 0 120px;
     }
     .mat-column-name {
-      min-width: 150px;
-      max-width: 300px;
-      flex: 0 0 220px;
+      min-width: 180px;
+      max-width: 350px;
+      flex: 0 0 250px;
     }
     .mat-column-description {
       flex: 1 1 auto;
       min-width: 200px;
     }
-
-    /* KOLOM AKSI: RATA TENGAH */
     .mat-column-actions {
-      min-width: 100px;
+      min-width: 120px;
       max-width: 150px;
-      flex: 0 0 120px;
+      flex: 0 0 130px;
       text-align: center;
     }
 
     /* Font Name yang menonjol */
     .name-txt {
-      font-weight: 700;
-      color: #2d3748;
+      font-weight: 600;
+      color: #1e293b;
     }
 
     /* Action Buttons */
     .col-actions {
-      button {
-        margin-left: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+
+      button[mat-icon-button] {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        &[color="primary"] {
+          color: #6366f1;
+          &:hover {
+            background: #eef2ff;
+          }
+        }
+
+        &[color="warn"] {
+          color: #f87171;
+          &:hover {
+            background: #fef2f2;
+          }
+        }
       }
     }
   }
@@ -135,48 +178,56 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 120px;
+    height: 200px;
     background: #ffffff;
     border: none;
     box-shadow: none;
   }
 
   .empty-state {
-    padding: 40px 20px;
-    color: #718096;
+    padding: 48px 24px;
+    color: #94a3b8;
     text-align: center;
-    font-size: 16px;
+    font-size: 15px;
     background: #ffffff;
     border-radius: 0 0 12px 12px;
   }
 
   mat-paginator {
-    margin-top: 18px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-
-    ::ng-deep .mat-mdc-paginator-container { padding: 0; }
+    margin-top: 20px;
+    background: transparent;
   }
 }
 
-/* Responsive: untuk layar sangat besar, batasi agar tetap readable */
+/* Responsive: untuk layar sangat besar */
 @media (min-width: 1800px) {
   .page {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 0 32px;
+    max-width: 1400px;
   }
 }
 
 /* Responsive: untuk layar kecil */
 @media (max-width: 768px) {
+  :host {
+    padding: 16px;
+  }
+
   .page {
-    padding: 0 12px;
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+
+      .controls {
+        margin-top: 12px;
+      }
+    }
 
     .sector-table {
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 12px;
+      }
+
       .mat-column-code {
         min-width: 60px;
         flex: 0 0 80px;
@@ -186,7 +237,7 @@
         flex: 0 0 140px;
       }
       .mat-column-description {
-        min-width: 120px;
+        min-width: 100px;
       }
       .mat-column-actions {
         min-width: 80px;

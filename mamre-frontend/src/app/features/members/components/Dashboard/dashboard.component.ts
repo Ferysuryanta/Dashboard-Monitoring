@@ -12,7 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgChartsModule } from 'ng2-charts';
 // PENTING: Import Chart untuk Plugin
-import { DashboardService, GenderDistribution, StatusDistribution, UpcomingBirthday, BibleReadingProgress } from 'src/app/core/services/dashboard.service';
+import { DashboardService, GenderDistribution, StatusDistribution, UpcomingBirthday, BibleReadingProgress, SectorBibleReadingReport } from 'src/app/core/services/dashboard.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -73,17 +73,19 @@ export class DashboardComponent implements OnInit {
     genderData: GenderDistribution[] = [];
     statusData: StatusDistribution[] = [];
     bibleReadingData: BibleReadingProgress[] = [];
+    sectorBibleReadingData: SectorBibleReadingReport[] = [];
 
 
     // --- CHART CONFIGS ---
 
-    // 1. Konfigurasi Bar Chart (Bible Reading Progress - Membaca Alkitab Mamre)
+    // 1. Konfigurasi Bar Chart (Persentase Baca Alkitab per Sektor)
     public lineChartType: ChartType = 'bar';
     public lineChartOptions: ChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        indexAxis: 'y', // Horizontal bar chart
         plugins: {
-            legend: { display: true, position: 'top' },
+            legend: { display: false },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
                 titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
@@ -95,34 +97,38 @@ export class DashboardComponent implements OnInit {
                 callbacks: {
                     label: (context: any) => {
                         const dataIndex = context.dataIndex;
-                        const datasetIndex = context.datasetIndex;
-                        if (datasetIndex === 0) {
-                            return `Hari Terbaca: ${context.raw} hari`;
-                        } else {
-                            return `Target: ${context.raw} hari`;
+                        const sectorData = this.sectorBibleReadingData[dataIndex];
+                        if (sectorData) {
+                            return [
+                                `Persentase: ${context.raw.toFixed(0)}%`,
+                                `Yang Baca: ${sectorData.membersWhoRead} dari ${sectorData.totalMembers} anggota`,
+                                `Kategori: ${sectorData.category}`
+                            ];
                         }
+                        return `${context.raw.toFixed(0)}%`;
                     }
                 }
             }
         },
         scales: {
-            y: {
+            x: {
                 beginAtZero: true,
-                max: 31,
+                max: 100,
                 grid: { color: 'rgba(0,0,0,0.08)' },
                 ticks: {
                     color: '#666',
                     font: { family: 'Poppins' },
-                    stepSize: 5
+                    stepSize: 20,
+                    callback: (value: any) => value + '%'
                 },
                 title: {
                     display: true,
-                    text: 'Jumlah Hari',
+                    text: 'Persentase Baca (%)',
                     color: '#666',
                     font: { family: 'Poppins', weight: 'bold' }
                 }
             },
-            x: {
+            y: {
                 grid: { display: false },
                 ticks: { color: '#666', font: { family: 'Poppins' } }
             }
@@ -132,21 +138,12 @@ export class DashboardComponent implements OnInit {
         datasets: [
             {
                 data: [],
-                label: 'Hari Terbaca',
-                backgroundColor: 'rgba(106, 90, 249, 0.9)',
-                hoverBackgroundColor: 'rgba(106, 90, 249, 1)',
+                label: '% Baca',
+                backgroundColor: [],
+                hoverBackgroundColor: [],
                 borderRadius: 6,
-                barPercentage: 0.8,
-                categoryPercentage: 0.9
-            },
-            {
-                data: [],
-                label: 'Target Hari',
-                backgroundColor: 'rgba(200, 200, 200, 0.4)',
-                hoverBackgroundColor: 'rgba(200, 200, 200, 0.6)',
-                borderRadius: 6,
-                barPercentage: 0.8,
-                categoryPercentage: 0.9
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             }
         ],
         labels: []
@@ -364,32 +361,47 @@ export class DashboardComponent implements OnInit {
 
         // ... (Logika loadMembersTrend dan loadCountBySector yang lain) ...
 
-        // Load Bible Reading Progress - Membaca Alkitab Mamre
-        this.svc.getBibleReadingProgress().subscribe(arr => {
-            this.bibleReadingData = arr;
+        // Load Bible Reading Progress per Sektor - Persentase Baca Alkitab Mamre
+        this.svc.getSectorBibleReadingReport().subscribe(arr => {
+            // Filter out the Total row for chart display
+            this.sectorBibleReadingData = arr.filter(x => x.sectorId !== null);
 
-            this.lineChartData.labels = arr.map(x => x.month);
+            // Get color based on category
+            const getColorByCategory = (category: string): string => {
+                switch (category) {
+                    case 'Sangat Baik': return 'rgba(27, 94, 32, 0.85)';  // Dark green
+                    case 'Baik': return 'rgba(76, 175, 80, 0.85)';        // Green
+                    case 'Cukup': return 'rgba(255, 152, 0, 0.85)';       // Orange
+                    case 'Kurang': return 'rgba(244, 67, 54, 0.85)';      // Red
+                    case 'Sangat Kurang': return 'rgba(183, 28, 28, 0.85)'; // Dark red
+                    default: return 'rgba(158, 158, 158, 0.85)';          // Grey
+                }
+            };
+
+            const getHoverColorByCategory = (category: string): string => {
+                switch (category) {
+                    case 'Sangat Baik': return 'rgba(27, 94, 32, 1)';
+                    case 'Baik': return 'rgba(76, 175, 80, 1)';
+                    case 'Cukup': return 'rgba(255, 152, 0, 1)';
+                    case 'Kurang': return 'rgba(244, 67, 54, 1)';
+                    case 'Sangat Kurang': return 'rgba(183, 28, 28, 1)';
+                    default: return 'rgba(158, 158, 158, 1)';
+                }
+            };
+
+            this.lineChartData.labels = this.sectorBibleReadingData.map(x => x.sectorName);
             this.lineChartData.datasets = [
                 {
-                    data: arr.map(x => x.completedDays),
-                    label: 'Hari Terbaca',
-                    backgroundColor: 'rgba(106, 90, 249, 0.9)',
-                    hoverBackgroundColor: 'rgba(106, 90, 249, 1)',
+                    data: this.sectorBibleReadingData.map(x => x.averagePercentage),
+                    label: '% Baca',
+                    backgroundColor: this.sectorBibleReadingData.map(x => getColorByCategory(x.category)),
+                    hoverBackgroundColor: this.sectorBibleReadingData.map(x => getHoverColorByCategory(x.category)),
                     borderRadius: 6,
-                    barPercentage: 0.8,
-                    categoryPercentage: 0.9
-                },
-                {
-                    data: arr.map(x => x.targetDays),
-                    label: 'Target Hari',
-                    backgroundColor: 'rgba(200, 200, 200, 0.3)',
-                    hoverBackgroundColor: 'rgba(200, 200, 200, 0.5)',
-                    borderRadius: 6,
-                    barPercentage: 0.8,
-                    categoryPercentage: 0.9
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.8
                 }
             ];
-        }, err => console.error('bible reading err', err));
+        }, err => console.error('sector bible reading err', err));
 
         this.svc.getCountBySector().pipe(
             map((res: any) => Array.isArray(res) ? res : (res.content ?? []))

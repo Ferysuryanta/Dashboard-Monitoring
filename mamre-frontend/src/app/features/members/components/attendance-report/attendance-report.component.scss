@@ -1,0 +1,276 @@
+.page {
+    padding: 24px;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .title {
+        h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+        .desc {
+            margin: 4px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+    }
+
+    .controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .filter-field {
+            width: 140px;
+        }
+
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+        }
+    }
+}
+
+.report-card {
+    padding: 24px;
+    border-radius: 12px;
+    overflow-x: auto;
+
+    .report-header {
+        text-align: center;
+        margin-bottom: 16px;
+
+        h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .report-period {
+            margin: 8px 0 0;
+            font-size: 16px;
+            color: #666;
+            font-weight: 600;
+        }
+    }
+}
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 48px;
+    color: #666;
+}
+
+.table-container {
+    margin-top: 16px;
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 1200px;
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px 10px;
+        text-align: center;
+    }
+
+    .header-row-main {
+        .th-fixed {
+            background: #1a237e;
+            color: white;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        .th-sector {
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .header-row-sub {
+        .th-sub {
+            background: #e8eaf6;
+            font-weight: 600;
+            font-size: 11px;
+            color: #333;
+            min-width: 80px;
+        }
+    }
+
+    .td-week {
+        background: #fff8e1;
+        font-weight: 600;
+        text-align: left;
+        padding-left: 12px;
+    }
+
+    .data-row td {
+        font-size: 12px;
+    }
+
+    .total-row {
+        background: #e3f2fd;
+
+        td {
+            font-weight: 700;
+        }
+
+        .td-week {
+            background: #0d47a1;
+            color: white;
+        }
+    }
+
+    .average-row {
+        background: #f3e5f5;
+
+        .td-week {
+            background: #7b1fa2;
+            color: white;
+        }
+    }
+}
+
+// Sector color backgrounds - matching the Excel image
+.sector-0, .sector-bg-0 { background-color: #c8e6c9 !important; } // Green - Cimanggu
+.sector-1, .sector-bg-1 { background-color: #bbdefb !important; } // Blue - Sukadame
+.sector-2, .sector-bg-2 { background-color: #fff59d !important; } // Yellow - Salebenda
+.sector-3, .sector-bg-3 { background-color: #e1bee7 !important; } // Purple - Semplak
+.sector-4, .sector-bg-4 { background-color: #ffcc80 !important; } // Orange - Yasmin
+
+// Sector header colors
+.th-sector.sector-0 { background-color: #388e3c !important; }
+.th-sector.sector-1 { background-color: #1976d2 !important; }
+.th-sector.sector-2 { background-color: #fbc02d !important; color: #333 !important; }
+.th-sector.sector-3 { background-color: #7b1fa2 !important; }
+.th-sector.sector-4 { background-color: #f57c00 !important; }
+
+// Percentage colors
+.percentage-excellent {
+    color: #1b5e20;
+    font-weight: 700;
+}
+
+.percentage-good {
+    color: #388e3c;
+    font-weight: 600;
+}
+
+.percentage-fair {
+    color: #f57c00;
+    font-weight: 600;
+}
+
+.percentage-poor {
+    color: #d32f2f;
+    font-weight: 600;
+}
+
+.percentage-very-poor {
+    color: #b71c1c;
+    font-weight: 700;
+}
+
+.summary-section {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+    h4 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+
+            .summary-label {
+                color: #666;
+                font-size: 13px;
+            }
+
+            .summary-value {
+                font-weight: 700;
+                font-size: 16px;
+                color: #1a237e;
+            }
+        }
+    }
+}
+
+.legend {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+
+    h4 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .formula {
+        margin: 0;
+        font-size: 14px;
+        font-style: italic;
+        color: #666;
+        background: #fff8e1;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border-left: 4px solid #ffc107;
+    }
+}
+
+// Print styles
+@media print {
+    .page-header .controls {
+        display: none;
+    }
+
+    .report-card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    .report-table {
+        font-size: 10px;
+    }
+}

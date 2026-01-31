@@ -21,4 +21,10 @@ public interface DashboardService {
 
     // Bible Reading Progress - Membaca Alkitab Mamre
     List<BibleReadingProgressDto> getBibleReadingProgress(int year);
+
+    // Laporan Bulanan Baca Alkitab per Sektor (MAMRE BACA ALKITAB)
+    List<SectorBibleReadingReportDto> getSectorBibleReadingReport(int year, int month);
+
+    // Laporan Kehadiran Bulanan per Sektor (dengan data mingguan, kolekte, % kehadiran)
+    List<SectorAttendanceReportDto> getSectorAttendanceReport(int year, int month);
 }

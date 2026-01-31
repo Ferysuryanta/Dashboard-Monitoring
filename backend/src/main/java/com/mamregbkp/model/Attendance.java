@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -27,6 +28,9 @@ public class Attendance {
 
     @Column(name = "present")
     private boolean present = true;
+
+    @Column(name = "kolpi_amount", precision = 15, scale = 2)
+    private BigDecimal kolpiAmount;  // Jumlah Kolekte/Persembahan
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;

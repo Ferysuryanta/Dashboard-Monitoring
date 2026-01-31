@@ -1,13 +1,13 @@
 <section class="page">
     <div class="page-header">
         <div class="title">
-            <h2>Users</h2>
-            <p class="desc">List of all members. Use search to find members (server-side search), click headers to sort, and use paginator for navigation.</p>
+            <h2>👥 Users</h2>
+            <p class="desc">Manage all members in one place. Search, filter by status, sort columns, and navigate with pagination.</p>
         </div>
 
         <div class="controls">
             <button mat-flat-button color="primary" routerLink="/members/new">
-                <mat-icon>person_add</mat-icon> Add user
+                <mat-icon>person_add</mat-icon> Add New User
             </button>
         </div>
     </div>
@@ -15,13 +15,13 @@
     <div class="search-row">
         <mat-form-field appearance="outline" class="search-minimal">
             <mat-icon matPrefix>search</mat-icon>
-            <input matInput [formControl]="search" placeholder="Search members..." />
+            <input matInput [formControl]="search" placeholder="Search by name, email, or phone..." />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="status-filter">
-            <mat-label>Status</mat-label>
+            <mat-label>Filter Status</mat-label>
             <mat-select (selectionChange)="setStatusFilter($event.value)" [value]="statusFilter || ''">
-                <mat-option value="">Semua Status</mat-option>
+                <mat-option value="">All Status</mat-option>
                 <mat-option value="ACTIVE">Active</mat-option>
                 <mat-option value="INACTIVE">Inactive</mat-option>
                 <mat-option value="PENDING">Pending</mat-option>
@@ -33,52 +33,52 @@
     <div *ngIf="error" class="error-box">{{ error }}</div>
 
     <div class="table-content-wrapper"> <div class="table-head">
-        <div class="col col-name">Name</div>
+        <div class="col col-name">Member</div>
 
-        <div class="col col-email sortable" (click)="sortToggle('email')">
+        <div class="col col-email sortable" (click)="sortToggle('email')" title="Click to sort by email">
             Email
             <mat-icon *ngIf="sortField === 'email' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'email' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-gender sortable" (click)="sortToggle('gender')">
+        <div class="col col-gender sortable" (click)="sortToggle('gender')" title="Click to sort by gender">
             Gender
             <mat-icon *ngIf="sortField === 'gender' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'gender' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-birth sortable" (click)="sortToggle('birthDate')">
+        <div class="col col-birth sortable" (click)="sortToggle('birthDate')" title="Click to sort by birth date">
             Birth Date
             <mat-icon *ngIf="sortField === 'birthDate' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'birthDate' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-phone sortable" (click)="sortToggle('phone')">
+        <div class="col col-phone sortable" (click)="sortToggle('phone')" title="Click to sort by phone">
             Phone
             <mat-icon *ngIf="sortField === 'phone' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'phone' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-position sortable" (click)="sortToggle('positionName')">
+        <div class="col col-position sortable" (click)="sortToggle('positionName')" title="Click to sort by position">
             Position
             <mat-icon *ngIf="sortField === 'positionName' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'positionName' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-status sortable" (click)="sortToggle('status')">
+        <div class="col col-status sortable" (click)="sortToggle('status')" title="Click to sort by status">
             Status
             <mat-icon *ngIf="sortField === 'status' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'status' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
-        <div class="col col-sector sortable" (click)="sortToggle('sectorName')">
+        <div class="col col-sector sortable" (click)="sortToggle('sectorName')" title="Click to sort by sector">
             Sector
             <mat-icon *ngIf="sortField === 'sectorName' && sortDir === 'asc'">arrow_upward</mat-icon>
             <mat-icon *ngIf="sortField === 'sectorName' && sortDir === 'desc'">arrow_downward</mat-icon>
         </div>
 
         <div class="col col-address">Address</div>
-        <div class="col col-action">Action</div>
+        <div class="col col-action">Actions</div>
     </div>
 
         <mat-divider></mat-divider>
@@ -96,9 +96,9 @@
                     </div>
 
                     <div class="col col-email" [title]="m.email || ''">{{ m.email || '-' }}</div>
-                    <div class="col col-gender">{{ m.gender || '-' }}</div>
+                    <div class="col col-gender">{{ formatGender(m.gender) }}</div>
                     <div class="col col-birth">
-                        <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
+                        <span *ngIf="m.birthDate">{{ m.birthDate | date:'MMM d, yyyy' }}</span>
                         <span *ngIf="!m.birthDate">-</span>
                     </div>
                     <div class="col col-phone" [title]="m.phone || ''">{{ m.phone || '-' }}</div>
@@ -109,9 +109,9 @@
                     <div class="col col-sector" [title]="m.sectorName || ''">{{ m.sectorName || '-' }}</div>
                     <div class="col col-address" [title]="m.address || ''">{{ m.address || '-' }}</div>
                     <div class="col col-action">
-                        <a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a>
+                        <a class="edit-link" [routerLink]="['/members', m.id, 'edit']" title="Edit member">Edit</a>
                         <button class="delete-btn" (click)="deleteMember(m)" title="Delete member">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon>delete_outline</mat-icon>
                         </button>
                     </div>
                 </div>

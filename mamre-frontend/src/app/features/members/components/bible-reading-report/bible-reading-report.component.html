@@ -1,0 +1,142 @@
+<section class="page">
+    <div class="page-header">
+        <div class="title">
+            <h2>📊 Laporan Bulanan MAMRE (MAMRE Baca Alkitab)</h2>
+            <p class="desc">Laporan pembacaan Alkitab per sektor untuk bulan {{ getMonthLabel() }} {{ selectedYear }}</p>
+        </div>
+        <div class="controls">
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Bulan</mat-label>
+                <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onFilterChange()">
+                    <mat-option *ngFor="let m of months" [value]="m.value">{{ m.label }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Tahun</mat-label>
+                <mat-select [(ngModel)]="selectedYear" (selectionChange)="onFilterChange()">
+                    <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-stroked-button color="primary" (click)="exportToExcel()">
+                <mat-icon>download</mat-icon> Export
+            </button>
+            <button mat-stroked-button (click)="printReport()">
+                <mat-icon>print</mat-icon> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Header -->
+    <mat-card class="report-card">
+        <div class="report-header">
+            <h3>LAPORAN BULANAN MAMRE (MAMRE BACA ALKITAB)</h3>
+            <p class="report-period">{{ getMonthLabel() }} {{ selectedYear }}</p>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Loading -->
+        <div class="loading-container" *ngIf="loading">
+            <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+            <span>Memuat data...</span>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container" *ngIf="!loading">
+            <table mat-table [dataSource]="reportData" class="report-table">
+
+                <!-- Sector Name Column -->
+                <ng-container matColumnDef="sectorName">
+                    <th mat-header-cell *matHeaderCellDef>Nama Sektor</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        {{ row.sectorName }}
+                    </td>
+                </ng-container>
+
+                <!-- Total Members Column -->
+                <ng-container matColumnDef="totalMembers">
+                    <th mat-header-cell *matHeaderCellDef>Jumlah Anggota</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        {{ row.totalMembers }}
+                    </td>
+                </ng-container>
+
+                <!-- Members Who Read Column -->
+                <ng-container matColumnDef="membersWhoRead">
+                    <th mat-header-cell *matHeaderCellDef>Yang Sudah Baca</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        {{ row.membersWhoRead }}
+                    </td>
+                </ng-container>
+
+                <!-- Average Percentage Column -->
+                <ng-container matColumnDef="averagePercentage">
+                    <th mat-header-cell *matHeaderCellDef>Rata-rata % Baca Bulan Ini</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        <span *ngIf="row.averagePercentage > 0">{{ row.averagePercentage | number:'1.0-0' }}%</span>
+                        <span *ngIf="row.averagePercentage === 0" class="no-data">-</span>
+                    </td>
+                </ng-container>
+
+                <!-- Category Column -->
+                <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef>Kategori</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        <span class="category-badge" [ngClass]="getCategoryClass(row.category)" *ngIf="row.averagePercentage > 0">
+                            {{ row.category }}
+                        </span>
+                        <span *ngIf="row.averagePercentage === 0" class="no-data">-</span>
+                    </td>
+                </ng-container>
+
+                <!-- Description Column -->
+                <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>Keterangan</th>
+                    <td mat-cell *matCellDef="let row" [class.total-row]="isTotal(row)">
+                        <span *ngIf="row.averagePercentage > 0">{{ row.description }}</span>
+                        <span *ngIf="row.averagePercentage === 0" class="no-data">Belum ada data</span>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    [class.total-row]="isTotal(row)"
+                    [class.highlight-row]="!isTotal(row) && row.averagePercentage >= 60"></tr>
+            </table>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend" *ngIf="!loading && reportData.length > 0">
+            <div class="formula-box">
+                <h4>Rumus Menghitung Persentase:</h4>
+                <p class="formula">Persentase Baca = (Jumlah anggota yang baca ÷ Total anggota sektor) × 100</p>
+            </div>
+
+            <h4>Keterangan Kategori:</h4>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="category-badge category-excellent">Sangat Baik</span>
+                    <span>&gt;= 80%</span>
+                </div>
+                <div class="legend-item">
+                    <span class="category-badge category-good">Baik</span>
+                    <span>60% - 79%</span>
+                </div>
+                <div class="legend-item">
+                    <span class="category-badge category-fair">Cukup</span>
+                    <span>40% - 59%</span>
+                </div>
+                <div class="legend-item">
+                    <span class="category-badge category-poor">Kurang</span>
+                    <span>20% - 39%</span>
+                </div>
+                <div class="legend-item">
+                    <span class="category-badge category-very-poor">Sangat Kurang</span>
+                    <span>&lt; 20%</span>
+                </div>
+            </div>
+        </div>
+    </mat-card>
+</section>

@@ -10,6 +10,7 @@ export interface Attendance {
     attendDate: string;
     event?: string;
     present: boolean;
+    kolpiAmount?: number;  // Jumlah Kolekte/Persembahan
     note?: string;
 }
 

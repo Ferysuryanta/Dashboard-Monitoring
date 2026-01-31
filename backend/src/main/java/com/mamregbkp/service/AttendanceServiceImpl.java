@@ -39,6 +39,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         d.setAttendDate(a.getAttendDate());
         d.setEvent(a.getEvent());
         d.setPresent(a.isPresent());
+        d.setKolpiAmount(a.getKolpiAmount());
         d.setNote(a.getNote());
         return d;
     }
@@ -52,6 +53,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         a.setAttendDate(dto.getAttendDate());
         a.setEvent(dto.getEvent());
         a.setPresent(dto.getPresent() == null || dto.getPresent());
+        a.setKolpiAmount(dto.getKolpiAmount());
         a.setNote(dto.getNote());
         attendanceRepository.save(a);
         dto.setId(a.getId());
@@ -78,6 +80,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         a.setAttendDate(dto.getAttendDate());
         a.setEvent(dto.getEvent());
         a.setPresent(dto.getPresent() == null || dto.getPresent());
+        a.setKolpiAmount(dto.getKolpiAmount());
         a.setNote(dto.getNote());
         attendanceRepository.save(a);
 

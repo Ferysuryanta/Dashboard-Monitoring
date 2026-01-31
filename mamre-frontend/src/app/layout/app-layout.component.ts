@@ -7,6 +7,7 @@ import {MatButton, MatIconButton} from "@angular/material/button";
 import {NgIf} from "@angular/common";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
+import {MatDivider} from "@angular/material/divider";
 
 @Component({
     selector: 'app-layout',
@@ -25,7 +26,8 @@ import {MatTooltip} from "@angular/material/tooltip";
         MatSidenavContent,
         MatToolbar,
         MatIconButton,
-        MatTooltip
+        MatTooltip,
+        MatDivider
     ],
     styleUrls: ['./app-layout.component.scss']
 })

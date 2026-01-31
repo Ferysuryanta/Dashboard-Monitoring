@@ -73,4 +73,26 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getBibleReadingProgress(targetYear));
     }
 
+    /**
+     * Laporan Bulanan Baca Alkitab per Sektor (MAMRE BACA ALKITAB)
+     * Returns report with: Nama Sektor, Jumlah Anggota, Rata-rata % Baca, Kategori, Keterangan
+     */
+    @GetMapping("/sector-bible-reading-report")
+    public ResponseEntity<List<SectorBibleReadingReportDto>> sectorBibleReadingReport(
+            @RequestParam(defaultValue = "0") int year,
+            @RequestParam(defaultValue = "0") int month) {
+        return ResponseEntity.ok(dashboardService.getSectorBibleReadingReport(year, month));
+    }
+
+    /**
+     * Laporan Kehadiran Bulanan per Sektor
+     * Returns report with: Per Minggu (Minggu 1-4), Jumlah Anggota, Hadir, Kolekte, % Kehadiran
+     */
+    @GetMapping("/sector-attendance-report")
+    public ResponseEntity<List<SectorAttendanceReportDto>> sectorAttendanceReport(
+            @RequestParam(defaultValue = "0") int year,
+            @RequestParam(defaultValue = "0") int month) {
+        return ResponseEntity.ok(dashboardService.getSectorAttendanceReport(year, month));
+    }
+
 }

@@ -70,7 +70,12 @@
 
         <div class="charts-row">
             <mat-card class="chart-card">
-                <div class="card-title">📖 Membaca Alkitab Mamre (12 Bulan Terakhir)</div>
+                <div class="card-header">
+                    <div class="card-title">📖 Persentase Baca Alkitab per Sektor</div>
+                    <button mat-icon-button matTooltip="Lihat Laporan Lengkap" routerLink="/bible-reading-report" class="chart-action-btn">
+                        <mat-icon>open_in_new</mat-icon>
+                    </button>
+                </div>
                 <div class="chart-area">
                     <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType"></canvas>
                 </div>

@@ -16,9 +16,11 @@ import {DashboardComponent} from "./features/members/components/Dashboard/dashbo
 
 // Bible Reading
 import { BibleReadingComponent } from "./features/members/components/bible-reading/bible-reading.component";
+import { BibleReadingReportComponent } from "./features/members/components/bible-reading-report/bible-reading-report.component";
 
 // Attendance
 import { AttendanceComponent } from "./features/members/components/attendance/attendance.component";
+import { AttendanceReportComponent } from "./features/members/components/attendance-report/attendance-report.component";
 
 // Dashboard
 
@@ -49,9 +51,11 @@ export const routes: Routes = [
 
             // 📖 Bible Reading
             { path: 'bible-reading', component: BibleReadingComponent },
+            { path: 'bible-reading-report', component: BibleReadingReportComponent },
 
             // 📋 Attendance
             { path: 'attendance', component: AttendanceComponent },
+            { path: 'attendance-report', component: AttendanceReportComponent },
         ]
     },
 

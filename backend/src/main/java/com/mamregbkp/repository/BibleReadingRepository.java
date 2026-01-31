@@ -1,6 +1,7 @@
 package com.mamregbkp.repository;
 
 import com.mamregbkp.model.BibleReading;
+import com.mamregbkp.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,4 +37,23 @@ public interface BibleReadingRepository extends JpaRepository<BibleReading, Long
 
     // Find readings for a member in date range
     List<BibleReading> findByMemberIdAndReadingDateBetween(UUID memberId, LocalDate start, LocalDate end);
+
+    // Count distinct members who read in a specific sector and date range
+    @Query("SELECT COUNT(DISTINCT br.memberId) FROM BibleReading br " +
+           "JOIN Member m ON br.memberId = m.id " +
+           "WHERE m.sector.id = :sectorId " +
+           "AND br.readingDate BETWEEN :start AND :end " +
+           "AND br.completed = true")
+    long countDistinctMembersBySectorAndDateRange(
+            @Param("sectorId") Long sectorId,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
+
+    // Get all member IDs who read in date range (for sector-based report)
+    @Query("SELECT DISTINCT br.memberId FROM BibleReading br " +
+           "WHERE br.readingDate BETWEEN :start AND :end " +
+           "AND br.completed = true")
+    List<UUID> findDistinctMemberIdsByDateRange(
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
 }

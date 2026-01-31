@@ -142,7 +142,14 @@ export class MemberListComponent implements OnInit {
         if (s.includes('active')) return 'status-active';
         if (s.includes('inactive') || s.includes('non') || s.includes('disabled')) return 'status-inactive';
         if (s.includes('pending')) return 'status-pending';
+        if (s.includes('suspended')) return 'status-suspended';
         return 'status-default';
+    }
+
+    // Format gender to be more readable (capitalize first letter)
+    formatGender(gender?: string): string {
+        if (!gender) return '-';
+        return gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
     }
 
     // helper to programmatically change status filter (if UI added)
