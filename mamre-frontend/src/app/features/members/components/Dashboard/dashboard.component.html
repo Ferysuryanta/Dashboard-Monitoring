@@ -2,6 +2,9 @@
     <div class="header-section">
         <h1>Welcome to <span>Dashboard Mamre GBKP</span></h1>
         <div class="top-actions">
+            <button mat-stroked-button (click)="goMembers()">
+                <mat-icon>people</mat-icon> Members
+            </button>
             <button mat-stroked-button (click)="goSectors()">
                 <mat-icon>account_tree</mat-icon> Sectors
             </button>
@@ -67,21 +70,26 @@
 
         <div class="charts-row">
             <mat-card class="chart-card">
-                <div class="card-title">Membership growth</div>
+                <div class="card-title">📖 Membaca Alkitab Mamre (12 Bulan Terakhir)</div>
                 <div class="chart-area">
                     <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType"></canvas>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card">
-                <div class="card-title">sector</div>
+                <div class="card-title">Sector</div>
                 <div class="chart-area">
                     <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card" *ngIf="attendanceSummary && summary.totalMembers > 0">
-                <div class="card-title">Attendance({{ attendanceSummary.month }})</div>
+                <div class="card-header">
+                    <div class="card-title">Attendance({{ attendanceSummary.month }})</div>
+                    <button mat-icon-button matTooltip="Kelola Kehadiran" routerLink="/attendance" class="chart-action-btn">
+                        <mat-icon>open_in_new</mat-icon>
+                    </button>
+                </div>
                 <div class="chart-area">
                     <canvas baseChart
                             id="attendanceChartCanvas"
@@ -94,14 +102,57 @@
             </mat-card>
         </div>
 
+        <!-- Row 2: Gender & Status Distribution -->
+        <div class="charts-row-secondary">
+            <mat-card class="chart-card-small">
+                <div class="card-title">Gender Distribution</div>
+                <div class="chart-area-small">
+                    <canvas baseChart [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
+                </div>
+            </mat-card>
+
+            <mat-card class="chart-card-small">
+                <div class="card-title">Status Distribution</div>
+                <div class="chart-area-small">
+                    <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
+                </div>
+            </mat-card>
+
+            <mat-card class="birthday-card">
+                <div class="card-title">
+                    <mat-icon class="title-icon">cake</mat-icon>
+                    Upcoming Birthdays
+                </div>
+                <mat-divider></mat-divider>
+                <div class="birthday-list" *ngIf="upcomingBirthdays.length > 0">
+                    <div class="birthday-item" *ngFor="let b of upcomingBirthdays" [ngClass]="getBirthdayClass(b.daysUntil)">
+                        <div class="birthday-avatar">{{ b.name?.[0] || '?' }}</div>
+                        <div class="birthday-info">
+                            <div class="birthday-name">{{ b.name }}</div>
+                            <div class="birthday-meta">
+                                {{ b.birthDate | date:'dd MMM' }} • {{ b.sectorName || 'No Sector' }}
+                            </div>
+                        </div>
+                        <div class="birthday-badge">
+                            {{ getBirthdayLabel(b.daysUntil) }}
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="upcomingBirthdays.length === 0" class="placeholder-text">
+                    <mat-icon>event_busy</mat-icon>
+                    <p>Tidak ada ulang tahun dalam 30 hari ke depan.</p>
+                </div>
+            </mat-card>
+        </div>
+
         <div class="recent-row">
             <mat-card class="recent-card">
                 <div class="card-title">Recent members</div>
                 <mat-divider></mat-divider>
                 <mat-list>
                     <mat-list-item *ngFor="let r of recent">
-                        <div mat-list-avatar class="avatar-large">{{ r.name?.[0] || '?' }}</div>
-                        <div mat-line class="member-info">
+                        <div matListItemAvatar class="avatar-large">{{ r.name?.[0] || '?' }}</div>
+                        <div matListItemLine class="member-info">
                             <div class="member-name">{{ r.name }}</div>
                             <div class="member-meta">{{ r.position }} • {{ r.sector }} • {{ r.joinedDate | date:'mediumDate' }}</div>
                         </div>

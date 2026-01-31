@@ -16,8 +16,6 @@ CREATE TABLE position (
     description TEXT
 );
 
-CREATE TYPE member_status AS ENUM ('ACTIVE', 'INACTIVE', 'PROSPECT', 'SUSPENDED');
-
 CREATE TABLE member (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(150) NOT NULL,
@@ -29,12 +27,13 @@ CREATE TABLE member (
     address TEXT,
     sector_id BIGINT,
     position_id BIGINT,
-    status member_status DEFAULT 'ACTIVE',
+    status VARCHAR(20) DEFAULT 'ACTIVE',
     joined_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     CONSTRAINT fk_member_sector FOREIGN KEY (sector_id) REFERENCES sector(id) ON DELETE SET NULL,
-    CONSTRAINT fk_member_position FOREIGN KEY (position_id) REFERENCES position(id) ON DELETE SET NULL
+    CONSTRAINT fk_member_position FOREIGN KEY (position_id) REFERENCES position(id) ON DELETE SET NULL,
+    CONSTRAINT chk_member_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'PROSPECT', 'SUSPENDED'))
 );
 
 CREATE TABLE attendance (

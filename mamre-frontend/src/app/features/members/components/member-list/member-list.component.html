@@ -13,9 +13,20 @@
     </div>
 
     <div class="search-row">
-        <mat-form-field appearance="standard" class="search-minimal">
+        <mat-form-field appearance="outline" class="search-minimal">
             <mat-icon matPrefix>search</mat-icon>
             <input matInput [formControl]="search" placeholder="Search members..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="status-filter">
+            <mat-label>Status</mat-label>
+            <mat-select (selectionChange)="setStatusFilter($event.value)" [value]="statusFilter || ''">
+                <mat-option value="">Semua Status</mat-option>
+                <mat-option value="ACTIVE">Active</mat-option>
+                <mat-option value="INACTIVE">Inactive</mat-option>
+                <mat-option value="PENDING">Pending</mat-option>
+                <mat-option value="SUSPENDED">Suspended</mat-option>
+            </mat-select>
         </mat-form-field>
     </div>
 
@@ -80,24 +91,29 @@
                     <div class="col col-name">
                         <div class="name-wrapper">
                             <div class="avatar">{{ initials(m) }}</div>
-                            <div class="name-txt">{{ m.firstName }} {{ m.lastName }}</div>
+                            <div class="name-txt" [title]="(m.firstName || '') + ' ' + (m.lastName || '')">{{ m.firstName }} {{ m.lastName }}</div>
                         </div>
                     </div>
 
-                    <div class="col col-email">{{ m.email || '-' }}</div>
+                    <div class="col col-email" [title]="m.email || ''">{{ m.email || '-' }}</div>
                     <div class="col col-gender">{{ m.gender || '-' }}</div>
                     <div class="col col-birth">
                         <span *ngIf="m.birthDate">{{ m.birthDate | date:'mediumDate' }}</span>
                         <span *ngIf="!m.birthDate">-</span>
                     </div>
-                    <div class="col col-phone">{{ m.phone || '-' }}</div>
-                    <div class="col col-position">{{ m.positionName || '-' }}</div>
+                    <div class="col col-phone" [title]="m.phone || ''">{{ m.phone || '-' }}</div>
+                    <div class="col col-position" [title]="m.positionName || ''">{{ m.positionName || '-' }}</div>
                     <div class="col col-status">
                         <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">{{ m.status || '-' }}</mat-chip>
                     </div>
-                    <div class="col col-sector">{{ m.sectorName || '-' }}</div>
-                    <div class="col col-address">{{ m.address || '-' }}</div>
-                    <div class="col col-action"><a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a></div>
+                    <div class="col col-sector" [title]="m.sectorName || ''">{{ m.sectorName || '-' }}</div>
+                    <div class="col col-address" [title]="m.address || ''">{{ m.address || '-' }}</div>
+                    <div class="col col-action">
+                        <a class="edit-link" [routerLink]="['/members', m.id, 'edit']">Edit</a>
+                        <button class="delete-btn" (click)="deleteMember(m)" title="Delete member">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
                 </div>
 
                 <mat-divider *ngIf="page.content.length>0"></mat-divider>

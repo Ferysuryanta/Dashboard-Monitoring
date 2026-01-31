@@ -1,7 +1,6 @@
 package com.mamregbkp.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -12,31 +11,27 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 /**
  * Global web configuration:
  *  - Enable stable Page<T> serialization via DTO
- *  - Provide global CORS config for frontend (<a href="http://localhost:4200">...</a>)
+ *  - Provide global CORS config for frontend
  */
 @Configuration
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.cors.allowed-origins}")
-    private String localhostOrigins;
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins(
-                                localhostOrigins,
-                                "http://127.0.0.1:4200"
-                        )
-                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true)
-                        // cache preflight (1 jam)
-                        .maxAge(3600);
-            }
-        };
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins(
+                        allowedOrigins,
+                        "http://localhost:4200",
+                        "http://127.0.0.1:4200"
+                )
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .exposedHeaders("Location", "Content-Disposition")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

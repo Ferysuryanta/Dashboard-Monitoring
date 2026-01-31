@@ -1,0 +1,136 @@
+# ==========================
+# Project-specific ignores
+# ==========================
+
+# ==========================
+# Backend - Java/Maven
+# ==========================
+
+# Compiled class files
+backend/target/
+*.class
+
+# Log files
+*.log
+logs/
+
+# Maven
+backend/.mvn/
+backend/*.jar
+!backend/.mvn/wrapper/maven-wrapper.jar
+backend/*.war
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# VS Code
+.vscode/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ==========================
+# Frontend - Angular/Node.js
+# ==========================
+
+# Dependencies
+mamre-frontend/node_modules/
+node_modules/
+
+# Angular build output
+mamre-frontend/dist/
+mamre-frontend/.angular/
+
+# Environment files (contains sensitive data)
+mamre-frontend/src/environments/environment.local.ts
+
+# Compiled output
+mamre-frontend/tmp/
+mamre-frontend/out-tsc/
+
+# Coverage directory
+mamre-frontend/coverage/
+
+# e2e
+mamre-frontend/e2e/*.js
+mamre-frontend/e2e/*.map
+
+# IDEs and editors
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Misc
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.sass-cache/
+
+# ==========================
+# OS Generated Files
+# ==========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ==========================
+# Sensitive/Local Files
+# ==========================
+
+# Local application properties (if any)
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-local.properties
+
+# Database files
+*.db
+*.sqlite
+*.h2.db
+
+# Uploaded files directory (if any)
+uploads/
+backend/uploads/
+
+# ==========================
+# Logs and temporary files
+# ==========================
+*.log
+*.tmp
+*.temp
+*.cache
+
+# npm debug log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================
+# Test and coverage
+# ==========================
+backend/target/surefire-reports/
+backend/target/failsafe-reports/
+*.exec
+jacoco.exec

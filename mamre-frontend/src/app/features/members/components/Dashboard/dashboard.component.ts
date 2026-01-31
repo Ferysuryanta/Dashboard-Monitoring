@@ -2,6 +2,7 @@
 
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgChartsModule } from 'ng2-charts';
 // PENTING: Import Chart untuk Plugin
-import { DashboardService } from 'src/app/core/services/dashboard.service';
+import { DashboardService, GenderDistribution, StatusDistribution, UpcomingBirthday, BibleReadingProgress } from 'src/app/core/services/dashboard.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -28,6 +29,7 @@ import {SectorApiResult} from "../../models/sector.response.model";
     standalone: true,
     imports: [
         CommonModule,
+        RouterModule,
         MatCardModule,
         MatGridListModule,
         MatIconModule,
@@ -61,20 +63,27 @@ export class DashboardComponent implements OnInit {
     trendData: number[] = [];
     sectorLabels: string[] = [];
     sectorData: number[] = [];
+    currentYear = new Date().getFullYear();
 
     // Properti Baru untuk Kehadiran
     attendanceSummary: AttendanceSummaryDto | null = null;
 
+    // Properti Baru untuk fitur tambahan
+    upcomingBirthdays: UpcomingBirthday[] = [];
+    genderData: GenderDistribution[] = [];
+    statusData: StatusDistribution[] = [];
+    bibleReadingData: BibleReadingProgress[] = [];
+
 
     // --- CHART CONFIGS ---
 
-    // 1. Konfigurasi Bar Chart (Membership Trend)
+    // 1. Konfigurasi Bar Chart (Bible Reading Progress - Membaca Alkitab Mamre)
     public lineChartType: ChartType = 'bar';
     public lineChartOptions: ChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { display: false },
+            legend: { display: true, position: 'top' },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
                 titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
@@ -82,14 +91,36 @@ export class DashboardComponent implements OnInit {
                 padding: 12,
                 cornerRadius: 8,
                 displayColors: true,
-                boxPadding: 4
+                boxPadding: 4,
+                callbacks: {
+                    label: (context: any) => {
+                        const dataIndex = context.dataIndex;
+                        const datasetIndex = context.datasetIndex;
+                        if (datasetIndex === 0) {
+                            return `Hari Terbaca: ${context.raw} hari`;
+                        } else {
+                            return `Target: ${context.raw} hari`;
+                        }
+                    }
+                }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
+                max: 31,
                 grid: { color: 'rgba(0,0,0,0.08)' },
-                ticks: { color: '#666', font: { family: 'Poppins' } }
+                ticks: {
+                    color: '#666',
+                    font: { family: 'Poppins' },
+                    stepSize: 5
+                },
+                title: {
+                    display: true,
+                    text: 'Jumlah Hari',
+                    color: '#666',
+                    font: { family: 'Poppins', weight: 'bold' }
+                }
             },
             x: {
                 grid: { display: false },
@@ -98,15 +129,26 @@ export class DashboardComponent implements OnInit {
         }
     };
     public lineChartData: ChartConfiguration<'bar'>['data'] = {
-        datasets: [{
-            data: [],
-            label: 'Members',
-            backgroundColor: 'rgba(106, 90, 249, 0.9)',
-            hoverBackgroundColor: 'rgba(106, 90, 249, 1)',
-            borderRadius: 8,
-            barPercentage: 0.7,
-            categoryPercentage: 0.8
-        }],
+        datasets: [
+            {
+                data: [],
+                label: 'Hari Terbaca',
+                backgroundColor: 'rgba(106, 90, 249, 0.9)',
+                hoverBackgroundColor: 'rgba(106, 90, 249, 1)',
+                borderRadius: 6,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9
+            },
+            {
+                data: [],
+                label: 'Target Hari',
+                backgroundColor: 'rgba(200, 200, 200, 0.4)',
+                hoverBackgroundColor: 'rgba(200, 200, 200, 0.6)',
+                borderRadius: 6,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9
+            }
+        ],
         labels: []
     };
 
@@ -200,6 +242,76 @@ export class DashboardComponent implements OnInit {
         }
     }];
 
+    // 4. Konfigurasi Donut Chart (Gender Distribution)
+    public genderChartType: ChartType = 'doughnut';
+    public genderChartOptions: ChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#666', font: { family: 'Poppins' }, padding: 15 }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
+                bodyFont: { size: 13, family: 'Poppins' },
+                padding: 12,
+                cornerRadius: 8
+            }
+        }
+    };
+    public genderChartData: ChartConfiguration<'doughnut'>['data'] = {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: ['#3b82f6', '#ec4899', '#9ca3af'],
+            borderColor: '#ffffff',
+            borderWidth: 4,
+            hoverOffset: 15
+        }]
+    };
+
+    // 5. Konfigurasi Bar Chart (Status Distribution)
+    public statusChartType: ChartType = 'bar';
+    public statusChartOptions: ChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
+                bodyFont: { size: 13, family: 'Poppins' },
+                padding: 12,
+                cornerRadius: 8
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0,0,0,0.08)' },
+                ticks: { color: '#666', font: { family: 'Poppins' } }
+            },
+            y: {
+                grid: { display: false },
+                ticks: { color: '#666', font: { family: 'Poppins', weight: 'bold' } }
+            }
+        }
+    };
+    public statusChartData: ChartConfiguration<'bar'>['data'] = {
+        labels: [],
+        datasets: [{
+            data: [],
+            label: 'Members',
+            backgroundColor: ['#20c997', '#e63946', '#ffb703', '#9ca3af'],
+            borderRadius: 6,
+            barPercentage: 0.6
+        }]
+    };
+
 
     ngOnInit(): void {
         this.loadAll();
@@ -252,18 +364,32 @@ export class DashboardComponent implements OnInit {
 
         // ... (Logika loadMembersTrend dan loadCountBySector yang lain) ...
 
-        this.svc.getMembersTrend(12).pipe(
-            map((res: any) => Array.isArray(res) ? res : (res.content ?? []))
-        ).subscribe((arr: any[]) => {
-            this.trendLabels = arr.map(x => x.month);
-            this.trendData = arr.map(x => x.count);
+        // Load Bible Reading Progress - Membaca Alkitab Mamre
+        this.svc.getBibleReadingProgress().subscribe(arr => {
+            this.bibleReadingData = arr;
 
-            this.lineChartData.labels = this.trendLabels;
-            this.lineChartData.datasets = [{
-                ...this.lineChartData.datasets[0],
-                data: this.trendData
-            }];
-        }, err => console.error('trend err', err));
+            this.lineChartData.labels = arr.map(x => x.month);
+            this.lineChartData.datasets = [
+                {
+                    data: arr.map(x => x.completedDays),
+                    label: 'Hari Terbaca',
+                    backgroundColor: 'rgba(106, 90, 249, 0.9)',
+                    hoverBackgroundColor: 'rgba(106, 90, 249, 1)',
+                    borderRadius: 6,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                },
+                {
+                    data: arr.map(x => x.targetDays),
+                    label: 'Target Hari',
+                    backgroundColor: 'rgba(200, 200, 200, 0.3)',
+                    hoverBackgroundColor: 'rgba(200, 200, 200, 0.5)',
+                    borderRadius: 6,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }
+            ];
+        }, err => console.error('bible reading err', err));
 
         this.svc.getCountBySector().pipe(
             map((res: any) => Array.isArray(res) ? res : (res.content ?? []))
@@ -287,8 +413,67 @@ export class DashboardComponent implements OnInit {
             this.recent = normalizeListResponse(arr);
             this.loading = false;
         }, () => this.loading = false);
+
+        // Load Gender Distribution
+        this.svc.getGenderDistribution().subscribe(arr => {
+            this.genderData = arr;
+            const genderColors: { [key: string]: string } = {
+                'Male': '#3b82f6',
+                'Female': '#ec4899',
+                'Unknown': '#9ca3af'
+            };
+            this.genderChartData.labels = arr.map(x => x.gender);
+            this.genderChartData.datasets = [{
+                data: arr.map(x => x.count),
+                backgroundColor: arr.map(x => genderColors[x.gender] || '#9ca3af'),
+                borderColor: '#ffffff',
+                borderWidth: 4,
+                hoverOffset: 15
+            }];
+        }, err => console.error('gender err', err));
+
+        // Load Status Distribution
+        this.svc.getStatusDistribution().subscribe(arr => {
+            this.statusData = arr;
+            const statusColors: { [key: string]: string } = {
+                'ACTIVE': '#20c997',
+                'INACTIVE': '#e63946',
+                'PROSPECT': '#ffb703',
+                'SUSPENDED': '#6c757d',
+                'Unknown': '#9ca3af'
+            };
+            this.statusChartData.labels = arr.map(x => x.status);
+            this.statusChartData.datasets = [{
+                data: arr.map(x => x.count),
+                label: 'Members',
+                backgroundColor: arr.map(x => statusColors[x.status] || '#9ca3af'),
+                borderRadius: 6,
+                barPercentage: 0.6
+            }];
+        }, err => console.error('status err', err));
+
+        // Load Upcoming Birthdays
+        this.svc.getUpcomingBirthdays(30, 5).subscribe(arr => {
+            this.upcomingBirthdays = arr;
+        }, err => console.error('birthdays err', err));
     }
 
     goSectors() { this.router.navigateByUrl('/sectors'); }
     goPositions() { this.router.navigateByUrl('/positions'); }
+    goMembers() { this.router.navigateByUrl('/members'); }
+
+    // Helper untuk menentukan label hari ulang tahun
+    getBirthdayLabel(daysUntil: number): string {
+        if (daysUntil === 0) return 'Hari ini! 🎂';
+        if (daysUntil === 1) return 'Besok';
+        return `${daysUntil} hari lagi`;
+    }
+
+    // Helper untuk warna badge birthday
+    getBirthdayClass(daysUntil: number): string {
+        if (daysUntil === 0) return 'birthday-today';
+        if (daysUntil <= 3) return 'birthday-soon';
+        if (daysUntil <= 7) return 'birthday-week';
+        return 'birthday-later';
+    }
 }

@@ -1,0 +1,265 @@
+<section class="page">
+    <div class="page-header">
+        <div class="title">
+            <h2>📋 Kehadiran Anggota</h2>
+            <p class="desc">Kelola dan pantau kehadiran anggota di setiap kegiatan.</p>
+        </div>
+        <div class="controls">
+            <button mat-stroked-button color="primary" (click)="openBatchForm()" class="batch-btn">
+                <mat-icon>group_add</mat-icon> Input Massal
+            </button>
+            <button mat-flat-button color="primary" (click)="openAddForm()">
+                <mat-icon>add</mat-icon> Tambah Kehadiran
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <mat-card class="stat-card today">
+            <mat-icon>today</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ todayCount }}</div>
+                <div class="stat-label">Hari Ini</div>
+            </div>
+        </mat-card>
+        <mat-card class="stat-card week">
+            <mat-icon>date_range</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ weekCount }}</div>
+                <div class="stat-label">Minggu Ini</div>
+            </div>
+        </mat-card>
+        <mat-card class="stat-card month">
+            <mat-icon>calendar_month</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ monthCount }}</div>
+                <div class="stat-label">Bulan Ini</div>
+            </div>
+        </mat-card>
+    </div>
+
+    <!-- Individual Form Card -->
+    <mat-card class="form-card" *ngIf="showForm">
+        <div class="form-header">
+            <h3>{{ editingId ? 'Edit Kehadiran' : 'Tambah Kehadiran' }}</h3>
+            <button mat-icon-button (click)="cancelForm()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+        <form [formGroup]="form" (ngSubmit)="saveAttendance()" class="attendance-form">
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-member">
+                    <mat-label>Anggota</mat-label>
+                    <mat-select formControlName="memberName" required>
+                        <mat-option *ngFor="let m of members" [value]="m.email || (m.firstName + ' ' + m.lastName)">
+                            {{ m.firstName }} {{ m.lastName }}
+                            <span class="member-email" *ngIf="m.email"> ({{ m.email }})</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-date">
+                    <mat-label>Tanggal</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="attendDate" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-event">
+                    <mat-label>Kegiatan</mat-label>
+                    <mat-select formControlName="event" required>
+                        <mat-option *ngFor="let event of churchEvents" [value]="event">
+                            {{ event }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <div class="field-present">
+                    <mat-checkbox formControlName="present" color="primary">
+                        Hadir
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-notes">
+                    <mat-label>Catatan</mat-label>
+                    <textarea matInput formControlName="note" rows="2"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+                <button mat-button type="button" (click)="cancelForm()">Batal</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+                    {{ editingId ? 'Update' : 'Simpan' }}
+                </button>
+            </div>
+        </form>
+    </mat-card>
+
+    <!-- Batch Form Card -->
+    <mat-card class="form-card batch-card" *ngIf="showBatchForm">
+        <div class="form-header">
+            <h3>📋 Input Kehadiran Massal</h3>
+            <button mat-icon-button (click)="cancelForm()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+        <form [formGroup]="batchForm" (ngSubmit)="saveBatchAttendance()" class="batch-form">
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-date">
+                    <mat-label>Tanggal Kegiatan</mat-label>
+                    <input matInput [matDatepicker]="batchPicker" formControlName="attendDate" required>
+                    <mat-datepicker-toggle matSuffix [for]="batchPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #batchPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-event">
+                    <mat-label>Kegiatan</mat-label>
+                    <mat-select formControlName="event" required>
+                        <mat-option *ngFor="let event of churchEvents" [value]="event">
+                            {{ event }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="member-selection">
+                <div class="selection-header">
+                    <span class="selection-title">Pilih Anggota yang Hadir ({{ selectedMembers.size }} dipilih)</span>
+                    <div class="selection-actions">
+                        <button mat-button type="button" (click)="selectAllMembers()">Pilih Semua</button>
+                        <button mat-button type="button" (click)="deselectAllMembers()">Batal Semua</button>
+                    </div>
+                </div>
+                <div class="member-grid">
+                    <div *ngFor="let m of members"
+                         class="member-chip"
+                         [class.selected]="isMemberSelected(m.id)"
+                         (click)="toggleMemberSelection(m.id)">
+                        <mat-icon>{{ isMemberSelected(m.id) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                        <span>{{ m.firstName }} {{ m.lastName }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button mat-button type="button" (click)="cancelForm()">Batal</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="batchForm.invalid || selectedMembers.size === 0">
+                    Simpan {{ selectedMembers.size }} Kehadiran
+                </button>
+            </div>
+        </form>
+    </mat-card>
+
+    <!-- Filter Section -->
+    <mat-card class="filter-card">
+        <div class="filter-row">
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Cari Anggota</mat-label>
+                <input matInput [(ngModel)]="filterMember" placeholder="Nama atau email...">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Dari Tanggal</mat-label>
+                <input matInput type="date" [(ngModel)]="filterFrom">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Sampai Tanggal</mat-label>
+                <input matInput type="date" [(ngModel)]="filterTo">
+            </mat-form-field>
+
+            <div class="filter-actions">
+                <button mat-stroked-button (click)="applyFilter()">
+                    <mat-icon>filter_list</mat-icon> Filter
+                </button>
+                <button mat-button (click)="clearFilter()">
+                    <mat-icon>clear</mat-icon> Reset
+                </button>
+            </div>
+        </div>
+    </mat-card>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <mat-card *ngIf="loading" class="loading-card">
+            <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        </mat-card>
+
+        <mat-card class="table-card" *ngIf="!loading">
+            <table mat-table [dataSource]="attendances" class="attendance-table">
+                <ng-container matColumnDef="attendDate">
+                    <th mat-header-cell *matHeaderCellDef>Tanggal</th>
+                    <td mat-cell *matCellDef="let a">{{ a.attendDate | date:'dd MMM yyyy' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="memberName">
+                    <th mat-header-cell *matHeaderCellDef>Anggota</th>
+                    <td mat-cell *matCellDef="let a">
+                        <span class="member-name">{{ a.memberName }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="event">
+                    <th mat-header-cell *matHeaderCellDef>Kegiatan</th>
+                    <td mat-cell *matCellDef="let a">
+                        <span class="event-badge">{{ a.event || '-' }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="present">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let a">
+                        <mat-chip [class.present]="a.present" [class.absent]="!a.present">
+                            {{ a.present ? '✓ Hadir' : '✗ Tidak Hadir' }}
+                        </mat-chip>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="note">
+                    <th mat-header-cell *matHeaderCellDef>Catatan</th>
+                    <td mat-cell *matCellDef="let a">
+                        <span class="note-text" [matTooltip]="a.note">{{ a.note || '-' }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Aksi</th>
+                    <td mat-cell *matCellDef="let a">
+                        <button mat-icon-button color="primary" matTooltip="Edit" (click)="openEditForm(a)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Hapus" (click)="deleteAttendance(a)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['attendDate', 'memberName', 'event', 'present', 'note', 'actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['attendDate', 'memberName', 'event', 'present', 'note', 'actions'];"></tr>
+            </table>
+
+            <div *ngIf="attendances.length === 0" class="empty-state">
+                <mat-icon>event_busy</mat-icon>
+                <p>Belum ada data kehadiran. Mulai catat kehadiran anggota!</p>
+            </div>
+        </mat-card>
+
+        <mat-paginator
+            [length]="totalElements"
+            [pageIndex]="pageIndex"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            (page)="onPageChange($event)">
+        </mat-paginator>
+    </div>
+</section>

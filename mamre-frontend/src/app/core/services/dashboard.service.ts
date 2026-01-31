@@ -10,6 +10,10 @@ export interface MembersTrendPoint { month: string; count: number; }
 export interface SectorDistribution { sector: string; count: number; }
 export interface RecentActivity { id: string; name: string; email?: string; joinedDate?: string; sector?: string; position?: string; }
 export interface AttendanceSummary { month: string; totalAttendances: number; uniqueMembers: number; }
+export interface GenderDistribution { gender: string; count: number; }
+export interface StatusDistribution { status: string; count: number; }
+export interface UpcomingBirthday { id: string; name: string; birthDate: string; daysUntil: number; sectorName?: string; positionName?: string; }
+export interface BibleReadingProgress { month: string; targetDays: number; completedDays: number; percentage: number; }
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -61,5 +65,36 @@ export class DashboardService {
     getCountBySector(): Observable<{ sector: string; count: number }[] | null> {
         return this.http.get<{ sector: string; count: number }[]>(`${this.base}/members/count-by-sector`)
             .pipe(catchError(err => { console.error('dashboard.getCountBySector', err); return of(null); }));
+    }
+
+    // new: gender distribution
+    getGenderDistribution(): Observable<GenderDistribution[]> {
+        return this.http.get<GenderDistribution[]>(`${this.base}/gender-distribution`)
+            .pipe(catchError(err => { console.error('dashboard.getGenderDistribution', err); return of([]); }));
+    }
+
+    // new: status distribution
+    getStatusDistribution(): Observable<StatusDistribution[]> {
+        return this.http.get<StatusDistribution[]>(`${this.base}/status-distribution`)
+            .pipe(catchError(err => { console.error('dashboard.getStatusDistribution', err); return of([]); }));
+    }
+
+    // new: upcoming birthdays
+    getUpcomingBirthdays(days = 30, limit = 5): Observable<UpcomingBirthday[]> {
+        const params = new HttpParams()
+            .set('days', String(days))
+            .set('limit', String(limit));
+        return this.http.get<UpcomingBirthday[]>(`${this.base}/upcoming-birthdays`, { params })
+            .pipe(catchError(err => { console.error('dashboard.getUpcomingBirthdays', err); return of([]); }));
+    }
+
+    // new: bible reading progress - Membaca Alkitab Mamre
+    getBibleReadingProgress(year?: number): Observable<BibleReadingProgress[]> {
+        const options: { params?: HttpParams } = {};
+        if (year) {
+            options.params = new HttpParams().set('year', String(year));
+        }
+        return this.http.get<BibleReadingProgress[]>(`${this.base}/bible-reading-progress`, options)
+            .pipe(catchError(err => { console.error('dashboard.getBibleReadingProgress', err); return of([]); }));
     }
 }

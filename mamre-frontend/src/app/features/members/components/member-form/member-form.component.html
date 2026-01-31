@@ -51,7 +51,9 @@
 
                 <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>Tanggal Lahir</mat-label>
-                    <input matInput formControlName="birthDate" placeholder="YYYY-MM-DD" />
+                    <input matInput [matDatepicker]="birthPicker" formControlName="birthDate" placeholder="Pilih tanggal" />
+                    <mat-datepicker-toggle matSuffix [for]="birthPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #birthPicker></mat-datepicker>
                 </mat-form-field>
             </div>
 
@@ -88,7 +90,9 @@
 
                 <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>Tanggal Bergabung</mat-label>
-                    <input matInput formControlName="joinedDate" placeholder="YYYY-MM-DD" />
+                    <input matInput [matDatepicker]="joinedPicker" formControlName="joinedDate" placeholder="Pilih tanggal" />
+                    <mat-datepicker-toggle matSuffix [for]="joinedPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #joinedPicker></mat-datepicker>
                 </mat-form-field>
             </div>
 

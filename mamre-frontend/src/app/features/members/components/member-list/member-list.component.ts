@@ -8,11 +8,15 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {Observable, BehaviorSubject, combineLatest, of, filter} from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, catchError, shareReplay, tap } from 'rxjs/operators';
 import { MemberService, PagedResult } from '../../../../core/services/member.service';
 import { MemberDto } from '../../models/member.model';
+import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-member-list',
@@ -27,7 +31,10 @@ import { MemberDto } from '../../models/member.model';
         MatChipsModule,
         MatFormFieldModule,
         MatInputModule,
-        MatPaginatorModule
+        MatSelectModule,
+        MatPaginatorModule,
+        MatDialogModule,
+        MatSnackBarModule
     ],
     templateUrl: './member-list.component.html',
     styleUrls: ['./member-list.component.scss']
@@ -46,8 +53,13 @@ export class MemberListComponent implements OnInit {
     paged$!: Observable<PagedResult<MemberDto>>;
 
     error?: string;
+    private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
-    constructor(private service: MemberService) {}
+    constructor(
+        private service: MemberService,
+        private dialog: MatDialog,
+        private snackBar: MatSnackBar
+    ) {}
 
     ngOnInit(): void {
         const search$ = this.search.valueChanges.pipe(
@@ -63,7 +75,8 @@ export class MemberListComponent implements OnInit {
             this.size$,
             this.sortField$,
             this.sortDir$,
-            search$
+            search$,
+            this.refreshTrigger$
         ]).pipe(
             switchMap(([page, size, sortField, sortDir, searchTerm]) => {
                 this.error = undefined;
@@ -143,4 +156,31 @@ export class MemberListComponent implements OnInit {
     // expose current sort state for template
     get sortField() { return this.sortField$.value; }
     get sortDir() { return this.sortDir$.value; }
+
+    // Delete member with confirmation
+    deleteMember(member: MemberDto) {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {
+                title: 'Hapus Anggota',
+                message: `Apakah Anda yakin ingin menghapus ${member.firstName} ${member.lastName || ''}?`,
+                confirmText: 'Hapus',
+                cancelText: 'Batal'
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result && member.id) {
+                this.service.delete(member.id).subscribe({
+                    next: () => {
+                        this.snackBar.open('Anggota berhasil dihapus', 'OK', { duration: 3000 });
+                        this.refreshTrigger$.next();
+                    },
+                    error: (err) => {
+                        this.snackBar.open('Gagal menghapus anggota: ' + (err?.message || 'Unknown error'), 'OK', { duration: 5000 });
+                    }
+                });
+            }
+        });
+    }
 }

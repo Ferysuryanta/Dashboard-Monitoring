@@ -3,7 +3,9 @@ package com.mamregbkp.service;
 import com.mamregbkp.dto.*;
 import com.mamregbkp.model.Member;
 import com.mamregbkp.repository.AttendanceRepository;
+import com.mamregbkp.repository.BibleReadingRepository;
 import com.mamregbkp.repository.MemberRepository;
+import com.mamregbkp.repository.PositionRepository;
 import com.mamregbkp.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,12 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
+
+    @Autowired
+    private BibleReadingRepository bibleReadingRepository;
 
     @Override
     public List<SectorCountDto> countMembersBySector() {
@@ -53,12 +61,13 @@ public class DashboardServiceImpl implements DashboardService {
         return dto;
     }
 
+
     @Override
     public DashboardSummaryDto getSummary() {
         long total = memberRepository.count();
         long active = memberRepository.countByStatus("ACTIVE");
-        long sectors = memberRepository.count();
-        long positions = memberRepository.count();
+        long sectors = sectorRepository.count();
+        long positions = positionRepository.count();
         return new DashboardSummaryDto(total, active, sectors, positions);
     }
 
@@ -114,5 +123,144 @@ public class DashboardServiceImpl implements DashboardService {
             return new RecentMemberDto(m.getId(), fullname, m.getEmail(), m.getPosition() != null ? m.getPosition().getName() : null,
                     m.getSector() != null ? m.getSector().getName() : null, m.getJoinedDate());
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GenderDistributionDto> getGenderDistribution() {
+        List<Member> all = memberRepository.findAll();
+        Map<String, Long> grouping = all.stream()
+                .collect(Collectors.groupingBy(m -> {
+                    String gender = m.getGender();
+                    if (gender == null || gender.trim().isEmpty()) return "Unknown";
+                    return gender;
+                }, Collectors.counting()));
+
+        return grouping.entrySet().stream()
+                .map(e -> new GenderDistributionDto(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparingLong(GenderDistributionDto::getCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StatusDistributionDto> getStatusDistribution() {
+        List<Member> all = memberRepository.findAll();
+        Map<String, Long> grouping = all.stream()
+                .collect(Collectors.groupingBy(m -> {
+                    String status = m.getStatus();
+                    if (status == null || status.trim().isEmpty()) return "Unknown";
+                    return status;
+                }, Collectors.counting()));
+
+        return grouping.entrySet().stream()
+                .map(e -> new StatusDistributionDto(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparingLong(StatusDistributionDto::getCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UpcomingBirthdayDto> getUpcomingBirthdays(int days, int limit) {
+        if (days <= 0) days = 30;
+        if (limit <= 0) limit = 5;
+
+        LocalDate today = LocalDate.now();
+        int currentYear = today.getYear();
+
+        List<Member> all = memberRepository.findAll();
+
+        final int finalDays = days;
+        final int finalLimit = limit;
+
+        return all.stream()
+                .filter(m -> m.getBirthDate() != null)
+                .map(m -> {
+                    LocalDate birthDate = m.getBirthDate();
+                    // Calculate birthday this year
+                    LocalDate birthdayThisYear = birthDate.withYear(currentYear);
+
+                    // If birthday already passed this year, check next year
+                    if (birthdayThisYear.isBefore(today)) {
+                        birthdayThisYear = birthDate.withYear(currentYear + 1);
+                    }
+
+                    long daysUntil = java.time.temporal.ChronoUnit.DAYS.between(today, birthdayThisYear);
+
+                    String fullname = String.join(" ",
+                            Optional.ofNullable(m.getFirstName()).orElse(""),
+                            Optional.ofNullable(m.getLastName()).orElse("")).trim();
+
+                    return new UpcomingBirthdayDto(
+                            m.getId(),
+                            fullname,
+                            m.getBirthDate(),
+                            (int) daysUntil,
+                            m.getSector() != null ? m.getSector().getName() : null,
+                            m.getPosition() != null ? m.getPosition().getName() : null
+                    );
+                })
+                .filter(dto -> dto.getDaysUntil() >= 0 && dto.getDaysUntil() <= finalDays)
+                .sorted(Comparator.comparingInt(UpcomingBirthdayDto::getDaysUntil))
+                .limit(finalLimit)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BibleReadingProgressDto> getBibleReadingProgress(int year) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH);
+        List<BibleReadingProgressDto> result = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        // Jika year = 0 atau tidak valid, tampilkan 12 bulan terakhir
+        if (year <= 0) {
+            // 12 bulan terakhir (termasuk bulan ini)
+            for (int i = 11; i >= 0; i--) {
+                YearMonth ym = YearMonth.from(today).minusMonths(i);
+                LocalDate start = ym.atDay(1);
+                LocalDate end = ym.atEndOfMonth();
+
+                // Jika bulan ini, end = hari ini
+                if (ym.equals(YearMonth.from(today))) {
+                    end = today;
+                }
+
+                int targetDays = ym.lengthOfMonth();
+                int completedDays = 0;
+
+                try {
+                    completedDays = (int) bibleReadingRepository.countDistinctReadingDaysBetween(start, end);
+                } catch (Exception e) {
+                    // Jika error, return 0
+                }
+
+                String monthLabel = ym.format(formatter);
+                result.add(new BibleReadingProgressDto(monthLabel, targetDays, completedDays));
+            }
+        } else {
+            // Jika year spesifik, tampilkan per bulan dalam tahun tersebut
+            int currentYear = today.getYear();
+
+            for (int month = 1; month <= 12; month++) {
+                YearMonth ym = YearMonth.of(year, month);
+                LocalDate start = ym.atDay(1);
+                LocalDate end = ym.atEndOfMonth();
+
+                int targetDays = ym.lengthOfMonth();
+                int completedDays = 0;
+
+                // Hanya hitung jika bulan sudah lewat atau bulan ini
+                if (year < currentYear || (year == currentYear && month <= today.getMonthValue())) {
+                    try {
+                        completedDays = (int) bibleReadingRepository.countDistinctReadingDaysBetween(start, end);
+                    } catch (Exception e) {
+                        completedDays = 0;
+                    }
+                }
+
+                String monthLabel = ym.format(DateTimeFormatter.ofPattern("MMM", Locale.ENGLISH));
+                result.add(new BibleReadingProgressDto(monthLabel, targetDays, completedDays));
+            }
+        }
+
+        return result;
     }
 }

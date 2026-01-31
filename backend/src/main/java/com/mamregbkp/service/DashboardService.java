@@ -13,4 +13,12 @@ public interface DashboardService {
     List<MembersTrendPointDto> getMembersTrend(int months);
     List<SectorDistributionDto> getSectorDistribution();
     List<RecentMemberDto> getRecentMembers(int size);
+
+    // New features
+    List<GenderDistributionDto> getGenderDistribution();
+    List<StatusDistributionDto> getStatusDistribution();
+    List<UpcomingBirthdayDto> getUpcomingBirthdays(int days, int limit);
+
+    // Bible Reading Progress - Membaca Alkitab Mamre
+    List<BibleReadingProgressDto> getBibleReadingProgress(int year);
 }

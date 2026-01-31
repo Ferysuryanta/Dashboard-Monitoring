@@ -1,0 +1,192 @@
+<section class="page">
+    <div class="page-header">
+        <div class="title">
+            <h2>📖 Membaca Alkitab Mamre</h2>
+            <p class="desc">Catat dan pantau progres membaca Alkitab harian Anda.</p>
+        </div>
+        <div class="controls">
+            <button mat-flat-button color="primary" (click)="openAddForm()">
+                <mat-icon>add</mat-icon> Tambah Bacaan
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <mat-card class="stat-card today">
+            <mat-icon>today</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ todayCount }}</div>
+                <div class="stat-label">Hari Ini</div>
+            </div>
+        </mat-card>
+        <mat-card class="stat-card week">
+            <mat-icon>date_range</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ weekCount }}</div>
+                <div class="stat-label">Minggu Ini</div>
+            </div>
+        </mat-card>
+        <mat-card class="stat-card month">
+            <mat-icon>calendar_month</mat-icon>
+            <div class="stat-info">
+                <div class="stat-value">{{ monthCount }}</div>
+                <div class="stat-label">Bulan Ini</div>
+            </div>
+        </mat-card>
+    </div>
+
+    <!-- Form Card -->
+    <mat-card class="form-card" *ngIf="showForm">
+        <div class="form-header">
+            <h3>{{ editingId ? 'Edit Bacaan' : 'Tambah Bacaan Baru' }}</h3>
+            <button mat-icon-button (click)="cancelForm()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+        <form [formGroup]="form" (ngSubmit)="saveReading()" class="reading-form">
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-member">
+                    <mat-label>Anggota</mat-label>
+                    <mat-select formControlName="memberId" required>
+                        <mat-option *ngFor="let m of members" [value]="m.id">
+                            {{ m.firstName }} {{ m.lastName }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-date">
+                    <mat-label>Tanggal</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="readingDate" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-book">
+                    <mat-label>Kitab</mat-label>
+                    <mat-select formControlName="bookName" required>
+                        <mat-option *ngFor="let book of bibleBooks" [value]="book">
+                            {{ book }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-chapter">
+                    <mat-label>Pasal</mat-label>
+                    <input matInput type="number" formControlName="chapter" min="1">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-verse">
+                    <mat-label>Ayat Mulai</mat-label>
+                    <input matInput type="number" formControlName="verseStart" min="1">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field-verse">
+                    <mat-label>Ayat Akhir</mat-label>
+                    <input matInput type="number" formControlName="verseEnd" min="1">
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="field-notes">
+                    <mat-label>Catatan / Renungan</mat-label>
+                    <textarea matInput formControlName="notes" rows="3"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-checkbox formControlName="completed" color="primary">
+                    Sudah selesai dibaca
+                </mat-checkbox>
+            </div>
+
+            <div class="form-actions">
+                <button mat-button type="button" (click)="cancelForm()">Batal</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+                    {{ editingId ? 'Update' : 'Simpan' }}
+                </button>
+            </div>
+        </form>
+    </mat-card>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <mat-card *ngIf="loading" class="loading-card">
+            <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        </mat-card>
+
+        <mat-card class="table-card" *ngIf="!loading">
+            <table mat-table [dataSource]="readings" class="reading-table">
+                <ng-container matColumnDef="readingDate">
+                    <th mat-header-cell *matHeaderCellDef>Tanggal</th>
+                    <td mat-cell *matCellDef="let r">{{ r.readingDate | date:'dd MMM yyyy' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="memberName">
+                    <th mat-header-cell *matHeaderCellDef>Anggota</th>
+                    <td mat-cell *matCellDef="let r">
+                        <span class="member-name">{{ r.memberName || getMemberName(r.memberId) }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="bookName">
+                    <th mat-header-cell *matHeaderCellDef>Kitab</th>
+                    <td mat-cell *matCellDef="let r">
+                        <span class="book-name">{{ r.bookName }}</span>
+                        <span class="chapter-info" *ngIf="r.chapter"> pasal {{ r.chapter }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="verses">
+                    <th mat-header-cell *matHeaderCellDef>Ayat</th>
+                    <td mat-cell *matCellDef="let r">
+                        <span *ngIf="r.verseStart && r.verseEnd">{{ r.verseStart }} - {{ r.verseEnd }}</span>
+                        <span *ngIf="r.verseStart && !r.verseEnd">{{ r.verseStart }}</span>
+                        <span *ngIf="!r.verseStart">-</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="completed">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let r">
+                        <mat-chip [class.completed]="r.completed" [class.pending]="!r.completed">
+                            {{ r.completed ? '✓ Selesai' : 'Belum' }}
+                        </mat-chip>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Aksi</th>
+                    <td mat-cell *matCellDef="let r">
+                        <button mat-icon-button color="primary" matTooltip="Edit" (click)="openEditForm(r)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Hapus" (click)="deleteReading(r)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['readingDate', 'memberName', 'bookName', 'verses', 'completed', 'actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['readingDate', 'memberName', 'bookName', 'verses', 'completed', 'actions'];"></tr>
+            </table>
+
+            <div *ngIf="readings.length === 0" class="empty-state">
+                <mat-icon>menu_book</mat-icon>
+                <p>Belum ada data bacaan. Mulai catat bacaan Alkitab Anda!</p>
+            </div>
+        </mat-card>
+
+        <mat-paginator
+            [length]="totalElements"
+            [pageIndex]="pageIndex"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 20, 50]"
+            (page)="onPageChange($event)">
+        </mat-paginator>
+    </div>
+</section>

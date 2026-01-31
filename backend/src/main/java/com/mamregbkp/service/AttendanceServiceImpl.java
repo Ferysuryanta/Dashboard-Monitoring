@@ -29,11 +29,12 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceDto toDto(Attendance a) {
         AttendanceDto d = new AttendanceDto();
         d.setId(a.getId());
-        // return memberName (prefer email if present, else "First Last")
+        // return memberName as "First Last" (nama lengkap)
         Member m = a.getMember();
         if (m != null) {
-            if (m.getEmail() != null && !m.getEmail().isBlank()) d.setMemberName(m.getEmail());
-            else d.setMemberName(String.join(" ", Optional.ofNullable(m.getFirstName()).orElse(""), Optional.ofNullable(m.getLastName()).orElse("")).trim());
+            String firstName = Optional.ofNullable(m.getFirstName()).orElse("");
+            String lastName = Optional.ofNullable(m.getLastName()).orElse("");
+            d.setMemberName((firstName + " " + lastName).trim());
         }
         d.setAttendDate(a.getAttendDate());
         d.setEvent(a.getEvent());
@@ -54,10 +55,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         a.setNote(dto.getNote());
         attendanceRepository.save(a);
         dto.setId(a.getId());
-        // echo resolved memberName back to client
+        // echo resolved memberName back to client as full name
         if (m != null) {
-            dto.setMemberName(m.getEmail() != null && !m.getEmail().isBlank() ? m.getEmail()
-                    : (m.getFirstName() + (m.getLastName() != null ? " " + m.getLastName() : "")).trim());
+            String firstName = Optional.ofNullable(m.getFirstName()).orElse("");
+            String lastName = Optional.ofNullable(m.getLastName()).orElse("");
+            dto.setMemberName((firstName + " " + lastName).trim());
         }
         return dto;
     }
