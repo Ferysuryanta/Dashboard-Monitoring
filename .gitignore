@@ -105,6 +105,19 @@ Desktop.ini
 backend/src/main/resources/application-local.yml
 backend/src/main/resources/application-local.properties
 
+# Environment files with secrets
+*.env
+.env.*
+!.env.example
+
+# Secret keys and certificates
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.truststore
+
 # Database files
 *.db
 *.sqlite

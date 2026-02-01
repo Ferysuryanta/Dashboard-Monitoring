@@ -1,0 +1,53 @@
+# Production profile configuration
+# Use: --spring.profiles.active=prod
+#
+# IMPORTANT: In production, you MUST set these environment variables:
+# - DB_URL, DB_USERNAME, DB_PASSWORD
+# - JWT_SECRET (base64 encoded, minimum 256 bits)
+# - CORS_ORIGINS
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+    clean-disabled: true
+
+# Security is strictly enabled in production
+app:
+  security:
+    enabled: true
+  cors:
+    allowed-origins: ${CORS_ORIGINS}
+
+# JWT must be provided via environment variable
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 1800000   # 30 minutes for production
+  refresh-expiration: 86400000  # 1 day for production
+
+# Minimal logging for production
+logging:
+  level:
+    root: WARN
+    com.mamregbkp: INFO
+    org.springframework.security: WARN
+    AUDIT: INFO
+  file:
+    name: ${LOG_PATH:/var/log/mamre}/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Server configuration for production
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false

@@ -1,0 +1,24 @@
+# Development profile configuration
+# Use: --spring.profiles.active=dev
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mamre}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:12345}
+
+# Security is relaxed in dev mode
+app:
+  security:
+    enabled: false
+
+# JWT Secret for development only (DO NOT use in production)
+jwt:
+  secret: ZGV2ZWxvcG1lbnRTZWNyZXRLZXlGb3JUZXN0aW5nT25seU5vdEZvclByb2R1Y3Rpb25Vc2U=
+
+# Enable detailed logging for development
+logging:
+  level:
+    com.mamregbkp: DEBUG
+    org.springframework.security: DEBUG
+    AUDIT: INFO

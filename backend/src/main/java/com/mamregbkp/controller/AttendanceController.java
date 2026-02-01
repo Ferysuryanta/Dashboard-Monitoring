@@ -2,6 +2,7 @@ package com.mamregbkp.controller;
 
 import com.mamregbkp.dto.AttendanceDto;
 import com.mamregbkp.service.AttendanceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
     @PostMapping
-    public ResponseEntity<AttendanceDto> create(@RequestBody AttendanceDto dto) {
+    public ResponseEntity<AttendanceDto> create(@Valid @RequestBody AttendanceDto dto) {
         return ResponseEntity.status(201).body(attendanceService.create(dto));
     }
 
@@ -28,14 +29,14 @@ public class AttendanceController {
 
     /**
      * List attendances.
-     *
+     * <p>
      * Query params:
      * - page (int)
      * - size (int)
      * - member (optional String) : either a UUID (member id) or a name/email to search by
      * - from (optional ISO date) : yyyy-MM-dd
      * - to (optional ISO date) : yyyy-MM-dd
-     *
+     * <p>
      * Examples:
      * GET /api/attendance?page=0&size=20&member=0123e456-...      -> filter by member UUID
      * GET /api/attendance?page=0&size=20&member=Sinta%20Jeruk      -> filter by member name
@@ -58,7 +59,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AttendanceDto> update(@PathVariable Long id, @RequestBody AttendanceDto dto) {
+    public ResponseEntity<AttendanceDto> update(@PathVariable Long id, @Valid @RequestBody AttendanceDto dto) {
         return ResponseEntity.ok(attendanceService.update(id, dto));
     }
 

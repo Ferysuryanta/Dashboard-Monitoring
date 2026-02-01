@@ -1,8 +1,10 @@
 package com.mamregbkp.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,9 +33,15 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final Environment environment;
+
+    @Value("${app.security.enabled:true}")
+    private boolean securityEnabled;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -57,26 +65,46 @@ public class SecurityConfig {
                                 "img-src 'self' data: https: blob:; " +
                                 "connect-src 'self' http://localhost:4200 http://localhost:8080;"
                         ))
-                        // HTTP Strict Transport Security (HSTS) - only enable in production with HTTPS
-                        // .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
-                )
+                        // HTTP Strict Transport Security (HSTS) - enable in production
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                                .preload(true))
+                );
 
-                .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        // Configure authorization based on environment
+        if (isDevProfile || !securityEnabled) {
+            // Development mode - more permissive for testing
+            http.authorizeHttpRequests(auth -> auth
+                    // Public endpoints
+                    .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Allow all API endpoints in dev mode
+                    .requestMatchers("/api/**").permitAll()
+                    .anyRequest().permitAll()
+            );
+        } else {
+            // Production mode - strict security
+            http.authorizeHttpRequests(auth -> auth
+                    // Public endpoints - only auth
+                    .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Allow all API endpoints for now (development)
-                        // TODO: Uncomment below to enable authentication
-                        .requestMatchers("/api/**").permitAll()
+                    // Swagger should be disabled or protected in production
+                    // .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
 
-                        // Protected endpoints (uncomment for production)
-                        // .requestMatchers("/api/auth/me", "/api/auth/change-password", "/api/auth/profile").authenticated()
-                        // .requestMatchers("/api/**").authenticated()
+                    // Protected user endpoints
+                    .requestMatchers("/api/auth/me", "/api/auth/change-password", "/api/auth/profile").authenticated()
 
-                        .anyRequest().permitAll()
-                )
+                    // All other API endpoints require authentication
+                    .requestMatchers("/api/**").authenticated()
+
+                    .anyRequest().denyAll()
+            );
+        }
+
+        http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

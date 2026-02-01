@@ -1,5 +1,8 @@
 package com.mamregbkp.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,11 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @Value("${app.security.enabled:true}")
+    private boolean securityEnabled;
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, WebRequest req) {
@@ -52,6 +60,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
     public ResponseEntity<ErrorResponse> handleAuthException(Exception ex, WebRequest req) {
+        // Log the actual error for debugging but don't expose details
+        log.warn("Authentication failed: {}", ex.getMessage());
+
         ErrorResponse e = new ErrorResponse();
         e.setMessage("Username atau password salah");
         e.setPath(req.getDescription(false));
@@ -80,8 +91,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, WebRequest req) {
+        // Always log the full error for debugging
+        log.error("Unhandled exception occurred", ex);
+
         ErrorResponse e = new ErrorResponse();
-        e.setMessage("Internal server error: " + ex.getMessage());
+
+        // In production mode, don't expose internal error details
+        if (securityEnabled) {
+            e.setMessage("Terjadi kesalahan pada server. Silakan coba lagi nanti.");
+        } else {
+            // In dev mode, show more details
+            e.setMessage("Internal server error: " + ex.getMessage());
+        }
+
         e.setPath(req.getDescription(false));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
     }

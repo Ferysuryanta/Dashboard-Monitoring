@@ -4,11 +4,13 @@ package com.mamregbkp.config;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * CORS Filter - handles cross-origin requests at the earliest stage.
@@ -17,6 +19,16 @@ import java.io.IOException;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
+
+    // Whitelist of allowed origins - only specific trusted origins
+    private static final Set<String> ALLOWED_ORIGINS = Set.of(
+            "http://localhost:4200",
+            "http://127.0.0.1:4200",
+            "http://localhost:3000"
+    );
+
+    @Value("${app.cors.allowed-origins:}")
+    private String additionalOrigins;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -27,18 +39,15 @@ public class CorsFilter implements Filter {
 
         String origin = request.getHeader("Origin");
 
-        // Allow localhost origins for development
-        if (origin != null && (origin.contains("localhost") || origin.contains("127.0.0.1"))) {
+        // Check if origin is in whitelist
+        if (origin != null && isAllowedOrigin(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
-        } else {
-            response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With, Origin");
+            response.setHeader("Access-Control-Expose-Headers", "Location, Content-Disposition");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Max-Age", "3600");
         }
-
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With, Origin");
-        response.setHeader("Access-Control-Expose-Headers", "Location, Content-Disposition");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Max-Age", "3600");
 
         // Handle preflight OPTIONS request
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
@@ -47,5 +56,24 @@ public class CorsFilter implements Filter {
         }
 
         chain.doFilter(req, res);
+    }
+
+    private boolean isAllowedOrigin(String origin) {
+        // Check static whitelist
+        if (ALLOWED_ORIGINS.contains(origin)) {
+            return true;
+        }
+
+        // Check additional origins from configuration
+        if (additionalOrigins != null && !additionalOrigins.isBlank()) {
+            String[] configOrigins = additionalOrigins.split(",");
+            for (String configOrigin : configOrigins) {
+                if (configOrigin.trim().equals(origin)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
