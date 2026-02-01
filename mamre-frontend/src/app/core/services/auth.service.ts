@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, delay, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { SecureStorageService } from './secure-storage.service';
 
 export interface User {
     id: string;
@@ -66,6 +67,10 @@ export class AuthService {
     private readonly USER_KEY = 'mamre_user';
     private readonly API_URL = environment.apiUrl || '/api';
 
+    // Token expiry times
+    private readonly SESSION_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes for session
+    private readonly REMEMBER_ME_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days for remember me
+
     private currentUserSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -74,14 +79,22 @@ export class AuthService {
 
     constructor(
         private http: HttpClient,
-        private router: Router
+        private router: Router,
+        private secureStorage: SecureStorageService
     ) {
         this.loadStoredUser();
     }
 
     private loadStoredUser(): void {
-        const token = localStorage.getItem(this.TOKEN_KEY);
-        const userJson = localStorage.getItem(this.USER_KEY);
+        // Try session storage first (more secure), then persistent storage (remember me)
+        let token = this.secureStorage.getItem(this.TOKEN_KEY);
+        let userJson = this.secureStorage.getItem(this.USER_KEY);
+
+        // If not in session, check persistent storage (remember me)
+        if (!token) {
+            token = this.secureStorage.getItemPersistent(this.TOKEN_KEY);
+            userJson = this.secureStorage.getItemPersistent(this.USER_KEY);
+        }
 
         if (token && userJson) {
             try {
@@ -103,7 +116,9 @@ export class AuthService {
     }
 
     get token(): string | null {
-        return localStorage.getItem(this.TOKEN_KEY);
+        // Try session storage first, then persistent
+        return this.secureStorage.getItem(this.TOKEN_KEY)
+            || this.secureStorage.getItemPersistent(this.TOKEN_KEY);
     }
 
     /**
@@ -127,11 +142,20 @@ export class AuthService {
     }
 
     private handleLoginSuccess(response: LoginResponse, rememberMe?: boolean): void {
-        localStorage.setItem(this.TOKEN_KEY, response.token);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+        const userJson = JSON.stringify(response.user);
 
-        if (rememberMe && response.refreshToken) {
-            localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
+        if (rememberMe) {
+            // Use persistent storage with longer expiry for "remember me"
+            this.secureStorage.setItemPersistent(this.TOKEN_KEY, response.token, this.REMEMBER_ME_EXPIRY_MS);
+            this.secureStorage.setItemPersistent(this.USER_KEY, userJson, this.REMEMBER_ME_EXPIRY_MS);
+
+            if (response.refreshToken) {
+                this.secureStorage.setItemPersistent(this.REFRESH_TOKEN_KEY, response.refreshToken, this.REMEMBER_ME_EXPIRY_MS);
+            }
+        } else {
+            // Use session storage (cleared when browser closes) with short expiry
+            this.secureStorage.setItem(this.TOKEN_KEY, response.token, this.SESSION_EXPIRY_MS);
+            this.secureStorage.setItem(this.USER_KEY, userJson, this.SESSION_EXPIRY_MS);
         }
 
         this.currentUserSubject.next(response.user);
@@ -157,9 +181,13 @@ export class AuthService {
     }
 
     private clearStorage(): void {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-        localStorage.removeItem(this.USER_KEY);
+        // Clear both session and persistent storage
+        this.secureStorage.removeItem(this.TOKEN_KEY);
+        this.secureStorage.removeItem(this.REFRESH_TOKEN_KEY);
+        this.secureStorage.removeItem(this.USER_KEY);
+        this.secureStorage.removeItemPersistent(this.TOKEN_KEY);
+        this.secureStorage.removeItemPersistent(this.REFRESH_TOKEN_KEY);
+        this.secureStorage.removeItemPersistent(this.USER_KEY);
     }
 
     /**
@@ -168,7 +196,10 @@ export class AuthService {
     updateProfile(updates: Partial<User>): Observable<User> {
         return this.http.put<User>(`${this.API_URL}/auth/profile`, updates).pipe(
             tap(user => {
-                localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+                const userJson = JSON.stringify(user);
+                // Update in both storages (one will be active)
+                this.secureStorage.setItem(this.USER_KEY, userJson, this.SESSION_EXPIRY_MS);
+                this.secureStorage.setItemPersistent(this.USER_KEY, userJson, this.REMEMBER_ME_EXPIRY_MS);
                 this.currentUserSubject.next(user);
             }),
             catchError(this.handleError)
@@ -190,7 +221,8 @@ export class AuthService {
     getCurrentUserFromApi(): Observable<User> {
         return this.http.get<User>(`${this.API_URL}/auth/me`).pipe(
             tap(user => {
-                localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+                const userJson = JSON.stringify(user);
+                this.secureStorage.setItem(this.USER_KEY, userJson, this.SESSION_EXPIRY_MS);
                 this.currentUserSubject.next(user);
             }),
             catchError(this.handleError)
@@ -213,7 +245,8 @@ export class AuthService {
             delay(300),
             tap(prefs => {
                 const updatedUser = { ...currentUser, preferences: prefs };
-                localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+                const userJson = JSON.stringify(updatedUser);
+                this.secureStorage.setItem(this.USER_KEY, userJson, this.SESSION_EXPIRY_MS);
                 this.currentUserSubject.next(updatedUser);
             })
         );
