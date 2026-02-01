@@ -89,6 +89,8 @@ public class SecurityConfig {
             http.authorizeHttpRequests(auth -> auth
                     // Public endpoints - only auth
                     .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                    // Public dashboard stats for login page
+                    .requestMatchers("/api/dashboard/summary-stats").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                     // Swagger should be disabled or protected in production

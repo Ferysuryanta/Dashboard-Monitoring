@@ -11,6 +11,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 .mat-typography { font-family: 'Inter', Roboto, Arial, sans-serif; }
 
 /* Prevent double scrollbar on mat-sidenav-content */

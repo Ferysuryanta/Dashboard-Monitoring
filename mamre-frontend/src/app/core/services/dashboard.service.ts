@@ -52,6 +52,7 @@ export class DashboardService {
 
     constructor(private http: HttpClient) {}
 
+
     getSummary(): Observable<DashboardSummary> {
         return this.http.get<DashboardSummary>(`${this.base}/summary-stats`).pipe(
             catchError(err => { console.error('dashboard.getSummary', err); return of({ totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 }); })

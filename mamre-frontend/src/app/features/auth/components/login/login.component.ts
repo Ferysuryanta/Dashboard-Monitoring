@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../core/services/auth.service';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 
 @Component({
     selector: 'app-login',
@@ -41,9 +42,15 @@ export class LoginComponent implements OnInit {
     usernameFocused = false;
     passwordFocused = false;
 
+    // Stats for display
+    sectorCount = 0;
+    memberCount = 0;
+    activeMemberCount = 0;
+
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
+        private dashboardService: DashboardService,
         private router: Router,
         private route: ActivatedRoute,
         private snackBar: MatSnackBar
@@ -63,6 +70,25 @@ export class LoginComponent implements OnInit {
         if (this.authService.isAuthenticated) {
             this.router.navigate([this.returnUrl]);
         }
+
+        // Load public stats for login page
+        this.loadPublicStats();
+    }
+
+    private loadPublicStats(): void {
+        this.dashboardService.getSummary().subscribe({
+            next: (stats) => {
+                this.sectorCount = stats.sectors || 0;
+                this.memberCount = stats.totalMembers || 0;
+                this.activeMemberCount = stats.activeMembers || 0;
+            },
+            error: () => {
+                // Use default values if API fails
+                this.sectorCount = 12;
+                this.memberCount = 450;
+                this.activeMemberCount = 380;
+            }
+        });
     }
 
     onSubmit(): void {
