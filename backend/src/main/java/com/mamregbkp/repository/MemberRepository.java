@@ -14,6 +14,7 @@ import java.util.UUID;
 public interface MemberRepository extends JpaRepository<Member, UUID>, JpaSpecificationExecutor<Member> {
     Page<Member> findByStatus(String status, Pageable pageable);
     Page<Member> findBySectorId(Long sectorId, Pageable pageable);
+    List<Member> findBySectorId(Long sectorId);
     long countBySectorId(Long sectorId);
     Page<Member> findByStatusIgnoreCase(String status, Pageable pageable);
 

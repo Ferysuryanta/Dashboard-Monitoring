@@ -2,19 +2,23 @@ package com.mamregbkp.service;
 
 import com.mamregbkp.dto.SectorDto;
 import com.mamregbkp.model.Sector;
+import com.mamregbkp.repository.MemberRepository;
 import com.mamregbkp.repository.SectorRepository;
 import com.mamregbkp.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SectorServiceImpl implements SectorService {
 
     @Autowired
     private SectorRepository sectorRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     private SectorDto toDto(Sector s) {
         SectorDto d = new SectorDto();
@@ -49,7 +53,19 @@ public class SectorServiceImpl implements SectorService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
+        // Check if sector exists
+        if (!sectorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Sector not found: " + id);
+        }
+
+        // Remove sector reference from all members using this sector
+        memberRepository.findBySectorId(id).forEach(m -> {
+            m.setSector(null);
+            memberRepository.save(m);
+        });
+
         sectorRepository.deleteById(id);
     }
 

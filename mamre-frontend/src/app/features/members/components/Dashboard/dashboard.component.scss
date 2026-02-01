@@ -88,43 +88,130 @@ mat-divider {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
-  padding-top: 20px;
+  padding: 30px 35px;
+  background: linear-gradient(135deg, rgba(106, 90, 249, 0.08) 0%, rgba(176, 107, 245, 0.08) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(106, 90, 249, 0.1);
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .greeting-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6a5af9;
+    letter-spacing: 0.5px;
+  }
 
   h1 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 800;
     color: #2c3e50;
     letter-spacing: -0.5px;
-    span { color: #6a5af9; }
+    margin: 0;
+    span {
+      color: #6a5af9;
+      background: linear-gradient(135deg, #6a5af9, #b06bf5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .header-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6a5af9;
+    }
   }
 
   .top-actions {
     display: flex;
     gap: 12px;
 
-    button {
-      height: 50px;
-      padding: 0 28px;
-      font-size: 16px;
+    .action-btn {
+      height: 48px;
+      padding: 0 24px;
+      font-size: 15px;
       font-weight: 600;
       border-radius: 12px;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
-      &.mat-stroked-button {
-        border: 2px solid #dcdcdc;
-        color: #555;
-        background-color: rgba(255, 255, 255, 0.7);
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.primary {
+        background: linear-gradient(135deg, #6a5af9, #8b7cf7);
+        color: white;
         &:hover {
-          border-color: #6a5af9;
-          color: #6a5af9;
-          background-color: rgba(106, 90, 249, 0.1);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(106, 90, 249, 0.4);
+        }
+      }
+
+      &.secondary {
+        background: linear-gradient(135deg, #20c997, #38d9a9);
+        color: white;
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(32, 201, 151, 0.4);
+        }
+      }
+
+      &.tertiary {
+        background: linear-gradient(135deg, #fd7e14, #ffa94d);
+        color: white;
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(253, 126, 20, 0.4);
         }
       }
     }
-    mat-icon { margin-right: 10px; font-size: 22px; }
+  }
+
+  // Responsive
+  @media (max-width: 992px) {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+
+    .header-left {
+      align-items: center;
+    }
+
+    .header-date {
+      justify-content: center;
+    }
+
+    .top-actions {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
   }
 }
+
 
 /* --- Summary Grid (5 Cards) --- */
 .summary-grid {
@@ -205,10 +292,26 @@ mat-divider {
     min-height: 480px;
     display: flex;
     flex-direction: column;
+
+    // Khusus untuk chart pertama (bar chart persentase baca)
+    &:first-child {
+      .chart-area {
+        padding-left: 0;
+
+        canvas {
+          // Tidak menggunakan position absolute untuk bar chart horizontal
+          position: relative !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+      }
+    }
   }
+
   .chart-area {
     flex-grow: 1;
     height: 100%;
+    min-height: 350px;
     position: relative;
     /* Memastikan canvas mengisi area */
     canvas {

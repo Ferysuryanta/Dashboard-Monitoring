@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json",
+    "start": "node --no-deprecation node_modules/@angular/cli/bin/ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint"

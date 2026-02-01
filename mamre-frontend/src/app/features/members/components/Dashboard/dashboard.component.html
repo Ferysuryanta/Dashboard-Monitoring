@@ -1,15 +1,22 @@
 <div class="dashboard-root">
     <div class="header-section">
-        <h1>Welcome to <span>Dashboard Mamre GBKP</span></h1>
+        <div class="header-left">
+            <div class="greeting-text">{{ getGreeting() }} 👋</div>
+            <h1>Dashboard <span>Mamre GBKP</span></h1>
+            <div class="header-date">
+                <mat-icon>calendar_today</mat-icon>
+                {{ today | date:'EEEE, dd MMMM yyyy' }}
+            </div>
+        </div>
         <div class="top-actions">
-            <button mat-stroked-button (click)="goMembers()">
-                <mat-icon>people</mat-icon> Members
+            <button mat-flat-button class="action-btn primary" (click)="goMembers()">
+                <mat-icon>people</mat-icon> Anggota
             </button>
-            <button mat-stroked-button (click)="goSectors()">
-                <mat-icon>account_tree</mat-icon> Sectors
+            <button mat-flat-button class="action-btn secondary" (click)="goSectors()">
+                <mat-icon>account_tree</mat-icon> Sektor
             </button>
-            <button mat-stroked-button (click)="goPositions()">
-                <mat-icon>work</mat-icon> Positions
+            <button mat-flat-button class="action-btn tertiary" (click)="goPositions()">
+                <mat-icon>work</mat-icon> Jabatan
             </button>
         </div>
     </div>
@@ -42,7 +49,7 @@
 
             <mat-card class="stat-card">
                 <div class="stat-left">
-                    <div class="stat-label">Sectors</div>
+                    <div class="stat-label">Sektor</div>
                     <div class="stat-value">{{ summary.sectors }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay sectors">account_tree</mat-icon>
@@ -51,7 +58,7 @@
 
             <mat-card class="stat-card">
                 <div class="stat-left">
-                    <div class="stat-label">Positions</div>
+                    <div class="stat-label">Jabatan</div>
                     <div class="stat-value">{{ summary.positions }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay positions">work</mat-icon>
@@ -77,12 +84,12 @@
                     </button>
                 </div>
                 <div class="chart-area">
-                    <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType"></canvas>
+                    <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card">
-                <div class="card-title">Sector</div>
+                <div class="card-title">Distribusi Sektor</div>
                 <div class="chart-area">
                     <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
                 </div>
@@ -90,7 +97,7 @@
 
             <mat-card class="chart-card" *ngIf="attendanceSummary && summary.totalMembers > 0">
                 <div class="card-header">
-                    <div class="card-title">Attendance({{ attendanceSummary.month }})</div>
+                    <div class="card-title">Kehadiran ({{ attendanceSummary.month }})</div>
                     <button mat-icon-button matTooltip="Kelola Kehadiran" routerLink="/attendance" class="chart-action-btn">
                         <mat-icon>open_in_new</mat-icon>
                     </button>
@@ -110,14 +117,14 @@
         <!-- Row 2: Gender & Status Distribution -->
         <div class="charts-row-secondary">
             <mat-card class="chart-card-small">
-                <div class="card-title">Gender Distribution</div>
+                <div class="card-title">Distribusi Gender</div>
                 <div class="chart-area-small">
                     <canvas baseChart [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card-small">
-                <div class="card-title">Status Distribution</div>
+                <div class="card-title">Distribusi Status</div>
                 <div class="chart-area-small">
                     <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
                 </div>
@@ -126,7 +133,7 @@
             <mat-card class="birthday-card">
                 <div class="card-title">
                     <mat-icon class="title-icon">cake</mat-icon>
-                    Upcoming Birthdays
+                    Ulang Tahun Mendatang
                 </div>
                 <mat-divider></mat-divider>
                 <div class="birthday-list" *ngIf="upcomingBirthdays.length > 0">
@@ -135,7 +142,8 @@
                         <div class="birthday-info">
                             <div class="birthday-name">{{ b.name }}</div>
                             <div class="birthday-meta">
-                                {{ b.birthDate | date:'dd MMM' }} • {{ b.sectorName || 'No Sector' }}
+
+                               {{ b.birthDate | date:'dd MMM' }} • {{ b.sectorName || 'Tanpa Sektor' }}
                             </div>
                         </div>
                         <div class="birthday-badge">
@@ -145,21 +153,21 @@
                 </div>
                 <div *ngIf="upcomingBirthdays.length === 0" class="placeholder-text">
                     <mat-icon>event_busy</mat-icon>
-                    <p>Tidak ada ulang tahun dalam 30 hari ke depan.</p>
+                    <p>Tidak ada ulang tahun dalam 30 hari ke depan</p>
                 </div>
             </mat-card>
         </div>
 
         <div class="recent-row">
             <mat-card class="recent-card">
-                <div class="card-title">Recent members</div>
+                <div class="card-title">Anggota Terbaru</div>
                 <mat-divider></mat-divider>
                 <mat-list>
                     <mat-list-item *ngFor="let r of recent">
                         <div matListItemAvatar class="avatar-large">{{ r.name?.[0] || '?' }}</div>
                         <div matListItemLine class="member-info">
                             <div class="member-name">{{ r.name }}</div>
-                            <div class="member-meta">{{ r.position }} • {{ r.sector }} • {{ r.joinedDate | date:'mediumDate' }}</div>
+                            <div class="member-meta">{{ r.sector || 'Tanpa Sektor' }} • Bergabung {{ r.joinedDate | date:'dd MMM yyyy' }}</div>
                         </div>
                         <button mat-icon-button matTooltip="Edit" (click)="router.navigateByUrl('/members/' + r.id + '/edit')">
                             <mat-icon>edit</mat-icon>
@@ -172,21 +180,21 @@
             </mat-card>
 
             <mat-card class="activity-card">
-                <div class="card-title">Quick stats</div>
+                <div class="card-title">Statistik Ringkas</div>
                 <mat-divider></mat-divider>
                 <div class="quick-grid">
-                    <div class="q-item"><div class="q-value">{{ summary.totalMembers }}</div><div class="q-label">Total members</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.activeMembers }}</div><div class="q-label">Active</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.sectors }}</div><div class="q-label">Sectors</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.positions }}</div><div class="q-label">Positions</div></div>
+                    <div class="q-item"><div class="q-value">{{ summary.totalMembers }}</div><div class="q-label">Total Anggota</div></div>
+                    <div class="q-item"><div class="q-value">{{ summary.activeMembers }}</div><div class="q-label">Anggota Aktif</div></div>
+                    <div class="q-item"><div class="q-value">{{ summary.sectors }}</div><div class="q-label">Jumlah Sektor</div></div>
+                    <div class="q-item"><div class="q-value">{{ summary.positions }}</div><div class="q-label">Jumlah Jabatan</div></div>
 
                     <div class="q-item" *ngIf="attendanceSummary">
                         <div class="q-value">{{ attendanceSummary.uniqueMembers | number }}</div>
-                        <div class="q-label">Anggota Hadir (Unik)</div>
+                        <div class="q-label">Anggota Hadir</div>
                     </div>
                     <div class="q-item" *ngIf="attendanceSummary">
                         <div class="q-value">{{ attendanceSummary.totalAttendances | number }}</div>
-                        <div class="q-label">Total Kehadiran ({{ attendanceSummary.month }})</div>
+                        <div class="q-label">Kehadiran ({{ attendanceSummary.month }})</div>
                     </div>
                 </div>
             </mat-card>

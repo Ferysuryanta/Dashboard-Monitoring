@@ -1,5 +1,6 @@
 package com.mamregbkp.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,6 +56,26 @@ public class GlobalExceptionHandler {
         e.setMessage("Username atau password salah");
         e.setPath(req.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest req) {
+        ErrorResponse e = new ErrorResponse();
+        String message = "Operasi tidak dapat dilakukan karena data masih terhubung dengan data lain";
+
+        // Check for specific constraint violations
+        String exMessage = ex.getMostSpecificCause().getMessage();
+        if (exMessage != null) {
+            if (exMessage.contains("foreign key") || exMessage.contains("fk_")) {
+                message = "Tidak dapat menghapus data karena masih digunakan oleh data lain";
+            } else if (exMessage.contains("unique") || exMessage.contains("duplicate")) {
+                message = "Data dengan nilai tersebut sudah ada";
+            }
+        }
+
+        e.setMessage(message);
+        e.setPath(req.getDescription(false));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
     }
 
     @ExceptionHandler(Exception.class)

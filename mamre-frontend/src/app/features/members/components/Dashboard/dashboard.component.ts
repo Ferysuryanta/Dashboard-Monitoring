@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit {
     protected router = inject(Router);
 
     loading = true;
+    today = new Date();
     summary = { totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 };
     recent: any[] = [];
     trendLabels: string[] = [];
@@ -75,6 +76,14 @@ export class DashboardComponent implements OnInit {
     bibleReadingData: BibleReadingProgress[] = [];
     sectorBibleReadingData: SectorBibleReadingReport[] = [];
 
+    // Method untuk greeting berdasarkan waktu
+    getGreeting(): string {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 11) return 'Selamat Pagi';
+        if (hour >= 11 && hour < 15) return 'Selamat Siang';
+        if (hour >= 15 && hour < 18) return 'Selamat Sore';
+        return 'Selamat Malam';
+    }
 
     // --- CHART CONFIGS ---
 
@@ -84,6 +93,14 @@ export class DashboardComponent implements OnInit {
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: 'y', // Horizontal bar chart
+        layout: {
+            padding: {
+                left: 0,
+                right: 10,
+                top: 10,
+                bottom: 10
+            }
+        },
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -118,22 +135,51 @@ export class DashboardComponent implements OnInit {
                 ticks: {
                     color: '#666',
                     font: { family: 'Poppins' },
-                    stepSize: 20,
+                    stepSize: 25,
                     callback: (value: any) => value + '%'
-                },
-                title: {
-                    display: true,
-                    text: 'Persentase Baca (%)',
-                    color: '#666',
-                    font: { family: 'Poppins', weight: 'bold' }
                 }
             },
             y: {
                 grid: { display: false },
-                ticks: { color: '#666', font: { family: 'Poppins' } }
+                afterFit: (scaleInstance: any) => {
+                    scaleInstance.width = 100; // Fixed width untuk label sektor
+                },
+                ticks: {
+                    color: '#333',
+                    font: { family: 'Poppins', weight: 'bold', size: 13 },
+                    padding: 10,
+                    autoSkip: false,
+                    mirror: false
+                }
             }
         }
     };
+
+    // Plugin untuk menampilkan nilai di dalam bar
+    public barChartPlugins = [{
+        id: 'barValueLabels',
+        afterDatasetsDraw(chart: Chart) {
+            const ctx = chart.ctx;
+            chart.data.datasets.forEach((dataset, i) => {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach((bar: any, index: number) => {
+                    const value = dataset.data[index] as number;
+                    if (value > 0) {
+                        ctx.save();
+                        ctx.fillStyle = value > 50 ? '#fff' : '#333';
+                        ctx.font = 'bold 12px Poppins';
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        const x = bar.x - 35;
+                        const y = bar.y;
+                        ctx.fillText(`${value.toFixed(0)}%`, x > 20 ? x : bar.x + 5, y);
+                        ctx.restore();
+                    }
+                });
+            });
+        }
+    }];
+
     public lineChartData: ChartConfiguration<'bar'>['data'] = {
         datasets: [
             {
