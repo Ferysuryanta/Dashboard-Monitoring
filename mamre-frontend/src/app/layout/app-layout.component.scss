@@ -369,9 +369,87 @@ mat-nav-list {
 }
 
 /* responsive: collapse sidebar on small screens */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .app-sidenav {
     position: absolute;
-    z-index: 50;
+    z-index: 100;
   }
 }
+
+@media (max-width: 768px) {
+  .app-sidenav {
+    width: 260px;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  // Backdrop for mobile
+  ::ng-deep .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .app-header {
+    height: 56px;
+    padding: 0 12px;
+
+    .title {
+      font-size: 16px;
+    }
+  }
+
+  .left-group {
+    gap: 8px;
+  }
+
+  .right-group {
+    gap: 4px;
+
+    .avatar-small {
+      width: 34px;
+      height: 34px;
+      font-size: 12px;
+    }
+  }
+
+  .content {
+    min-height: calc(100vh - 56px);
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    height: 52px;
+    padding: 0 8px;
+
+    .title {
+      font-size: 14px;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .right-group {
+    .avatar-small {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+  }
+
+  .content {
+    min-height: calc(100vh - 52px);
+  }
+
+  ::ng-deep .profile-menu {
+    min-width: 260px !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  ::ng-deep .notification-menu {
+    min-width: 280px !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+}
+

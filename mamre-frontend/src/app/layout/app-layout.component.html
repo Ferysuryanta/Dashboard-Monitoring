@@ -1,5 +1,5 @@
 <mat-sidenav-container class="layout-shell">
-    <mat-sidenav #sidenav mode="side" class="app-sidenav" [opened]="isSidenavOpen">
+    <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" class="app-sidenav" [opened]="isSidenavOpen">
         <div class="sidenav-header">
             <div class="brand">
                 <div class="brand-avatar">M</div>
@@ -11,12 +11,12 @@
 
         <mat-nav-list>
             <!-- Main -->
-            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+            <a mat-list-item routerLink="/app/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onNavItemClick()">
                 <mat-icon>dashboard</mat-icon>
                 <span *ngIf="isSidenavOpen">Dashboard</span>
             </a>
 
-            <a mat-list-item routerLink="/members" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/members" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>groups</mat-icon>
                 <span *ngIf="isSidenavOpen">Members</span>
             </a>
@@ -25,12 +25,12 @@
             <div class="nav-section-label" *ngIf="isSidenavOpen">Attendance</div>
             <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
 
-            <a mat-list-item routerLink="/attendance" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/attendance" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>event_available</mat-icon>
                 <span *ngIf="isSidenavOpen">Attendance</span>
             </a>
 
-            <a mat-list-item routerLink="/attendance-report" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/attendance-report" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>bar_chart</mat-icon>
                 <span *ngIf="isSidenavOpen">Attendance Report</span>
             </a>
@@ -39,12 +39,12 @@
             <div class="nav-section-label" *ngIf="isSidenavOpen">Bible Reading</div>
             <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
 
-            <a mat-list-item routerLink="/bible-reading" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/bible-reading" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>menu_book</mat-icon>
                 <span *ngIf="isSidenavOpen">Bible Reading</span>
             </a>
 
-            <a mat-list-item routerLink="/bible-reading-report" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/bible-reading-report" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>assessment</mat-icon>
                 <span *ngIf="isSidenavOpen">Reading Report</span>
             </a>
@@ -53,12 +53,12 @@
             <div class="nav-section-label" *ngIf="isSidenavOpen">Settings</div>
             <mat-divider *ngIf="!isSidenavOpen"></mat-divider>
 
-            <a mat-list-item routerLink="/sectors" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/sectors" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>location_on</mat-icon>
                 <span *ngIf="isSidenavOpen">Sectors</span>
             </a>
 
-            <a mat-list-item routerLink="/positions" routerLinkActive="active-link">
+            <a mat-list-item routerLink="/app/positions" routerLinkActive="active-link" (click)="onNavItemClick()">
                 <mat-icon>badge</mat-icon>
                 <span *ngIf="isSidenavOpen">Positions</span>
             </a>
@@ -124,15 +124,15 @@
                         </div>
                     </div>
                     <mat-divider></mat-divider>
-                    <button mat-menu-item routerLink="/profile">
+                    <button mat-menu-item routerLink="/app/profile">
                         <mat-icon>person</mat-icon>
                         <span>My Profile</span>
                     </button>
-                    <button mat-menu-item routerLink="/settings">
+                    <button mat-menu-item routerLink="/app/settings">
                         <mat-icon>settings</mat-icon>
                         <span>Settings</span>
                     </button>
-                    <button mat-menu-item routerLink="/activity-log">
+                    <button mat-menu-item routerLink="/app/activity-log">
                         <mat-icon>history</mat-icon>
                         <span>Activity Log</span>
                     </button>

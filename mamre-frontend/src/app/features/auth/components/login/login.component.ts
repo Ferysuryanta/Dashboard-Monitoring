@@ -35,7 +35,11 @@ export class LoginComponent implements OnInit {
     loginForm!: FormGroup;
     isLoading = false;
     hidePassword = true;
-    returnUrl = '/dashboard';
+    returnUrl = '/app/dashboard';
+
+    // Focus states for custom inputs
+    usernameFocused = false;
+    passwordFocused = false;
 
     constructor(
         private fb: FormBuilder,
@@ -53,7 +57,7 @@ export class LoginComponent implements OnInit {
         });
 
         // Get return URL from route parameters or default to dashboard
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/app/dashboard';
 
         // If already authenticated, redirect
         if (this.authService.isAuthenticated) {

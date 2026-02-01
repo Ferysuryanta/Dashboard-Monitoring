@@ -1,214 +1,802 @@
-.login-container {
+// ========================================
+// MAMRE LOGIN - PROFESSIONAL MODERN
+// ========================================
+
+// Color System
+$primary: #4f46e5;
+$primary-light: #6366f1;
+$primary-dark: #4338ca;
+$accent: #7c3aed;
+$text-dark: #111827;
+$text-base: #374151;
+$text-muted: #6b7280;
+$text-light: #9ca3af;
+$white: #ffffff;
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$error: #dc2626;
+$success: #059669;
+
+// Breakpoints
+$breakpoint-xl: 1400px;
+$breakpoint-lg: 1200px;
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ========================================
+// PAGE LAYOUT
+// ========================================
+.login-page {
+    display: flex;
     min-height: 100vh;
+    width: 100%;
+
+    @media (max-width: $breakpoint-md) {
+        flex-direction: column;
+    }
+}
+
+// ========================================
+// BRANDING PANEL (LEFT)
+// ========================================
+.branding-panel {
+    flex: 0 0 50%;
+    max-width: 50%;
+    background: linear-gradient(145deg, $primary 0%, $accent 100%);
+    padding: 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    padding: 24px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
+    min-height: 100vh;
 
-// Animated background shapes
-.login-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-}
-
-.bg-shape {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.1;
-    background: white;
-}
-
-.shape-1 {
-    width: 400px;
-    height: 400px;
-    top: -100px;
-    left: -100px;
-    animation: float 8s ease-in-out infinite;
-}
-
-.shape-2 {
-    width: 300px;
-    height: 300px;
-    bottom: -50px;
-    right: -50px;
-    animation: float 6s ease-in-out infinite reverse;
-}
-
-.shape-3 {
-    width: 200px;
-    height: 200px;
-    top: 50%;
-    right: 10%;
-    animation: float 10s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
+    @media (max-width: $breakpoint-xl) {
+        flex: 0 0 48%;
+        max-width: 48%;
+        padding: 32px;
     }
-    50% {
-        transform: translateY(-20px) rotate(5deg);
+
+    @media (max-width: $breakpoint-lg) {
+        flex: 0 0 45%;
+        max-width: 45%;
+        padding: 28px;
+    }
+
+    @media (max-width: $breakpoint-md) {
+        display: none;
     }
 }
 
-// Login Card
-.login-card {
-    width: 100%;
-    max-width: 420px;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+.branding-content {
     position: relative;
-    z-index: 1;
-    background: white;
+    z-index: 2;
+    max-width: 480px;
+    width: 100%;
+}
 
-    @media (max-width: 480px) {
-        padding: 32px 24px;
-        margin: 0 16px;
+// Logo
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+
+    @media (max-width: $breakpoint-lg) {
+        margin-bottom: 28px;
     }
 }
 
-.login-header {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.brand-logo {
+.logo-box {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 8px;
+    font-size: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
 
-    .logo-avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 24px;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    @media (max-width: $breakpoint-lg) {
+        width: 46px;
+        height: 46px;
+        font-size: 22px;
     }
+}
 
+.logo-text {
     h1 {
         margin: 0;
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 700;
-        color: #1e293b;
-        letter-spacing: -0.5px;
+        color: $white;
+        line-height: 1.2;
+
+        @media (max-width: $breakpoint-lg) {
+            font-size: 22px;
+        }
+    }
+
+    span {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
     }
 }
 
-.login-subtitle {
-    margin: 0;
-    color: #64748b;
-    font-size: 15px;
-}
+// Hero Section
+.hero-section {
+    margin-bottom: 32px;
 
-// Form styling
-.full-width {
-    width: 100%;
-    margin-bottom: 8px;
-}
+    @media (max-width: $breakpoint-lg) {
+        margin-bottom: 24px;
+    }
 
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    margin-top: 8px;
+    h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: $white;
+        line-height: 1.25;
+        margin: 0 0 14px;
 
-    .forgot-link {
-        color: #6366f1;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
+        @media (max-width: $breakpoint-xl) {
+            font-size: 28px;
+        }
 
-        &:hover {
-            text-decoration: underline;
+        @media (max-width: $breakpoint-lg) {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    }
+
+    p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.6;
+        margin: 0;
+
+        @media (max-width: $breakpoint-lg) {
+            font-size: 14px;
         }
     }
 }
 
-.login-button {
-    width: 100%;
-    height: 48px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+// Feature Cards
+.feature-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+
+    @media (max-width: $breakpoint-lg) {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+}
+
+.feature-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: all 0.3s ease;
+
+    @media (max-width: $breakpoint-lg) {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateX(6px);
+    }
+
+    .feature-icon {
+        font-size: 24px;
+        min-width: 32px;
+
+        @media (max-width: $breakpoint-lg) {
+            font-size: 20px;
+            min-width: 28px;
+        }
+    }
+
+    .feature-info {
+        h4 {
+            margin: 0 0 2px;
+            font-size: 14px;
+            font-weight: 600;
+            color: $white;
+
+            @media (max-width: $breakpoint-lg) {
+                font-size: 13px;
+            }
+        }
+
+        p {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+
+            @media (max-width: $breakpoint-lg) {
+                font-size: 11px;
+            }
+        }
+    }
+}
+
+// Stats Row
+.stats-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    @media (max-width: $breakpoint-lg) {
+        padding: 16px;
+        gap: 12px;
+    }
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+
+    .stat-number {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        color: $white;
+        line-height: 1.2;
+
+        @media (max-width: $breakpoint-lg) {
+            font-size: 20px;
+        }
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.75);
+
+        @media (max-width: $breakpoint-lg) {
+            font-size: 11px;
+        }
+    }
+}
+
+.stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+
+    @media (max-width: $breakpoint-lg) {
+        height: 30px;
+    }
+}
+
+// Decorative Circles
+.decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+
+    &.circle-1 {
+        width: 400px;
+        height: 400px;
+        top: -120px;
+        right: -120px;
+
+        @media (max-width: $breakpoint-lg) {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+    }
+
+    &.circle-2 {
+        width: 250px;
+        height: 250px;
+        bottom: -60px;
+        left: -60px;
+
+        @media (max-width: $breakpoint-lg) {
+            width: 180px;
+            height: 180px;
+        }
+    }
+
+    &.circle-3 {
+        width: 150px;
+        height: 150px;
+        top: 50%;
+        left: 55%;
+
+        @media (max-width: $breakpoint-lg) {
+            width: 100px;
+            height: 100px;
+        }
+    }
+}
+
+// ========================================
+// FORM PANEL (RIGHT)
+// ========================================
+.form-panel {
+    flex: 1;
+    background: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    min-height: 100vh;
+    overflow-y: auto;
+
+    @media (max-width: $breakpoint-xl) {
+        padding: 32px;
+    }
+
+    @media (max-width: $breakpoint-md) {
+        padding: 32px 24px;
+    }
+
+    @media (max-width: $breakpoint-xs) {
+        padding: 24px 20px;
+    }
+}
+
+.form-container {
+    width: 100%;
+    max-width: 380px;
+
+    @media (max-width: $breakpoint-xl) {
+        max-width: 360px;
+    }
+
+    @media (max-width: $breakpoint-md) {
+        max-width: 420px;
+    }
+}
+
+// Mobile Logo
+.mobile-logo {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+
+    @media (max-width: $breakpoint-md) {
+        display: flex;
+    }
+
+    .logo-box-sm {
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, $primary, $accent);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: $white;
+        box-shadow: 0 6px 16px rgba($primary, 0.3);
+
+        @media (max-width: $breakpoint-xs) {
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+        }
+    }
+
+    span {
+        font-size: 24px;
+        font-weight: 700;
+        color: $text-dark;
+
+        @media (max-width: $breakpoint-xs) {
+            font-size: 22px;
+        }
+    }
+}
+
+// Form Header
+.form-header {
+    margin-bottom: 28px;
+
+    @media (max-width: $breakpoint-xs) {
+        margin-bottom: 24px;
+        text-align: center;
+    }
+
+    h2 {
+        margin: 0 0 6px;
+        font-size: 24px;
+        font-weight: 700;
+        color: $text-dark;
+
+        @media (max-width: $breakpoint-xl) {
+            font-size: 22px;
+        }
+
+        @media (max-width: $breakpoint-xs) {
+            font-size: 20px;
+        }
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        color: $text-muted;
+
+        @media (max-width: $breakpoint-xs) {
+            font-size: 13px;
+        }
+    }
+}
+
+// Login Form
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    @media (max-width: $breakpoint-xs) {
+        gap: 16px;
+    }
+}
+
+// Field Group
+.field-group {
+    label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-base;
+
+        mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: $text-muted;
+        }
+    }
+}
+
+.field-input {
+    display: flex;
+    align-items: center;
+    background: $gray-50;
+    border: 2px solid $gray-200;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 48px;
+    transition: all 0.2s ease;
+
+    @media (max-width: $breakpoint-xs) {
+        height: 46px;
+        padding: 0 12px;
+    }
+
+    &.active {
+        background: $white;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    &.error {
+        border-color: $error;
+        background: rgba($error, 0.03);
+    }
+
+    input {
+        flex: 1;
+        height: 100%;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: $text-dark;
+        outline: none;
+
+        @media (max-width: $breakpoint-xs) {
+            font-size: 15px; // Slightly larger for mobile touch
+        }
+
+        &::placeholder {
+            color: $text-light;
+        }
+    }
+
+    .btn-toggle {
+        background: none;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        color: $text-muted;
+        display: flex;
+        align-items: center;
+        transition: color 0.2s;
+
+        &:hover {
+            color: $primary;
+        }
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+.field-error {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: $error;
+}
+
+// Options Row
+.options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: $text-base;
+    user-select: none;
+
+    input {
+        display: none;
+
+        &:checked + .checkmark {
+            background: $primary;
+            border-color: $primary;
+
+            &::after {
+                opacity: 1;
+                transform: rotate(45deg) scale(1);
+            }
+        }
+    }
+
+    .checkmark {
+        width: 18px;
+        height: 18px;
+        border: 2px solid $gray-300;
+        border-radius: 4px;
+        position: relative;
+        transition: all 0.2s;
+        flex-shrink: 0;
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 4px;
+            height: 9px;
+            border: solid $white;
+            border-width: 0 2px 2px 0;
+            opacity: 0;
+            transform: rotate(45deg) scale(0.5);
+            transition: all 0.2s;
+        }
+    }
+
+    &:hover .checkmark {
+        border-color: $primary;
+    }
+}
+
+.link-forgot {
+    font-size: 13px;
+    color: $primary;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// Submit Button
+.btn-submit {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, $primary, $accent);
+    border: none;
+    border-radius: 10px;
+    color: $white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba($primary, 0.35);
+
+    @media (max-width: $breakpoint-xs) {
+        height: 48px;
+        font-size: 14px;
+    }
 
     &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+        box-shadow: 0 6px 20px rgba($primary, 0.4);
     }
 
     &:disabled {
         opacity: 0.7;
+        cursor: not-allowed;
     }
 
-    mat-spinner {
-        display: inline-block;
-        margin-right: 8px;
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        transition: transform 0.3s;
+    }
 
-        ::ng-deep circle {
-            stroke: white;
-        }
+    &:hover mat-icon {
+        transform: translateX(4px);
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: $white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
     }
 }
 
-.login-footer {
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// Divider
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: $gray-200;
+    }
+
+    span {
+        font-size: 12px;
+        color: $text-muted;
+        white-space: nowrap;
+    }
+}
+
+// Social Buttons
+.social-buttons {
+    display: flex;
+    gap: 10px;
+
+    @media (max-width: $breakpoint-xs) {
+        flex-direction: column;
+    }
+}
+
+.btn-social {
+    flex: 1;
+    height: 44px;
+    background: $white;
+    border: 2px solid $gray-200;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-base;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: $primary;
+        background: $gray-50;
+    }
+
+    svg {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+// Register Prompt
+.register-prompt {
     text-align: center;
     margin-top: 24px;
     padding-top: 24px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid $gray-200;
+
+    @media (max-width: $breakpoint-xs) {
+        margin-top: 20px;
+        padding-top: 20px;
+    }
 
     p {
         margin: 0;
-        color: #64748b;
         font-size: 14px;
-    }
+        color: $text-muted;
 
-    .register-link {
-        color: #6366f1;
-        text-decoration: none;
-        font-weight: 600;
+        @media (max-width: $breakpoint-xs) {
+            font-size: 13px;
+        }
 
-        &:hover {
-            text-decoration: underline;
+        a {
+            color: $primary;
+            font-weight: 600;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 }
 
-.copyright {
-    margin-top: 24px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 13px;
-    z-index: 1;
+// Form Footer
+.form-footer {
+    text-align: center;
+    margin-top: 20px;
+
+    p {
+        margin: 0;
+        font-size: 12px;
+        color: $text-light;
+    }
 }
 
-// Error snackbar
+// ========================================
+// SNACKBAR
+// ========================================
 ::ng-deep .error-snackbar {
-    background: #dc2626;
-    color: white;
-
-    .mat-mdc-button {
-        color: white;
-    }
+    background: $error !important;
+    color: $white !important;
 }

@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
             if (requiredRoles && requiredRoles.length > 0) {
                 if (!this.authService.hasAnyRole(requiredRoles)) {
                     // User doesn't have required role, redirect to dashboard
-                    return this.router.createUrlTree(['/dashboard']);
+                    return this.router.createUrlTree(['/app/dashboard']);
                 }
             }
 
@@ -50,7 +50,7 @@ export class GuestGuard implements CanActivate {
     canActivate(): boolean | UrlTree {
         if (this.authService.isAuthenticated) {
             // Already authenticated, redirect to dashboard
-            return this.router.createUrlTree(['/dashboard']);
+            return this.router.createUrlTree(['/app/dashboard']);
         }
         return true;
     }

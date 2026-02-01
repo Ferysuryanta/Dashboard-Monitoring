@@ -1,65 +1,191 @@
-<div class="login-container">
-    <div class="login-background">
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
+<div class="login-page">
+    <!-- Left Panel - Branding -->
+    <div class="branding-panel">
+        <div class="branding-content">
+            <!-- Logo -->
+            <div class="logo-wrapper">
+                <div class="logo-box">
+                    <span>⛪</span>
+                </div>
+                <div class="logo-text">
+                    <h1>Mamre</h1>
+                    <span>Church Management</span>
+                </div>
+            </div>
+
+            <!-- Hero Text -->
+            <div class="hero-section">
+                <h2>Kelola Jemaat Anda<br>dengan Lebih Mudah</h2>
+                <p>Platform monitoring modern untuk memantau kehadiran, pertumbuhan, dan aktivitas jemaat gereja secara real-time.</p>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-info">
+                        <h4>Dashboard Analytics</h4>
+                        <p>Visualisasi data yang komprehensif</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-info">
+                        <h4>Manajemen Jemaat</h4>
+                        <p>Kelola data anggota dengan mudah</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-info">
+                        <h4>Tracking Kehadiran</h4>
+                        <p>Pantau kehadiran ibadah mingguan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Jemaat Aktif</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Sektor</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Kepuasan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="decoration">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
     </div>
 
-    <mat-card class="login-card">
-        <div class="login-header">
-            <div class="brand-logo">
-                <div class="logo-avatar">M</div>
-                <h1>Mamre</h1>
+    <!-- Right Panel - Login Form -->
+    <div class="form-panel">
+        <div class="form-container">
+            <!-- Mobile Logo -->
+            <div class="mobile-logo">
+                <div class="logo-box-sm">⛪</div>
+                <span>Mamre</span>
             </div>
-            <p class="login-subtitle">Dashboard Monitoring Gereja</p>
-        </div>
 
-        <mat-card-content>
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Username</mat-label>
-                    <input matInput formControlName="username" placeholder="Masukkan username" autocomplete="username">
-                    <mat-icon matPrefix>person</mat-icon>
-                    <mat-error *ngIf="f['username'].hasError('required')">Username wajib diisi</mat-error>
-                    <mat-error *ngIf="f['username'].hasError('minlength')">Username minimal 3 karakter</mat-error>
-                </mat-form-field>
+            <!-- Form Header -->
+            <div class="form-header">
+                <h2>Selamat Datang Kembali</h2>
+                <p>Masuk ke akun Anda untuk melanjutkan</p>
+            </div>
 
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Password</mat-label>
-                    <input matInput formControlName="password"
-                           [type]="hidePassword ? 'password' : 'text'"
-                           placeholder="Masukkan password"
-                           autocomplete="current-password">
-                    <mat-icon matPrefix>lock</mat-icon>
-                    <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-                        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                    </button>
-                    <mat-error *ngIf="f['password'].hasError('required')">Password wajib diisi</mat-error>
-                    <mat-error *ngIf="f['password'].hasError('minlength')">Password minimal 6 karakter</mat-error>
-                </mat-form-field>
-
-                <div class="form-options">
-                    <mat-checkbox formControlName="rememberMe" color="primary">
-                        Ingat saya
-                    </mat-checkbox>
-                    <a href="#" class="forgot-link">Lupa password?</a>
+            <!-- Login Form -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+                <!-- Username -->
+                <div class="field-group">
+                    <label for="username">
+                        <mat-icon>person</mat-icon>
+                        Username atau Email
+                    </label>
+                    <div class="field-input" [class.active]="usernameFocused" [class.error]="f['username'].invalid && f['username'].touched">
+                        <input
+                            id="username"
+                            type="text"
+                            formControlName="username"
+                            placeholder="Masukkan username atau email"
+                            autocomplete="username"
+                            (focus)="usernameFocused = true"
+                            (blur)="usernameFocused = false">
+                    </div>
+                    <span class="field-error" *ngIf="f['username'].hasError('required') && f['username'].touched">
+                        Username wajib diisi
+                    </span>
                 </div>
 
-                <button mat-flat-button color="primary" type="submit"
-                        class="login-button"
-                        [disabled]="isLoading">
-                    <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
-                    <span *ngIf="!isLoading">Login</span>
+                <!-- Password -->
+                <div class="field-group">
+                    <label for="password">
+                        <mat-icon>lock</mat-icon>
+                        Password
+                    </label>
+                    <div class="field-input" [class.active]="passwordFocused" [class.error]="f['password'].invalid && f['password'].touched">
+                        <input
+                            id="password"
+                            [type]="hidePassword ? 'password' : 'text'"
+                            formControlName="password"
+                            placeholder="Masukkan password Anda"
+                            autocomplete="current-password"
+                            (focus)="passwordFocused = true"
+                            (blur)="passwordFocused = false">
+                        <button type="button" class="btn-toggle" (click)="hidePassword = !hidePassword" tabindex="-1">
+                            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                    </div>
+                    <span class="field-error" *ngIf="f['password'].hasError('required') && f['password'].touched">
+                        Password wajib diisi
+                    </span>
+                </div>
+
+                <!-- Options Row -->
+                <div class="options-row">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" formControlName="rememberMe">
+                        <span class="checkmark"></span>
+                        Ingat saya
+                    </label>
+                    <a href="#" class="link-forgot">Lupa password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit" [disabled]="isLoading">
+                    <ng-container *ngIf="!isLoading">
+                        <span>Masuk ke Dashboard</span>
+                        <mat-icon>arrow_forward</mat-icon>
+                    </ng-container>
+                    <div class="spinner" *ngIf="isLoading"></div>
                 </button>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>atau masuk dengan</span>
+                </div>
+
+                <!-- Social Buttons -->
+                <div class="social-buttons">
+                    <button type="button" class="btn-social">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Google
+                    </button>
+                    <button type="button" class="btn-social">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="#00A4EF" d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"/>
+                        </svg>
+                        Microsoft
+                    </button>
+                </div>
             </form>
-        </mat-card-content>
 
-        <div class="login-footer">
-            <p>Belum punya akun? <a routerLink="/register" class="register-link">Daftar di sini</a></p>
+            <!-- Register Link -->
+            <div class="register-prompt">
+                <p>Belum punya akun? <a routerLink="/register">Daftar sekarang</a></p>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <p>&copy; 2026 Mamre Church. All rights reserved.</p>
+            </div>
         </div>
-    </mat-card>
-
-    <div class="copyright">
-        &copy; 2026 Mamre Church. All rights reserved.
     </div>
 </div>

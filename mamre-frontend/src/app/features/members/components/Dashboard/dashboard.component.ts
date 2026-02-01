@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit {
         layout: {
             padding: {
                 left: 0,
-                right: 10,
+                right: 15,
                 top: 10,
                 bottom: 10
             }
@@ -105,10 +105,10 @@ export class DashboardComponent implements OnInit {
             legend: { display: false },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
-                bodyFont: { size: 13, family: 'Poppins' },
-                padding: 12,
-                cornerRadius: 8,
+                titleFont: { size: 12, weight: 'bold', family: 'Inter' },
+                bodyFont: { size: 11, family: 'Inter' },
+                padding: 10,
+                cornerRadius: 6,
                 displayColors: true,
                 boxPadding: 4,
                 callbacks: {
@@ -131,23 +131,20 @@ export class DashboardComponent implements OnInit {
             x: {
                 beginAtZero: true,
                 max: 100,
-                grid: { color: 'rgba(0,0,0,0.08)' },
+                grid: { color: 'rgba(0,0,0,0.06)' },
                 ticks: {
                     color: '#666',
-                    font: { family: 'Poppins' },
+                    font: { family: 'Inter', size: 10 },
                     stepSize: 25,
                     callback: (value: any) => value + '%'
                 }
             },
             y: {
                 grid: { display: false },
-                afterFit: (scaleInstance: any) => {
-                    scaleInstance.width = 100; // Fixed width untuk label sektor
-                },
                 ticks: {
                     color: '#333',
-                    font: { family: 'Poppins', weight: 'bold', size: 13 },
-                    padding: 10,
+                    font: { family: 'Inter', weight: 'bold', size: 11 },
+                    padding: 8,
                     autoSkip: false,
                     mirror: false
                 }

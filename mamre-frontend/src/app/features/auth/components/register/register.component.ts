@@ -54,7 +54,7 @@ export class RegisterComponent implements OnInit {
 
         // Redirect if already authenticated
         if (this.authService.isAuthenticated) {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/app/dashboard']);
         }
     }
 
@@ -82,7 +82,7 @@ export class RegisterComponent implements OnInit {
         this.authService.register(request).subscribe({
             next: () => {
                 this.snackBar.open('Registrasi berhasil! Selamat datang.', 'OK', { duration: 3000 });
-                this.router.navigate(['/dashboard']);
+                this.router.navigate(['/app/dashboard']);
             },
             error: (err) => {
                 this.isLoading = false;

@@ -29,6 +29,13 @@ import { AttendanceComponent } from "./features/members/components/attendance/at
 import { AttendanceReportComponent } from "./features/members/components/attendance-report/attendance-report.component";
 
 export const routes: Routes = [
+    // 🔐 Default: Redirect to login
+    {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
+    },
+
     // 🔐 Login Page (Guest only - redirect if already logged in)
     {
         path: 'login',
@@ -43,14 +50,14 @@ export const routes: Routes = [
         canActivate: [GuestGuard]
     },
 
-    // 📱 Main App Layout (Protected routes)
+    // 📱 Main App Layout (Protected routes - requires authentication)
     {
-        path: '',
+        path: 'app',
         component: AppLayoutComponent,
-        // canActivate: [AuthGuard], // Uncomment to enable auth protection
+        canActivate: [AuthGuard],
         children: [
 
-            // 🔥 Dashboard as default page
+            // 🔥 Dashboard as default page after login
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: DashboardComponent },
 
@@ -83,6 +90,6 @@ export const routes: Routes = [
         ]
     },
 
-    // Fallback route
-    { path: '**', redirectTo: 'dashboard' }
+    // Fallback route - redirect to login
+    { path: '**', redirectTo: 'login' }
 ];

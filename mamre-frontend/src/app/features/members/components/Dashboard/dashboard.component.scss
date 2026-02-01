@@ -1,6 +1,6 @@
 /* dashboard.component.scss - Versi Inovatif, Mewah, Modern & Elegan */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap');
+// Font is loaded globally in index.html
 
 :host {
   display: block;
@@ -8,16 +8,19 @@
   background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
   padding-bottom: 50px; // Ruang di bawah
   box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
 }
 
 .dashboard-root {
   max-width: 1500px; /* Lebar maksimum lebih besar */
   margin: 0 auto; // Hapus margin top/bottom untuk full-bleed di atas
   padding: 30px 40px; /* Padding samping dan bawah yang nyaman */
-  font-family: 'Poppins', sans-serif; /* Font utama */
+  font-family: 'Inter', 'Poppins', sans-serif; /* Font utama */
   color: #333; /* Warna teks utama */
   box-sizing: border-box;
   overflow-x: hidden;
+  width: 100%;
 }
 
 /* --- Global Card Styling & Animasi --- */
@@ -570,7 +573,7 @@ mat-divider {
 
 /* --- Responsive Adjustments --- */
 
-/* Tablet & Large Mobile (1400px ke bawah) */
+/* Large screens (1400px ke bawah) */
 @media (max-width: 1400px) {
   /* Ubah 5 kolom kartu menjadi 2 kolom */
   .summary-grid {
@@ -597,25 +600,67 @@ mat-divider {
   }
 }
 
+/* Tablet (1024px ke bawah) */
+@media (max-width: 1024px) {
+  .dashboard-root {
+    padding: 20px 24px;
+  }
+
+  .header-section {
+    padding: 20px 24px;
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 28px;
+    }
+  }
+
+  mat-card {
+    border-radius: 16px;
+  }
+
+  .card-title {
+    font-size: 18px;
+  }
+}
+
 /* Mobile Portrait (768px ke bawah) */
 @media (max-width: 768px) {
   .dashboard-root {
-    padding: 15px 15px;
+    padding: 16px 16px;
   }
 
   .header-section {
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
-    h1 { font-size: 32px; }
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 16px;
+
+    h1 {
+      font-size: 24px;
+      line-height: 1.3;
+    }
+
+    .greeting-text {
+      font-size: 14px;
+    }
+
+    .header-date {
+      font-size: 12px;
+    }
 
     .top-actions {
       width: 100%;
       flex-wrap: wrap;
-      button {
-        flex: 1 1 auto; /* Memungkinkan tombol menyesuaikan lebar */
-        height: 45px;
-        padding: 0 15px;
+      gap: 8px;
+
+      button, .action-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 120px;
+        height: 42px;
+        padding: 0 12px;
+        font-size: 13px;
       }
     }
   }
@@ -623,29 +668,204 @@ mat-divider {
   /* Tetap 1 kolom untuk semua grid utama */
   .summary-grid, .charts-row, .charts-row-secondary, .recent-row {
     grid-template-columns: 1fr !important;
-    gap: 20px;
+    gap: 16px;
   }
 
   .stat-card {
-    min-height: 140px;
-    .stat-value { font-size: 40px; }
-    .stat-icon-overlay { font-size: 45px; }
-    .stat-icon-bg { font-size: 120px; bottom: -15px; right: -15px; }
+    min-height: 120px;
+    padding: 16px;
+
+    .stat-value { font-size: 32px; }
+    .stat-label { font-size: 12px; }
+    .stat-icon-overlay { font-size: 36px; }
+    .stat-icon-bg { font-size: 100px; bottom: -10px; right: -10px; }
   }
 
-  /* Quick stats kembali menjadi 2 kolom (atau 1 jika terlalu sempit) */
+  mat-card {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 14px;
+
+    &::before {
+      width: 40px;
+      height: 3px;
+    }
+  }
+
+  /* Quick stats menjadi 2 kolom */
   .quick-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 12px;
+  }
+
+  .q-item {
+    padding: 12px;
+
+    .q-value {
+      font-size: 22px;
+    }
+    .q-label {
+      font-size: 11px;
+    }
+  }
+
+  /* Chart responsive for tablet */
+  .chart-card {
+    min-height: 320px !important;
+    padding: 16px !important;
+  }
+
+  .chart-area {
+    min-height: 240px !important;
+  }
+
+  .chart-card-small {
+    min-height: 280px !important;
+  }
+
+  .chart-area-small {
+    min-height: 200px !important;
+  }
+
+  .charts-row-secondary {
+    grid-template-columns: 1fr 1fr !important;
+
+    .birthday-card {
+      grid-column: span 2;
+    }
   }
 }
 
 /* Mobile Sempit (480px ke bawah) */
 @media (max-width: 480px) {
+  .dashboard-root {
+    padding: 12px 12px;
+  }
+
+  .header-section {
+    padding: 14px 16px;
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .top-actions {
+      button, .action-btn {
+        flex: 1 1 100%;
+        height: 40px;
+      }
+    }
+  }
+
+  .summary-grid, .charts-row, .charts-row-secondary, .recent-row {
+    gap: 12px;
+  }
+
+  .stat-card {
+    min-height: 100px;
+    padding: 14px;
+
+    .stat-value { font-size: 28px; }
+    .stat-icon-overlay { font-size: 30px; }
+    .stat-icon-bg { font-size: 80px; }
+  }
+
+  mat-card {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
   .quick-grid {
     grid-template-columns: 1fr; /* Quick stats jadi 1 kolom penuh */
   }
+
   .avatar-large {
-    width: 40px; height: 40px; font-size: 18px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  /* Chart responsive for mobile */
+  .chart-card {
+    min-height: auto !important;
+    padding: 14px !important;
+
+    .card-header {
+      margin-bottom: 12px;
+
+      .card-title {
+        font-size: 14px !important;
+      }
+    }
+  }
+
+  .chart-area {
+    min-height: 200px !important;
+    height: auto !important;
+
+    canvas {
+      max-height: 200px !important;
+    }
+  }
+
+  .chart-card-small {
+    min-height: auto !important;
+    padding: 14px !important;
+  }
+
+  .chart-area-small {
+    min-height: 180px !important;
+
+    canvas {
+      max-height: 180px !important;
+    }
+  }
+
+  /* Table adjustments for mobile */
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px 6px !important;
+  }
+}
+
+/* Extra small devices (360px ke bawah) */
+@media (max-width: 360px) {
+  .dashboard-root {
+    padding: 8px 8px;
+  }
+
+  .header-section {
+    padding: 12px;
+
+    h1 {
+      font-size: 18px;
+    }
+  }
+
+  .stat-card {
+    .stat-value { font-size: 24px; }
+  }
+
+  .chart-area {
+    min-height: 160px !important;
+
+    canvas {
+      max-height: 160px !important;
+    }
+  }
+
+  .chart-area-small {
+    min-height: 140px !important;
+
+    canvas {
+      max-height: 140px !important;
+    }
   }
 }
