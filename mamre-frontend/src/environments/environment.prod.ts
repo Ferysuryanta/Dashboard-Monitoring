@@ -1,1 +1,4 @@
-export const environment = { production: true, apiUrl: 'http://localhost:8080/api' };
+export const environment = {
+  production: true,
+  apiUrl: '/api' // Relative URL - akan menggunakan domain yang sama dengan frontend
+};
