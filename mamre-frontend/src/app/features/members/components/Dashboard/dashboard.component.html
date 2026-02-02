@@ -160,41 +160,109 @@
 
         <div class="recent-row">
             <mat-card class="recent-card">
-                <div class="card-title">Anggota Terbaru</div>
+                <div class="card-title">
+                    <mat-icon class="title-icon">group_add</mat-icon>
+                    Anggota Terbaru
+                    <span class="badge-count" *ngIf="recent.length > 0">{{ recent.length }}</span>
+                </div>
                 <mat-divider></mat-divider>
-                <mat-list>
-                    <mat-list-item *ngFor="let r of recent">
-                        <div matListItemAvatar class="avatar-large">{{ r.name?.[0] || '?' }}</div>
-                        <div matListItemLine class="member-info">
-                            <div class="member-name">{{ r.name }}</div>
-                            <div class="member-meta">{{ r.sector || 'Tanpa Sektor' }} • Bergabung {{ r.joinedDate | date:'dd MMM yyyy' }}</div>
+                <div class="member-list-modern">
+                    <div class="member-item-modern" *ngFor="let r of recent; let i = index">
+                        <div class="avatar-modern" [ngClass]="'avatar-color-' + (i % 5)">
+                            <span class="avatar-letter">{{ r.name?.[0] || '?' }}</span>
+                            <div class="avatar-status online"></div>
                         </div>
-                        <button mat-icon-button matTooltip="Edit" (click)="router.navigateByUrl('/members/' + r.id + '/edit')">
-                            <mat-icon>edit</mat-icon>
-                        </button>
-                    </mat-list-item>
-                    <div *ngIf="recent.length === 0" class="placeholder-text">
-                        <p>Belum ada anggota baru.</p>
+                        <div class="member-content">
+                            <div class="member-name-modern">{{ r.name }}</div>
+                            <div class="member-details">
+                                <span class="sector-badge">
+                                    <mat-icon>location_on</mat-icon>
+                                    {{ r.sector || 'Tanpa Sektor' }}
+                                </span>
+                                <span class="join-date">
+                                    <mat-icon>event</mat-icon>
+                                    {{ r.joinedDate | date:'dd MMM yyyy' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="member-actions">
+                            <button mat-icon-button class="action-btn-modern" matTooltip="Lihat Detail" (click)="router.navigateByUrl('/app/members/' + r.id)">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button mat-icon-button class="action-btn-modern edit" matTooltip="Edit" (click)="router.navigateByUrl('/app/members/' + r.id + '/edit')">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </div>
                     </div>
-                </mat-list>
+                    <div *ngIf="recent.length === 0" class="empty-state-modern">
+                        <mat-icon>person_add_disabled</mat-icon>
+                        <p>Belum ada anggota baru</p>
+                        <span>Anggota baru akan muncul di sini</span>
+                    </div>
+                </div>
             </mat-card>
 
             <mat-card class="activity-card">
-                <div class="card-title">Statistik Ringkas</div>
+                <div class="card-title">
+                    <mat-icon class="title-icon">analytics</mat-icon>
+                    Statistik Ringkas
+                </div>
                 <mat-divider></mat-divider>
-                <div class="quick-grid">
-                    <div class="q-item"><div class="q-value">{{ summary.totalMembers }}</div><div class="q-label">Total Anggota</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.activeMembers }}</div><div class="q-label">Anggota Aktif</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.sectors }}</div><div class="q-label">Jumlah Sektor</div></div>
-                    <div class="q-item"><div class="q-value">{{ summary.positions }}</div><div class="q-label">Jumlah Jabatan</div></div>
-
-                    <div class="q-item" *ngIf="attendanceSummary">
-                        <div class="q-value">{{ attendanceSummary.uniqueMembers | number }}</div>
-                        <div class="q-label">Anggota Hadir</div>
+                <div class="quick-grid-modern">
+                    <div class="q-item-modern total">
+                        <div class="q-icon-wrap">
+                            <mat-icon>groups</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ summary.totalMembers }}</div>
+                            <div class="q-label-modern">Total Anggota</div>
+                        </div>
                     </div>
-                    <div class="q-item" *ngIf="attendanceSummary">
-                        <div class="q-value">{{ attendanceSummary.totalAttendances | number }}</div>
-                        <div class="q-label">Kehadiran ({{ attendanceSummary.month }})</div>
+                    <div class="q-item-modern active">
+                        <div class="q-icon-wrap">
+                            <mat-icon>verified</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ summary.activeMembers }}</div>
+                            <div class="q-label-modern">Anggota Aktif</div>
+                        </div>
+                    </div>
+                    <div class="q-item-modern sectors">
+                        <div class="q-icon-wrap">
+                            <mat-icon>account_tree</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ summary.sectors }}</div>
+                            <div class="q-label-modern">Jumlah Sektor</div>
+                        </div>
+                    </div>
+                    <div class="q-item-modern positions">
+                        <div class="q-icon-wrap">
+                            <mat-icon>work</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ summary.positions }}</div>
+                            <div class="q-label-modern">Jumlah Jabatan</div>
+                        </div>
+                    </div>
+
+                    <div class="q-item-modern attendance" *ngIf="attendanceSummary">
+                        <div class="q-icon-wrap">
+                            <mat-icon>how_to_reg</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ attendanceSummary.uniqueMembers | number }}</div>
+                            <div class="q-label-modern">Anggota Hadir</div>
+                        </div>
+                    </div>
+                    <div class="q-item-modern monthly" *ngIf="attendanceSummary">
+                        <div class="q-icon-wrap">
+                            <mat-icon>calendar_month</mat-icon>
+                        </div>
+                        <div class="q-content">
+                            <div class="q-value-modern">{{ attendanceSummary.totalAttendances | number }}</div>
+                            <div class="q-label-modern">Kehadiran ({{ attendanceSummary.month }})</div>
+                        </div>
                     </div>
                 </div>
             </mat-card>

@@ -638,9 +638,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }, err => console.error('birthdays err', err));
     }
 
-    goSectors() { this.router.navigateByUrl('/sectors'); }
-    goPositions() { this.router.navigateByUrl('/positions'); }
-    goMembers() { this.router.navigateByUrl('/members'); }
+    goSectors() { this.router.navigateByUrl('/app/sectors'); }
+    goPositions() { this.router.navigateByUrl('/app/positions'); }
+    goMembers() { this.router.navigateByUrl('/app/members'); }
 
     // Helper untuk menentukan label hari ulang tahun
     getBirthdayLabel(daysUntil: number): string {
