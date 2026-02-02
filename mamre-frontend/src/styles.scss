@@ -159,6 +159,85 @@ body {
   font-size: 12px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+// Remove underline/border from individual header cells - border should be on row only
+.mat-mdc-header-cell,
+.mdc-data-table__header-cell,
+th.mat-mdc-header-cell,
+th[mat-header-cell],
+.mat-column-actions,
+.mat-column-actions.mat-mdc-header-cell {
+  border-bottom: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  background-image: none !important;
+
+  &::after,
+  &::before {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+
+// MDC Data Table specific overrides
+.mdc-data-table__header-cell,
+.mdc-data-table__cell {
+  border-bottom-color: transparent !important;
+
+  &::after,
+  &::before {
+    display: none !important;
+  }
+}
+
+// Ensure header row has the bottom border, not individual cells
+.mat-mdc-header-row {
+  border-bottom: 2px solid #6366f1 !important;
+
+  .mat-mdc-header-cell {
+    border: none !important;
+  }
+}
+
+// Fix Actions column alignment - should be left aligned like other headers
+// Using higher specificity selectors
+.sector-table .mat-column-actions.mat-mdc-header-cell,
+.sector-table .mat-mdc-header-cell.mat-column-actions,
+.sector-table th.mat-column-actions,
+.sector-table th.col-actions,
+.sector-table .col-actions.mat-mdc-header-cell,
+.mat-column-actions.mat-mdc-header-cell,
+.mat-mdc-header-cell.mat-column-actions,
+th.mat-column-actions,
+th.col-actions,
+.col-actions.mat-mdc-header-cell {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+// Actions body cells - center the buttons
+.sector-table .mat-column-actions.mat-mdc-cell,
+.sector-table td.mat-column-actions,
+.sector-table td.col-actions,
+.sector-table .col-actions.mat-mdc-cell,
+.mat-column-actions.mat-mdc-cell,
+td.mat-column-actions,
+td.col-actions,
+.col-actions.mat-mdc-cell {
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 table th {
@@ -342,13 +421,27 @@ table th {
   }
 
   // Table header cells - CYAN/TEAL TEXT FOR VISIBILITY
-  .mat-mdc-header-cell {
+  .mat-mdc-header-cell,
+  .mdc-data-table__header-cell,
+  th.mat-mdc-header-cell,
+  .mat-column-actions,
+  .mat-column-actions.mat-mdc-header-cell {
     color: #38bdf8 !important;
-    border-bottom-color: #6366f1 !important;
+    border: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    box-shadow: none !important;
     font-weight: 700 !important;
     font-size: 12px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.6px !important;
+
+    &::after,
+    &::before {
+      display: none !important;
+      content: none !important;
+      background: transparent !important;
+    }
   }
 
   // Custom table header

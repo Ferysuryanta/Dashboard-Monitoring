@@ -80,6 +80,14 @@
       border-bottom: 2px solid #6366f1;
     }
 
+    // Remove all individual cell borders - border is on row only
+    .mat-mdc-header-cell,
+    th.mat-mdc-header-cell {
+      border-bottom: none !important;
+      border-top: none !important;
+      box-shadow: none !important;
+    }
+
     .mat-mdc-row {
       height: auto;
       min-height: 60px;
@@ -126,11 +134,41 @@
       flex: 1 1 auto;
       min-width: 200px;
     }
-    .mat-column-actions {
-      min-width: 120px;
-      max-width: 150px;
-      flex: 0 0 130px;
-      text-align: center;
+    .mat-column-actions,
+    .col-actions {
+      min-width: 140px;
+      max-width: 160px;
+      flex: 0 0 150px;
+    }
+
+    // Header cell actions - align left like other columns
+    th.col-actions,
+    th.mat-column-actions,
+    .mat-column-actions.mat-mdc-header-cell,
+    .col-actions.mat-mdc-header-cell {
+      justify-content: flex-start !important;
+      align-items: center !important;
+      text-align: left !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      border-bottom: none !important;
+
+      // Override any internal flex wrappers
+      * {
+        justify-content: flex-start !important;
+        text-align: left !important;
+      }
+    }
+
+    // Body cell actions - center the action buttons
+    td.col-actions,
+    td.mat-column-actions,
+    .mat-column-actions.mat-mdc-cell,
+    .col-actions.mat-mdc-cell {
+      justify-content: center !important;
+      text-align: center !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
     }
 
     /* Font Name yang menonjol */
@@ -139,8 +177,51 @@
       color: #1e293b;
     }
 
-    /* Action Buttons */
-    .col-actions {
+
+    /* Action Buttons Container */
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Action Button Styling */
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px !important;
+      transition: all 0.2s ease !important;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &.edit-btn {
+        color: #6366f1;
+        background: transparent;
+
+        &:hover {
+          background: rgba(99, 102, 241, 0.12);
+          transform: scale(1.08);
+        }
+      }
+
+      &.delete-btn {
+        color: #ef4444;
+        background: transparent;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.12);
+          transform: scale(1.08);
+        }
+      }
+    }
+
+    /* Legacy col-actions fallback - ONLY for body cells (td), NOT header (th) */
+    td.col-actions {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -248,6 +329,117 @@
 }
 
 // ========================================
+// GLOBAL MATERIAL TABLE OVERRIDES
+// ========================================
+::ng-deep {
+  .sector-table {
+    // Remove all borders and underlines from header cells
+    .mat-mdc-header-cell,
+    .mdc-data-table__header-cell,
+    th.mat-mdc-header-cell,
+    th[mat-header-cell] {
+      border-bottom: none !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+
+      // Remove any ::after or ::before pseudo-elements that might create underlines
+      &::after,
+      &::before {
+        display: none !important;
+        border: none !important;
+        background: none !important;
+        content: none !important;
+      }
+    }
+
+    .mat-sort-header-container {
+      border-bottom: none !important;
+    }
+
+    // Target specific actions column - ALIGN LEFT like other columns
+    .mat-column-actions.mat-mdc-header-cell,
+    th.mat-column-actions,
+    th.col-actions,
+    .col-actions.mat-mdc-header-cell,
+    .mat-mdc-header-cell.mat-column-actions,
+    .mat-mdc-header-cell.col-actions {
+      justify-content: flex-start !important;
+      text-align: left !important;
+      border: none !important;
+      box-shadow: none !important;
+
+      &::after,
+      &::before {
+        display: none !important;
+        content: none !important;
+      }
+    }
+
+    // Actions body cell - center buttons
+    .mat-column-actions.mat-mdc-cell,
+    td.mat-column-actions,
+    td.col-actions,
+    .col-actions.mat-mdc-cell {
+      justify-content: center !important;
+    }
+
+    // Override mdc internal styles
+    .mdc-data-table__header-cell::after,
+    .mdc-data-table__header-cell::before {
+      display: none !important;
+    }
+  }
+}
+
+// Dark mode ::ng-deep override
+:host-context([data-theme="dark"]) ::ng-deep {
+  .sector-table {
+    .mat-mdc-header-cell,
+    .mdc-data-table__header-cell,
+    th.mat-mdc-header-cell,
+    th[mat-header-cell] {
+      border-bottom: none !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      box-shadow: none !important;
+
+      &::after,
+      &::before {
+        display: none !important;
+        content: none !important;
+      }
+    }
+
+    // Actions header - align left like other columns
+    .mat-column-actions.mat-mdc-header-cell,
+    .mat-mdc-header-cell.mat-column-actions,
+    th.col-actions,
+    .col-actions.mat-mdc-header-cell {
+      justify-content: flex-start !important;
+      text-align: left !important;
+      border: none !important;
+
+      &::after,
+      &::before {
+        display: none !important;
+        content: none !important;
+      }
+    }
+
+    // Actions body cell - center buttons
+    .mat-column-actions.mat-mdc-cell,
+    td.col-actions,
+    .col-actions.mat-mdc-cell {
+      justify-content: center !important;
+    }
+  }
+}
+
+// ========================================
 // DARK MODE OVERRIDES
 // ========================================
 :host-context([data-theme="dark"]) {
@@ -274,11 +466,17 @@
     .mat-mdc-header-row {
       background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
       border-bottom: 2px solid #6366f1 !important;
+
+      // Ensure all header cells have no individual border
+      .mat-mdc-header-cell {
+        border-bottom: none !important;
+      }
     }
 
     .mat-mdc-header-cell {
       color: #38bdf8 !important;
       border-color: var(--card-border) !important;
+      border-bottom: none !important;
       font-weight: 700 !important;
       font-size: 12px !important;
       text-transform: uppercase !important;
@@ -302,7 +500,26 @@
       color: #f8fafc !important;
     }
 
-    // Action buttons
+    // Action buttons styling
+    .action-btn {
+      &.edit-btn {
+        color: #a5b4fc !important;
+
+        &:hover {
+          background: rgba(99, 102, 241, 0.25) !important;
+        }
+      }
+
+      &.delete-btn {
+        color: #f87171 !important;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.25) !important;
+        }
+      }
+    }
+
+    // Legacy action buttons fallback
     .col-actions {
       button[mat-icon-button] {
         &[color="primary"] {

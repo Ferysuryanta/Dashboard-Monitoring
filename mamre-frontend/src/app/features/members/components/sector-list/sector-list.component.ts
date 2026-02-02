@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,7 +26,8 @@ import {MatTooltip} from "@angular/material/tooltip";
         MatTooltip
     ],
     templateUrl: './sector-list.component.html',
-    styleUrls: ['./sector-list.component.scss']
+    styleUrls: ['./sector-list.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class SectorListComponent implements OnInit {
     private svc = inject(SectorService);
