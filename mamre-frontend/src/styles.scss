@@ -136,6 +136,42 @@ body {
 }
 
 // ========================================
+// LIGHT MODE - Table Header Styling
+// ========================================
+.table-head {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  border-bottom: 2px solid #6366f1 !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 12px !important;
+}
+
+.mat-mdc-header-row {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 2px solid #6366f1;
+}
+
+.mat-mdc-header-cell {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+table th {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #6366f1;
+}
+
+// ========================================
 // DARK MODE - Chart & Component Overrides
 // ========================================
 [data-theme="dark"] {
@@ -285,6 +321,136 @@ body {
   // Dividers
   .mat-divider {
     border-color: var(--divider-color) !important;
+  }
+
+  // ========================================
+  // Material Table Dark Mode Overrides
+  // ========================================
+
+  // Table wrapper/container
+  .table-content-wrapper,
+  .table-card,
+  .table-wrapper {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+  }
+
+  // Table header row - MORE PROMINENT
+  .mat-mdc-header-row {
+    background: linear-gradient(180deg, rgba(51, 65, 85, 0.85) 0%, rgba(51, 65, 85, 0.7) 100%) !important;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.3) !important;
+  }
+
+  // Table header cells - BOLDER & MORE VISIBLE
+  .mat-mdc-header-cell {
+    color: #e2e8f0 !important;
+    border-bottom-color: var(--card-border) !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  // Table body rows
+  .mat-mdc-row {
+    background: var(--card-bg) !important;
+    border-bottom-color: var(--card-border) !important;
+
+    &:hover {
+      background: rgba(51, 65, 85, 0.4) !important;
+    }
+  }
+
+  // Table body cells
+  .mat-mdc-cell {
+    color: #e2e8f0 !important;
+    border-bottom-color: var(--card-border) !important;
+  }
+
+  // Table footer
+  .mat-mdc-footer-row {
+    background: rgba(51, 65, 85, 0.5) !important;
+  }
+
+  .mat-mdc-footer-cell {
+    color: #e2e8f0 !important;
+    border-top-color: var(--card-border) !important;
+  }
+
+  // Paginator
+  .mat-mdc-paginator {
+    background: var(--card-bg) !important;
+    color: #e2e8f0 !important;
+
+    .mat-mdc-paginator-page-size-label,
+    .mat-mdc-paginator-range-label {
+      color: #94a3b8 !important;
+    }
+
+    .mat-mdc-select-value {
+      color: #e2e8f0 !important;
+    }
+
+    .mat-mdc-icon-button {
+      color: #94a3b8 !important;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &[disabled] {
+        color: #475569 !important;
+      }
+    }
+  }
+
+  // Table sort header
+  .mat-sort-header-arrow {
+    color: #94a3b8 !important;
+  }
+
+  // Custom table styling overrides
+  table {
+    th {
+      background: linear-gradient(180deg, rgba(51, 65, 85, 0.85) 0%, rgba(51, 65, 85, 0.7) 100%) !important;
+      color: #e2e8f0 !important;
+      border-color: var(--card-border) !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      border-bottom: 2px solid rgba(99, 102, 241, 0.3) !important;
+    }
+
+    td {
+      color: #e2e8f0 !important;
+      border-color: var(--card-border) !important;
+    }
+
+    tr:hover td {
+      background: rgba(51, 65, 85, 0.3) !important;
+    }
+  }
+
+  // Name text in tables
+  .name-txt,
+  .member-name {
+    color: #f8fafc !important;
+  }
+
+  // Empty state
+  .empty-state,
+  .empty {
+    color: #94a3b8 !important;
+
+    mat-icon {
+      color: #64748b !important;
+    }
+  }
+
+  // Loading state
+  .loading-card {
+    background: var(--card-bg) !important;
   }
 
   // ========================================

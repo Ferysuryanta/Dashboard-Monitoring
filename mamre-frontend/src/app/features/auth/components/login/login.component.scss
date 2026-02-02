@@ -1044,3 +1044,125 @@ $breakpoint-xs: 576px;
     background: $error !important;
     color: $white !important;
 }
+
+// ========================================
+// DARK MODE OVERRIDES
+// ========================================
+:host-context([data-theme="dark"]) {
+  .login-page {
+    background: var(--bg-secondary);
+  }
+
+  .form-panel {
+    background: var(--bg-secondary);
+  }
+
+  .form-card {
+    background: var(--card-bg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-header {
+    .welcome-title {
+      color: #f8fafc;
+    }
+
+    .welcome-desc {
+      color: #94a3b8;
+    }
+  }
+
+  .form-group {
+    label {
+      color: #94a3b8;
+    }
+  }
+
+  .input-wrapper {
+    input {
+      background: rgba(51, 65, 85, 0.5);
+      border-color: var(--card-border);
+      color: #f8fafc;
+
+      &::placeholder {
+        color: #64748b;
+      }
+
+      &:focus {
+        border-color: var(--primary-color);
+        background: rgba(51, 65, 85, 0.7);
+      }
+    }
+  }
+
+  .password-toggle {
+    color: #94a3b8;
+
+    &:hover {
+      color: #f8fafc;
+    }
+  }
+
+  .remember-row {
+    label {
+      color: #94a3b8;
+    }
+
+    .forgot-link {
+      color: var(--primary-color);
+
+      &:hover {
+        color: #a5b4fc;
+      }
+    }
+  }
+
+  .error-message {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.3);
+    color: #fca5a5;
+  }
+
+  .divider {
+    &::before, &::after {
+      background: var(--card-border);
+    }
+
+    span {
+      color: #94a3b8;
+    }
+  }
+
+  .btn-social {
+    background: rgba(51, 65, 85, 0.5);
+    border-color: var(--card-border);
+    color: #e2e8f0;
+
+    &:hover {
+      background: rgba(51, 65, 85, 0.7);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .register-prompt {
+    border-top-color: var(--card-border);
+
+    p {
+      color: #94a3b8;
+
+      a {
+        color: var(--primary-color);
+
+        &:hover {
+          color: #a5b4fc;
+        }
+      }
+    }
+  }
+
+  .form-footer {
+    p {
+      color: #64748b;
+    }
+  }
+}

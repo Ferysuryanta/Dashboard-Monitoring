@@ -69,3 +69,59 @@
     .status { order: 2; }
   }
 }
+
+// ========================================
+// DARK MODE OVERRIDES
+// ========================================
+:host-context([data-theme="dark"]) {
+  .member-card {
+    background: linear-gradient(180deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.95) 100%);
+    border-color: var(--card-border);
+
+    .header {
+      .name {
+        color: #f8fafc;
+      }
+      .meta {
+        color: #94a3b8;
+      }
+      .sub {
+        color: #94a3b8;
+      }
+      .dot {
+        color: #475569;
+      }
+    }
+
+    .details {
+      .label {
+        color: #94a3b8;
+      }
+      .value {
+        color: #e2e8f0;
+      }
+    }
+
+    .status {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+
+      &.active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4ade80;
+      }
+      &.inactive {
+        background: rgba(158, 158, 158, 0.2);
+        color: #9ca3af;
+      }
+      &.pending {
+        background: rgba(255, 193, 7, 0.2);
+        color: #fcd34d;
+      }
+    }
+
+    &:hover {
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+    }
+  }
+}

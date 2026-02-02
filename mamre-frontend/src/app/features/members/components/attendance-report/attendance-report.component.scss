@@ -274,3 +274,95 @@
         font-size: 10px;
     }
 }
+
+// ========================================
+// DARK MODE OVERRIDES
+// ========================================
+:host-context([data-theme="dark"]) {
+  .page {
+    background: var(--bg-secondary);
+  }
+
+  .page-header {
+    .title {
+      h2 {
+        color: #a5b4fc;
+      }
+      .desc {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .report-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+
+    .report-header {
+      h3 {
+        color: #a5b4fc;
+      }
+      .report-period {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .report-table {
+    th {
+      background: rgba(51, 65, 85, 0.7) !important;
+      color: #e2e8f0 !important;
+      border-color: var(--card-border) !important;
+    }
+
+    td {
+      color: #e2e8f0 !important;
+      border-color: var(--card-border) !important;
+    }
+
+    .member-name {
+      color: #f8fafc !important;
+    }
+
+    .member-sector {
+      color: #94a3b8 !important;
+    }
+
+    .summary-row td {
+      background: rgba(99, 102, 241, 0.15) !important;
+      color: #f8fafc !important;
+    }
+  }
+
+  .formula-section {
+    border-top-color: var(--card-border);
+
+    h4 {
+      color: #f8fafc;
+    }
+
+    .formula {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fcd34d;
+      border-left-color: #f59e0b;
+    }
+  }
+
+  // Form fields
+  ::ng-deep {
+    .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background: rgba(51, 65, 85, 0.5);
+      }
+      .mdc-floating-label {
+        color: #94a3b8 !important;
+      }
+      .mat-mdc-input-element {
+        color: #f8fafc !important;
+      }
+    }
+    .mat-mdc-select-value {
+      color: #f8fafc !important;
+    }
+  }
+}
