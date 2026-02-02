@@ -1,6 +1,6 @@
 // dashboard.component.ts
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -13,10 +13,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgChartsModule } from 'ng2-charts';
 // PENTING: Import Chart untuk Plugin
 import { DashboardService, GenderDistribution, StatusDistribution, UpcomingBirthday, BibleReadingProgress, SectorBibleReadingReport } from 'src/app/core/services/dashboard.service';
+import { ThemeService } from 'src/app/core/services/theme.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { normalizeListResponse } from "../../../../core/utils/response-normalizer";
+import { Subscription } from 'rxjs';
 
 // Import animasi Angular
 import { trigger, style, animate, transition } from '@angular/animations';
@@ -52,9 +54,12 @@ import {SectorApiResult} from "../../models/sector.response.model";
         ]),
     ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
     private svc = inject(DashboardService);
+    private themeService = inject(ThemeService);
     protected router = inject(Router);
+    private themeSubscription?: Subscription;
+    isDarkMode = false;
 
     loading = true;
     today = new Date();
@@ -157,13 +162,18 @@ export class DashboardComponent implements OnInit {
         id: 'barValueLabels',
         afterDatasetsDraw(chart: Chart) {
             const ctx = chart.ctx;
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const darkTextColor = '#e2e8f0';
+            const lightTextColor = '#333';
+
             chart.data.datasets.forEach((dataset, i) => {
                 const meta = chart.getDatasetMeta(i);
                 meta.data.forEach((bar: any, index: number) => {
                     const value = dataset.data[index] as number;
                     if (value > 0) {
                         ctx.save();
-                        ctx.fillStyle = value > 50 ? '#fff' : '#333';
+                        // In dark mode, use light text; otherwise use logic based on bar value
+                        ctx.fillStyle = isDark ? darkTextColor : (value > 50 ? '#fff' : lightTextColor);
                         ctx.font = 'bold 12px Poppins';
                         ctx.textAlign = 'left';
                         ctx.textBaseline = 'middle';
@@ -203,7 +213,10 @@ export class DashboardComponent implements OnInit {
                 position: 'right',
                 labels: {
                     color: '#666',
-                    font: { family: 'Poppins' }
+                    font: { family: 'Poppins' },
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 12
                 }
             },
             tooltip: {
@@ -257,6 +270,11 @@ export class DashboardComponent implements OnInit {
                 const { ctx, width, height } = chart;
                 ctx.restore();
 
+                // Check dark mode
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const valueColor = isDark ? '#f8fafc' : '#333';
+                const labelColor = isDark ? '#94a3b8' : '#666';
+
                 // Total Kehadiran Unik + Anggota Belum Hadir = Total Anggota
                 const totalValue = chart.data.datasets[0].data.reduce((sum: number, value: number) => sum + value, 0);
                 const totalText = totalValue.toLocaleString(); // Format angka
@@ -269,12 +287,12 @@ export class DashboardComponent implements OnInit {
 
                 // Teks Total Value (Angka Besar)
                 ctx.font = '700 24px "Montserrat", sans-serif';
-                ctx.fillStyle = '#333';
+                ctx.fillStyle = valueColor;
                 ctx.fillText(totalText, centerX, centerY - 10);
 
                 // Teks Label "Total Anggota" (Label Kecil)
                 ctx.font = '500 12px "Poppins", sans-serif';
-                ctx.fillStyle = '#666';
+                ctx.fillStyle = labelColor;
                 ctx.fillText('Total Anggota', centerX, centerY + 15);
 
                 ctx.save();
@@ -291,7 +309,13 @@ export class DashboardComponent implements OnInit {
             legend: {
                 display: true,
                 position: 'bottom',
-                labels: { color: '#666', font: { family: 'Poppins' }, padding: 15 }
+                labels: {
+                    color: '#666',
+                    font: { family: 'Poppins' },
+                    padding: 15,
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                }
             },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -354,7 +378,84 @@ export class DashboardComponent implements OnInit {
 
 
     ngOnInit(): void {
+        // Subscribe to theme changes
+        this.themeSubscription = this.themeService.isDarkMode$.subscribe(isDark => {
+            this.isDarkMode = isDark;
+            this.updateChartColors(isDark);
+        });
         this.loadAll();
+    }
+
+    ngOnDestroy(): void {
+        this.themeSubscription?.unsubscribe();
+    }
+
+    // Update chart colors based on theme
+    private updateChartColors(isDark: boolean): void {
+        const textColor = isDark ? '#e2e8f0' : '#666';
+        const textColorDark = isDark ? '#f8fafc' : '#333';
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)';
+        const tooltipBg = isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.75)';
+
+        // Update lineChartOptions (Bar Chart for Bible Reading)
+        if (this.lineChartOptions.scales) {
+            const xScale = this.lineChartOptions.scales['x'] as any;
+            const yScale = this.lineChartOptions.scales['y'] as any;
+            if (xScale) {
+                xScale.grid = { color: gridColor };
+                xScale.ticks = { ...xScale.ticks, color: textColor };
+            }
+            if (yScale) {
+                yScale.ticks = { ...yScale.ticks, color: textColorDark };
+            }
+        }
+        if (this.lineChartOptions.plugins?.tooltip) {
+            (this.lineChartOptions.plugins.tooltip as any).backgroundColor = tooltipBg;
+        }
+
+        // Update pieChartOptions (Doughnut for Sector Distribution)
+        if (this.pieChartOptions.plugins?.legend?.labels) {
+            (this.pieChartOptions.plugins.legend.labels as any).color = textColor;
+        }
+        if (this.pieChartOptions.plugins?.tooltip) {
+            (this.pieChartOptions.plugins.tooltip as any).backgroundColor = tooltipBg;
+        }
+
+        // Update genderChartOptions - IMPORTANT: Update legend label color
+        if (this.genderChartOptions.plugins?.legend?.labels) {
+            (this.genderChartOptions.plugins.legend.labels as any).color = textColor;
+        }
+        if (this.genderChartOptions.plugins?.tooltip) {
+            (this.genderChartOptions.plugins.tooltip as any).backgroundColor = tooltipBg;
+        }
+
+        // Update statusChartOptions
+        if (this.statusChartOptions.scales) {
+            const xScale = this.statusChartOptions.scales['x'] as any;
+            const yScale = this.statusChartOptions.scales['y'] as any;
+            if (xScale) {
+                xScale.grid = { color: gridColor };
+                xScale.ticks = { ...xScale.ticks, color: textColor };
+            }
+            if (yScale) {
+                yScale.ticks = { ...yScale.ticks, color: textColor };
+            }
+        }
+        if (this.statusChartOptions.plugins?.tooltip) {
+            (this.statusChartOptions.plugins.tooltip as any).backgroundColor = tooltipBg;
+        }
+
+        // Update attendanceChartOptions tooltip
+        if (this.attendanceChartOptions.plugins?.tooltip) {
+            (this.attendanceChartOptions.plugins.tooltip as any).backgroundColor = tooltipBg;
+        }
+
+        // Force chart refresh by creating new options objects
+        this.lineChartOptions = { ...this.lineChartOptions };
+        this.pieChartOptions = { ...this.pieChartOptions };
+        this.genderChartOptions = { ...this.genderChartOptions };
+        this.statusChartOptions = { ...this.statusChartOptions };
+        this.attendanceChartOptions = { ...this.attendanceChartOptions };
     }
 
     // Fungsi Helper untuk memperbarui data Attendance Chart
@@ -472,15 +573,39 @@ export class DashboardComponent implements OnInit {
         // Load Gender Distribution
         this.svc.getGenderDistribution().subscribe(arr => {
             this.genderData = arr;
+
+            // Normalize gender values (handle case inconsistency like MALE vs Male)
+            const normalizeGender = (gender: string): string => {
+                const upper = gender?.toUpperCase() || 'UNKNOWN';
+                if (upper === 'MALE' || upper === 'M') return 'Male';
+                if (upper === 'FEMALE' || upper === 'F') return 'Female';
+                return 'Unknown';
+            };
+
+            // Aggregate data by normalized gender
+            const aggregatedData = arr.reduce((acc, item) => {
+                const normalizedGender = normalizeGender(item.gender);
+                if (acc[normalizedGender]) {
+                    acc[normalizedGender] += item.count;
+                } else {
+                    acc[normalizedGender] = item.count;
+                }
+                return acc;
+            }, {} as { [key: string]: number });
+
             const genderColors: { [key: string]: string } = {
                 'Male': '#3b82f6',
                 'Female': '#ec4899',
                 'Unknown': '#9ca3af'
             };
-            this.genderChartData.labels = arr.map(x => x.gender);
+
+            const genderLabels = Object.keys(aggregatedData);
+            const genderCounts = Object.values(aggregatedData);
+
+            this.genderChartData.labels = genderLabels;
             this.genderChartData.datasets = [{
-                data: arr.map(x => x.count),
-                backgroundColor: arr.map(x => genderColors[x.gender] || '#9ca3af'),
+                data: genderCounts,
+                backgroundColor: genderLabels.map(g => genderColors[g] || '#9ca3af'),
                 borderColor: '#ffffff',
                 borderWidth: 4,
                 hoverOffset: 15

@@ -8,19 +8,20 @@
 .app-sidenav {
   width: 240px;
   min-width: 72px;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-shadow: none;
-  transition: width 0.2s ease;
+  transition: width 0.2s ease, background-color 0.3s ease;
+  overflow-x: hidden;
 }
 
 /* header inside sidenav */
 .sidenav-header {
   padding: 20px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--divider-color);
 
   .brand {
     display: flex;
@@ -31,7 +32,7 @@
       margin: 0;
       font-size: 20px;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text-primary);
       letter-spacing: -0.3px;
     }
   }
@@ -58,7 +59,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #94a3b8;
+  color: var(--sidebar-section-label);
 }
 
 /* nav list */
@@ -66,17 +67,36 @@ mat-nav-list {
   padding-top: 8px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(148, 163, 184, 0.5);
+    }
+  }
 
   mat-divider {
     margin: 8px 16px;
-    border-color: #f1f5f9;
+    border-color: var(--divider-color);
   }
 
   a[mat-list-item] {
     height: 44px;
     border-radius: 8px;
     margin: 2px 12px;
-    color: #475569;
+    color: var(--sidebar-text);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -86,7 +106,7 @@ mat-nav-list {
     transition: all 0.15s ease;
 
     mat-icon {
-      color: #64748b;
+      color: var(--sidebar-icon);
       font-size: 22px;
       width: 22px;
       height: 22px;
@@ -94,26 +114,26 @@ mat-nav-list {
     }
 
     &:hover {
-      background: #f8fafc;
-      color: #334155;
+      background: var(--sidebar-hover);
+      color: var(--text-primary);
 
       mat-icon {
-        color: #475569;
+        color: var(--text-secondary);
       }
     }
   }
 
   a.active-link {
-    background: linear-gradient(90deg, #eef2ff, #f5f3ff);
-    color: #6366f1;
+    background: var(--sidebar-active-bg);
+    color: var(--primary-color);
     font-weight: 600;
 
     mat-icon {
-      color: #6366f1;
+      color: var(--primary-color);
     }
 
     &:hover {
-      background: linear-gradient(90deg, #e0e7ff, #ede9fe);
+      background: var(--sidebar-active-bg);
     }
   }
 }
@@ -121,12 +141,12 @@ mat-nav-list {
 /* footer area in sidenav */
 .sidenav-footer {
   padding: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--divider-color);
 
   .collapse-btn {
     width: 100%;
     justify-content: flex-start;
-    color: #64748b;
+    color: var(--sidebar-icon);
     font-size: 13px;
     font-weight: 500;
     border-radius: 8px;
@@ -141,8 +161,8 @@ mat-nav-list {
     }
 
     &:hover {
-      background: #f8fafc;
-      color: #334155;
+      background: var(--sidebar-hover);
+      color: var(--text-primary);
     }
   }
 }
@@ -219,14 +239,19 @@ mat-nav-list {
 .content {
   padding: 0;
   min-height: calc(100vh - 64px);
-  background: #f8fafc;
+  background: var(--bg-secondary);
   overflow-x: hidden;
   box-sizing: border-box;
+  transition: background-color 0.3s ease;
 }
 
 /* Profile Menu Styling */
 ::ng-deep .profile-menu {
   min-width: 280px !important;
+
+  .mat-mdc-menu-panel {
+    background: var(--menu-bg) !important;
+  }
 
   .profile-header {
     padding: 16px !important;
@@ -237,6 +262,7 @@ mat-nav-list {
     opacity: 1 !important;
     height: auto !important;
     line-height: normal !important;
+    background: var(--menu-bg);
 
     .profile-avatar {
       width: 48px;
@@ -260,17 +286,17 @@ mat-nav-list {
       .profile-name {
         font-weight: 600;
         font-size: 15px;
-        color: #1e293b;
+        color: var(--text-primary);
       }
 
       .profile-email {
         font-size: 13px;
-        color: #64748b;
+        color: var(--text-secondary);
       }
 
       .profile-role {
         font-size: 11px;
-        color: #6366f1;
+        color: var(--primary-color);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -281,14 +307,19 @@ mat-nav-list {
 
   .mat-mdc-menu-item {
     height: 44px;
+    color: var(--text-primary);
 
     mat-icon {
-      color: #64748b;
+      color: var(--text-muted);
       margin-right: 12px;
     }
 
-    &:hover mat-icon {
-      color: #475569;
+    &:hover {
+      background: var(--menu-hover);
+
+      mat-icon {
+        color: var(--text-secondary);
+      }
     }
   }
 
@@ -300,7 +331,7 @@ mat-nav-list {
     }
 
     &:hover {
-      background: #fef2f2;
+      background: rgba(220, 38, 38, 0.1);
     }
   }
 }
@@ -310,16 +341,21 @@ mat-nav-list {
   min-width: 320px !important;
   max-width: 360px !important;
 
+  .mat-mdc-menu-panel {
+    background: var(--menu-bg) !important;
+  }
+
   .menu-header {
     padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: var(--menu-bg);
 
     span {
       font-weight: 600;
       font-size: 15px;
-      color: #1e293b;
+      color: var(--text-primary);
     }
 
     button {
@@ -342,6 +378,7 @@ mat-nav-list {
       height: auto;
       min-height: 60px;
       white-space: normal;
+      color: var(--text-primary);
     }
 
     mat-icon {
@@ -356,13 +393,13 @@ mat-nav-list {
 
       .notification-title {
         font-size: 14px;
-        color: #1e293b;
+        color: var(--text-primary);
         font-weight: 500;
       }
 
       .notification-time {
         font-size: 12px;
-        color: #94a3b8;
+        color: var(--text-muted);
       }
     }
   }

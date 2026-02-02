@@ -46,3 +46,272 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+// src/styles.scss - Theme Variables
+:root {
+  // Background colors
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+
+  // Text colors
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  // Card & surfaces
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  // Sidebar
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e2e8f0;
+  --sidebar-hover: #f8fafc;
+  --sidebar-active-bg: linear-gradient(90deg, #eef2ff, #f5f3ff);
+  --sidebar-text: #475569;
+  --sidebar-icon: #64748b;
+  --sidebar-section-label: #64748b;
+
+  // Header
+  --header-bg: linear-gradient(90deg, #6366f1, #8b5cf6);
+  --header-text: #ffffff;
+
+  // Dividers
+  --divider-color: #f1f5f9;
+
+  // Menu/Dropdown
+  --menu-bg: #ffffff;
+  --menu-hover: #f8fafc;
+
+  // Primary color
+  --primary-color: #6366f1;
+  --primary-light: #eef2ff;
+}
+
+[data-theme="dark"] {
+  // Background colors
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+
+  // Text colors - IMPROVED CONTRAST
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+
+  // Card & surfaces
+  --card-bg: #1e293b;
+  --card-border: #475569;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  // Sidebar - IMPROVED VISIBILITY
+  --sidebar-bg: #1e293b;
+  --sidebar-border: #475569;
+  --sidebar-hover: #334155;
+  --sidebar-active-bg: linear-gradient(90deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.2));
+  --sidebar-text: #e2e8f0;
+  --sidebar-icon: #a5b4fc;
+  --sidebar-section-label: #94a3b8;
+
+  // Header - keep gradient but slightly darker
+  --header-bg: linear-gradient(90deg, #4f46e5, #7c3aed);
+  --header-text: #ffffff;
+
+  // Dividers
+  --divider-color: #475569;
+
+  // Menu/Dropdown
+  --menu-bg: #1e293b;
+  --menu-hover: #334155;
+
+  // Primary color
+  --primary-color: #818cf8;
+  --primary-light: rgba(99, 102, 241, 0.2);
+}
+
+body {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// ========================================
+// DARK MODE - Chart & Component Overrides
+// ========================================
+[data-theme="dark"] {
+  // ApexCharts text labels - ALL text elements
+  .apexcharts-text,
+  .apexcharts-xaxis-label,
+  .apexcharts-yaxis-label,
+  .apexcharts-datalabel,
+  .apexcharts-datalabel-label,
+  .apexcharts-datalabel-value,
+  .apexcharts-pie-label,
+  .apexcharts-radialbar-label,
+  .apexcharts-title-text,
+  .apexcharts-subtitle-text {
+    fill: #e2e8f0 !important;
+  }
+
+  // ApexCharts legend text
+  .apexcharts-legend-text {
+    color: #e2e8f0 !important;
+  }
+
+  // ApexCharts legend series name
+  .apexcharts-legend-series {
+    color: #e2e8f0 !important;
+  }
+
+  // ApexCharts tooltip
+  .apexcharts-tooltip {
+    background: #1e293b !important;
+    border-color: #475569 !important;
+    color: #f8fafc !important;
+
+    .apexcharts-tooltip-title {
+      background: #334155 !important;
+      border-color: #475569 !important;
+      color: #f8fafc !important;
+    }
+
+    .apexcharts-tooltip-text,
+    .apexcharts-tooltip-text-y-label,
+    .apexcharts-tooltip-text-y-value {
+      color: #f8fafc !important;
+    }
+  }
+
+  // ApexCharts grid
+  .apexcharts-gridline {
+    stroke: #334155 !important;
+  }
+
+  .apexcharts-xaxis-tick,
+  .apexcharts-yaxis-tick {
+    stroke: #475569 !important;
+  }
+
+  // ApexCharts axis line
+  .apexcharts-xaxis line,
+  .apexcharts-yaxis line {
+    stroke: #475569 !important;
+  }
+
+  // Chart.js canvas - force text color via CSS (limited support)
+  canvas {
+    color: #e2e8f0;
+  }
+
+  // ngx-charts overrides
+  .ngx-charts {
+    text {
+      fill: #e2e8f0 !important;
+    }
+
+    .gridline-path {
+      stroke: #334155 !important;
+    }
+
+    .tick text {
+      fill: #e2e8f0 !important;
+    }
+
+    .legend-label-text {
+      color: #e2e8f0 !important;
+      fill: #e2e8f0 !important;
+    }
+
+    .legend-labels {
+      background: transparent !important;
+    }
+
+    .chart-legend .legend-label {
+      color: #e2e8f0 !important;
+    }
+
+    .pie-label {
+      fill: #e2e8f0 !important;
+    }
+
+    .arc-label {
+      fill: #e2e8f0 !important;
+    }
+  }
+
+  // Material overrides for dark mode
+  .mat-mdc-card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-card-title,
+  .mat-mdc-card-subtitle {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-menu-panel {
+    background-color: var(--menu-bg) !important;
+  }
+
+  .mat-mdc-menu-item {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-list-item {
+    color: var(--sidebar-text) !important;
+  }
+
+  .mdc-list-item__primary-text {
+    color: var(--sidebar-text) !important;
+  }
+
+  // Force text color for all elements
+  .card-title,
+  .chart-title,
+  h1, h2, h3, h4, h5, h6 {
+    color: #f8fafc !important;
+  }
+
+  // Form fields
+  .mat-mdc-form-field {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+  }
+
+  // Dividers
+  .mat-divider {
+    border-color: var(--divider-color) !important;
+  }
+
+  // ========================================
+  // Chart.js Legend Overrides (ng2-charts)
+  // ========================================
+
+  // Chart container legend styling
+  .chart-legend {
+    li {
+      color: #e2e8f0 !important;
+
+      span {
+        color: #e2e8f0 !important;
+      }
+    }
+  }
+
+  // Generic legend text for Chart.js
+  [class*="legend"] {
+    color: #e2e8f0 !important;
+  }
+
+  // Chart wrapper text
+  .chart-wrapper,
+  .chart-area,
+  .chart-area-small {
+    color: #e2e8f0;
+  }
+}
+

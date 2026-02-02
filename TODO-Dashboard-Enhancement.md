@@ -5,11 +5,11 @@
 
 ## 🎨 **Frontend - UI/UX Improvements**
 
-### 1. **Dark Mode Support**
-- [ ] Tambahkan variabel warna untuk dark theme
-- [ ] Implementasi toggle dark/light mode di header
-- [ ] Simpan preferensi user di localStorage
-- [ ] Update semua komponen untuk mendukung dark mode
+### 1. **Dark Mode Support** ✅ COMPLETED
+- [x] Tambahkan variabel warna untuk dark theme (`styles.scss`)
+- [x] Implementasi toggle dark/light mode di header (`app-layout.component.*`)
+- [x] Simpan preferensi user di localStorage (`theme.service.ts`)
+- [x] Update semua komponen untuk mendukung dark mode (`dashboard.component.scss`, `app-layout.component.scss`)
 
 ### 2. **Chart Improvements**
 - [ ] Tambahkan animasi loading skeleton untuk charts

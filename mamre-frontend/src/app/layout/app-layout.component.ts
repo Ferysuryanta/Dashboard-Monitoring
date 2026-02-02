@@ -4,13 +4,14 @@ import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/mater
 import {MatListItem, MatNavList} from "@angular/material/list";
 import {MatIcon} from "@angular/material/icon";
 import {MatButton, MatIconButton} from "@angular/material/button";
-import {NgIf} from "@angular/common";
+import {NgIf, AsyncPipe} from "@angular/common";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
 import {MatDivider} from "@angular/material/divider";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatBadge} from "@angular/material/badge";
 import { AuthService } from '../core/services/auth.service';
+import { ThemeService } from '../core/services/theme.service';
 
 interface CurrentUserDisplay {
     fullName: string;
@@ -33,6 +34,7 @@ interface CurrentUserDisplay {
         RouterLink,
         MatButton,
         NgIf,
+        AsyncPipe,
         MatSidenavContent,
         MatToolbar,
         MatIconButton,
@@ -57,7 +59,8 @@ export class AppLayoutComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private authService: AuthService
+        private authService: AuthService,
+        public themeService: ThemeService
     ) {
         this.checkScreenSize();
     }
@@ -124,5 +127,9 @@ export class AppLayoutComponent implements OnInit {
 
     onLogout(): void {
         this.authService.logout();
+    }
+
+    toggleTheme(): void {
+        this.themeService.toggle();
     }
 }

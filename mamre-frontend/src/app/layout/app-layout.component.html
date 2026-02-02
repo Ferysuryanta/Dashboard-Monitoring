@@ -82,6 +82,14 @@
             </div>
 
             <div class="right-group">
+                <!-- Theme Toggle -->
+                <button mat-icon-button
+                        (click)="toggleTheme()"
+                        [matTooltip]="(themeService.isDarkMode$ | async) ? 'Light Mode' : 'Dark Mode'"
+                        aria-label="Toggle theme">
+                    <mat-icon>{{ (themeService.isDarkMode$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                </button>
+
                 <!-- Notifications -->
                 <button mat-icon-button matTooltip="Notifications" aria-label="Notifications" [matMenuTriggerFor]="notificationMenu">
                     <mat-icon [matBadge]="unreadNotifications" matBadgeColor="warn" [matBadgeHidden]="unreadNotifications === 0">notifications</mat-icon>
