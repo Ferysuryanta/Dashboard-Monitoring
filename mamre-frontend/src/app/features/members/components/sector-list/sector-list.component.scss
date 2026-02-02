@@ -272,12 +272,12 @@
 
   .sector-table {
     .mat-mdc-header-row {
-      background: linear-gradient(180deg, rgba(51, 65, 85, 0.85) 0%, rgba(51, 65, 85, 0.7) 100%) !important;
-      border-bottom: 2px solid rgba(99, 102, 241, 0.5) !important;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+      border-bottom: 2px solid #6366f1 !important;
     }
 
     .mat-mdc-header-cell {
-      color: #e2e8f0 !important;
+      color: #38bdf8 !important;
       border-color: var(--card-border) !important;
       font-weight: 700 !important;
       font-size: 12px !important;
@@ -289,7 +289,7 @@
       border-color: var(--card-border) !important;
 
       &:hover {
-        background: rgba(51, 65, 85, 0.3) !important;
+        background: rgba(51, 65, 85, 0.4) !important;
       }
     }
 
@@ -297,6 +297,35 @@
       color: #e2e8f0 !important;
       border-color: var(--card-border) !important;
     }
+
+    .name-txt {
+      color: #f8fafc !important;
+    }
+
+    // Action buttons
+    .col-actions {
+      button[mat-icon-button] {
+        &[color="primary"] {
+          color: #a5b4fc !important;
+
+          &:hover {
+            background: rgba(99, 102, 241, 0.2) !important;
+          }
+        }
+
+        &[color="warn"] {
+          color: #f87171 !important;
+
+          &:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    color: #94a3b8 !important;
   }
 
   .paginator-wrapper,

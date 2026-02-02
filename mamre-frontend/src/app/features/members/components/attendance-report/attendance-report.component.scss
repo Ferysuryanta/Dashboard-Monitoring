@@ -97,10 +97,13 @@
 
     .header-row-main {
         .th-fixed {
-            background: #1a237e;
+            background: linear-gradient(180deg, #1a237e 0%, #303f9f 100%);
             color: white;
             font-weight: 700;
             min-width: 100px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .th-sector {
@@ -113,11 +116,13 @@
 
     .header-row-sub {
         .th-sub {
-            background: #e8eaf6;
-            font-weight: 600;
+            background: linear-gradient(180deg, #e8eaf6 0%, #c5cae9 100%);
+            font-weight: 700;
             font-size: 11px;
-            color: #333;
+            color: #1a237e;
             min-width: 80px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
     }
 
@@ -310,9 +315,25 @@
 
   .report-table {
     th {
-      background: rgba(51, 65, 85, 0.7) !important;
-      color: #e2e8f0 !important;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+      color: #38bdf8 !important;
       border-color: var(--card-border) !important;
+      font-weight: 700 !important;
+      font-size: 12px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      border-bottom: 2px solid #6366f1 !important;
+    }
+
+    .header-row-main .th-fixed {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+      color: #38bdf8 !important;
+      border-bottom: 2px solid #6366f1 !important;
+    }
+
+    .header-row-sub .th-sub {
+      background: rgba(30, 41, 59, 0.8) !important;
+      color: #7dd3fc !important;
     }
 
     td {

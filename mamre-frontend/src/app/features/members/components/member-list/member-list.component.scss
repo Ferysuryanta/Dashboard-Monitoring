@@ -552,10 +552,120 @@ DARK MODE OVERRIDES
   }
 
   .table-head {
-    background: linear-gradient(180deg, rgba(51, 65, 85, 0.85) 0%, rgba(51, 65, 85, 0.7) 100%) !important;
-    border-bottom: 2px solid rgba(99, 102, 241, 0.5) !important;
-    color: #e2e8f0 !important;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+    border-bottom: 2px solid #6366f1 !important;
+    color: #38bdf8 !important;
     font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+
+    .col {
+      color: #38bdf8 !important;
+    }
+
+    .sortable:hover {
+      color: #7dd3fc !important;
+    }
+
+    mat-icon {
+      color: #38bdf8 !important;
+    }
+  }
+
+  // Custom grid rows
+  .row {
+    background: var(--card-bg) !important;
+    border-bottom-color: var(--card-border) !important;
+
+    &:hover {
+      background: rgba(51, 65, 85, 0.4) !important;
+    }
+  }
+
+  // All column text
+  .col {
+    color: #e2e8f0 !important;
+  }
+
+  // Name column - more prominent
+  .name-txt {
+    color: #f8fafc !important;
+    font-weight: 600 !important;
+  }
+
+  // Avatar styling
+  .avatar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  // Email link
+  .col-email a {
+    color: #60a5fa !important;
+
+    &:hover {
+      color: #93c5fd !important;
+    }
+  }
+
+  // Status chips
+  .status-chip {
+    &.status-active {
+      background: rgba(16, 185, 129, 0.2) !important;
+      color: #34d399 !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+    }
+
+    &.status-inactive {
+      background: rgba(239, 68, 68, 0.2) !important;
+      color: #f87171 !important;
+      border-color: rgba(239, 68, 68, 0.3) !important;
+    }
+
+    &.status-pending {
+      background: rgba(245, 158, 11, 0.2) !important;
+      color: #fbbf24 !important;
+      border-color: rgba(245, 158, 11, 0.3) !important;
+    }
+
+    &.status-suspended {
+      background: rgba(107, 114, 128, 0.2) !important;
+      color: #9ca3af !important;
+      border-color: rgba(107, 114, 128, 0.3) !important;
+    }
+  }
+
+  // Edit link
+  .edit-link {
+    background: rgba(99, 102, 241, 0.2) !important;
+    color: #a5b4fc !important;
+
+    &:hover {
+      background: #6366f1 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  // Delete button
+  .delete-btn {
+    background: rgba(239, 68, 68, 0.15) !important;
+
+    mat-icon {
+      color: #f87171 !important;
+    }
+
+    &:hover {
+      background: #ef4444 !important;
+
+      mat-icon {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Empty state
+  .empty {
+    color: #94a3b8 !important;
   }
 
   .mat-mdc-row {

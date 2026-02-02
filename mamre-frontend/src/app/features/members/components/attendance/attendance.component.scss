@@ -272,9 +272,13 @@
     width: 100%;
 
     th {
-        background: #f8f9fa;
-        font-weight: 600;
-        color: #333;
+        background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        border-bottom: 2px solid #6366f1;
     }
 
     td, th {
@@ -396,7 +400,39 @@ mat-paginator {
     }
   }
 
-  mat-card {
+  // Stat cards - PRESERVE colorful gradients in dark mode
+  .stat-card {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+
+    &.today {
+      background: linear-gradient(135deg, #6a5af9 0%, #8b7cf9 100%) !important;
+      color: white !important;
+    }
+    &.week {
+      background: linear-gradient(135deg, #20c997 0%, #38d9a9 100%) !important;
+      color: white !important;
+    }
+    &.month {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%) !important;
+      color: white !important;
+    }
+
+    mat-icon {
+      color: white !important;
+    }
+
+    .stat-info {
+      .stat-value {
+        color: white !important;
+      }
+      .stat-label {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+  }
+
+  // Regular mat-cards (NOT stat-cards)
+  mat-card:not(.stat-card) {
     background: var(--card-bg) !important;
     border-color: var(--card-border) !important;
   }
@@ -412,11 +448,32 @@ mat-paginator {
   }
 
   .mat-mdc-header-row {
-    background: rgba(51, 65, 85, 0.5) !important;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+    border-bottom: 2px solid #6366f1 !important;
   }
 
   .mat-mdc-header-cell {
-    color: #94a3b8 !important;
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+  }
+
+  .attendance-table {
+    th {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+      color: #38bdf8 !important;
+      border-bottom: 2px solid #6366f1 !important;
+    }
+
+    td {
+      color: #e2e8f0 !important;
+    }
+
+    .member-name {
+      color: #f8fafc !important;
+    }
   }
 
   .mat-mdc-row {
