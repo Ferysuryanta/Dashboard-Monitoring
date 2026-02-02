@@ -1,23 +1,49 @@
 <div class="dashboard-root">
-    <div class="header-section">
+    <div class="header-section-modern">
         <div class="header-left">
-            <div class="greeting-text">{{ getGreeting() }} 👋</div>
-            <h1>Dashboard <span>Mamre GBKP</span></h1>
+            <div class="greeting-row">
+                <span class="greeting-text">{{ getGreeting() }}</span>
+                <span class="greeting-wave">👋</span>
+            </div>
+            <h1 class="header-title">Dashboard <span class="brand-text">Mamre GBKP</span></h1>
             <div class="header-date">
-                <mat-icon>calendar_today</mat-icon>
-                {{ today | date:'EEEE, dd MMMM yyyy' }}
+                <div class="date-badge">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span>{{ today | date:'EEEE, dd MMMM yyyy' }}</span>
+                </div>
             </div>
         </div>
-        <div class="top-actions">
-            <button mat-flat-button class="action-btn primary" (click)="goMembers()">
-                <mat-icon>people</mat-icon> Anggota
-            </button>
-            <button mat-flat-button class="action-btn secondary" (click)="goSectors()">
-                <mat-icon>account_tree</mat-icon> Sektor
-            </button>
-            <button mat-flat-button class="action-btn tertiary" (click)="goPositions()">
-                <mat-icon>work</mat-icon> Jabatan
-            </button>
+        <div class="quick-nav-actions">
+            <div class="nav-card primary" (click)="goMembers()">
+                <div class="nav-icon-wrap">
+                    <mat-icon>groups</mat-icon>
+                </div>
+                <div class="nav-content">
+                    <span class="nav-title">Anggota</span>
+                    <span class="nav-subtitle">Kelola data anggota</span>
+                </div>
+                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+            </div>
+            <div class="nav-card secondary" (click)="goSectors()">
+                <div class="nav-icon-wrap">
+                    <mat-icon>account_tree</mat-icon>
+                </div>
+                <div class="nav-content">
+                    <span class="nav-title">Sektor</span>
+                    <span class="nav-subtitle">Atur pembagian</span>
+                </div>
+                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+            </div>
+            <div class="nav-card tertiary" (click)="goPositions()">
+                <div class="nav-icon-wrap">
+                    <mat-icon>work</mat-icon>
+                </div>
+                <div class="nav-content">
+                    <span class="nav-title">Jabatan</span>
+                    <span class="nav-subtitle">Struktur organisasi</span>
+                </div>
+                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+            </div>
         </div>
     </div>
 

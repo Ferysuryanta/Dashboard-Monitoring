@@ -148,152 +148,334 @@ mat-divider {
 }
 
 // ========================================
-// HEADER SECTION - Compact & Clean
+// HEADER SECTION - Modern Premium Design
 // ========================================
-.header-section {
+.header-section-modern {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding: 16px 20px;
-  background: $bg-card;
-  border-radius: $radius-lg;
-  border: 1px solid rgba($border-color, 0.6);
-  box-shadow: $shadow-xs;
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, $bg-card 0%, rgba($primary, 0.02) 100%);
+  border-radius: $radius-xl;
+  border: 1px solid rgba($border-color, 0.5);
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative background element
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba($primary, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
 
   .header-left {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .greeting-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .greeting-text {
     font-family: $font-body;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     color: $primary;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
   }
 
-  h1 {
-    font-family: $font-display;
-    font-size: 22px;
-    font-weight: 700;
-    color: $text-dark;
-    letter-spacing: -0.4px;
-    margin: 0;
+  .greeting-wave {
+    font-size: 18px;
+    display: inline-block;
+    animation: wave 2.5s ease-in-out infinite;
+    transform-origin: 70% 70%;
+  }
 
-    span {
-      background: linear-gradient(135deg, $primary, $primary-light);
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+    60% { transform: rotate(0deg); }
+  }
+
+  .header-title {
+    font-family: $font-display;
+    font-size: 26px;
+    font-weight: 800;
+    color: $text-dark;
+    letter-spacing: -0.5px;
+    margin: 0;
+    line-height: 1.2;
+
+    .brand-text {
+      background: linear-gradient(135deg, $primary 0%, $primary-light 50%, #a78bfa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      position: relative;
     }
   }
 
   .header-date {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-family: $font-body;
-    font-size: 12px;
-    color: $text-muted;
-    margin-top: 2px;
+    margin-top: 4px;
 
-    mat-icon {
-      font-size: 13px;
-      width: 13px;
-      height: 13px;
-      color: $text-light;
-    }
-  }
-
-  .top-actions {
-    display: flex;
-    gap: 8px;
-
-    .action-btn {
-      height: 36px;
-      padding: 0 14px;
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba($primary, 0.08);
+      border-radius: 20px;
       font-family: $font-body;
       font-size: 12px;
-      font-weight: 600;
-      border-radius: $radius-sm;
-      transition: all 0.2s $ease-smooth;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      box-shadow: none;
-      border: none;
+      font-weight: 500;
+      color: $text-muted;
 
       mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        transition: transform 0.2s $ease-smooth;
-      }
-
-      &:hover mat-icon {
-        transform: scale(1.1);
-      }
-
-      &.primary {
-        background: $primary;
-        color: white;
-        &:hover {
-          background: $primary-dark;
-          box-shadow: 0 4px 12px rgba($primary, 0.25);
-        }
-        &:active {
-          transform: scale(0.98);
-        }
-      }
-
-      &.secondary {
-        background: $secondary;
-        color: white;
-        &:hover {
-          background: #0d9668;
-          box-shadow: 0 4px 12px rgba($secondary, 0.25);
-        }
-        &:active {
-          transform: scale(0.98);
-        }
-      }
-
-      &.tertiary {
-        background: $accent;
-        color: white;
-        &:hover {
-          background: #d97706;
-          box-shadow: 0 4px 12px rgba($accent, 0.25);
-        }
-        &:active {
-          transform: scale(0.98);
-        }
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        color: $primary;
       }
     }
   }
+}
 
-  @media (max-width: 992px) {
+// ========================================
+// QUICK NAV CARDS - Modern Action Cards
+// ========================================
+.quick-nav-actions {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all 0.3s $ease-smooth;
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s $ease-bounce;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      color: white;
+    }
+  }
+
+  .nav-content {
+    display: flex;
     flex-direction: column;
-    gap: 16px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nav-title {
+    font-family: $font-display;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+  }
+
+  .nav-subtitle {
+    font-family: $font-body;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(white, 0.75);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-arrow {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: rgba(white, 0.6);
+    transition: all 0.3s $ease-smooth;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+
+    .nav-icon-wrap {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .nav-arrow {
+      transform: translateX(4px);
+      color: white;
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px) scale(0.99);
+  }
+
+  // Primary - Purple/Indigo
+  &.primary {
+    background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
+    box-shadow: 0 4px 20px rgba($primary, 0.35);
+
+    .nav-icon-wrap {
+      background: rgba(white, 0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    &:hover {
+      box-shadow: 0 8px 30px rgba($primary, 0.45);
+    }
+  }
+
+  // Secondary - Green/Emerald
+  &.secondary {
+    background: linear-gradient(135deg, $secondary 0%, $secondary-light 100%);
+    box-shadow: 0 4px 20px rgba($secondary, 0.35);
+
+    .nav-icon-wrap {
+      background: rgba(white, 0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    &:hover {
+      box-shadow: 0 8px 30px rgba($secondary, 0.45);
+    }
+  }
+
+  // Tertiary - Amber/Orange
+  &.tertiary {
+    background: linear-gradient(135deg, $accent 0%, #fbbf24 100%);
+    box-shadow: 0 4px 20px rgba($accent, 0.35);
+
+    .nav-icon-wrap {
+      background: rgba(white, 0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    &:hover {
+      box-shadow: 0 8px 30px rgba($accent, 0.45);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .header-section-modern {
+    flex-direction: column;
+    gap: 20px;
     text-align: center;
-    padding: 16px;
+    padding: 20px;
 
     .header-left {
       align-items: center;
     }
 
-    .header-date {
-      justify-content: center;
-    }
-
-    .top-actions {
-      flex-wrap: wrap;
+    .greeting-row {
       justify-content: center;
     }
   }
+
+  .quick-nav-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-card {
+    min-width: 160px;
+    padding: 12px 14px;
+
+    .nav-subtitle {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section-modern {
+    padding: 16px;
+
+    .header-title {
+      font-size: 22px;
+    }
+  }
+
+  .quick-nav-actions {
+    width: 100%;
+  }
+
+  .nav-card {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    justify-content: center;
+
+    .nav-content {
+      display: none;
+    }
+
+    .nav-arrow {
+      display: none;
+    }
+
+    .nav-icon-wrap {
+      width: 38px;
+      height: 38px;
+    }
+  }
+}
+
+// Keep old header-section for backwards compatibility (hidden)
+.header-section {
+  display: none;
 }
 
 
@@ -1074,7 +1256,7 @@ mat-divider {
     border-color: rgba($info, 0.2);
 
     .q-icon-wrap {
-      background: linear-gradient(135deg, $info, lighten($info, 10%));
+      background: linear-gradient(135deg, $info, #60a5fa);
       box-shadow: 0 4px 14px rgba($info, 0.35);
     }
     .q-value-modern { color: $info; }
@@ -1091,11 +1273,11 @@ mat-divider {
     border-color: rgba($accent, 0.2);
 
     .q-icon-wrap {
-      background: linear-gradient(135deg, $accent, lighten($accent, 10%));
+      background: linear-gradient(135deg, $accent, #fbbf24);
       box-shadow: 0 4px 14px rgba($accent, 0.35);
     }
     .q-value-modern { color: $accent; }
-    .q-label-modern { color: darken($accent, 5%); }
+    .q-label-modern { color: #d97706; }
 
     &:hover {
       background: linear-gradient(135deg, rgba($accent, 0.18) 0%, rgba($accent, 0.08) 100%);
