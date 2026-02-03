@@ -1,4 +1,4 @@
-<section class="page">
+e<section class="page">
     <div class="page-header">
         <div class="title">
             <h2>👥 Users</h2>
@@ -8,6 +8,10 @@
         <div class="controls">
             <button mat-flat-button color="primary" routerLink="/members/new">
                 <mat-icon>person_add</mat-icon> Add New User
+            </button>
+            <!-- new: open roster (generic) -->
+            <button mat-flat-button color="accent" [routerLink]="['/app/members/roster']">
+                <mat-icon>table_view</mat-icon> Roster
             </button>
         </div>
     </div>
@@ -106,7 +110,10 @@
                     <div class="col col-status">
                         <mat-chip class="status-chip" [ngClass]="statusClass(m.status)">{{ m.status || '-' }}</mat-chip>
                     </div>
-                    <div class="col col-sector" [title]="m.sectorName || ''">{{ m.sectorName || '-' }}</div>
+                    <div class="col col-sector" [title]="m.sectorName || ''">
+                        <a *ngIf="m.sectorId" [routerLink]="['/app/members/roster']" [queryParams]="{ sectorId: m.sectorId, sectorName: m.sectorName }">{{ m.sectorName || '-' }}</a>
+                        <span *ngIf="!m.sectorId">{{ m.sectorName || '-' }}</span>
+                    </div>
                     <div class="col col-address" [title]="m.address || ''">{{ m.address || '-' }}</div>
                     <div class="col col-action">
                         <a class="edit-link" [routerLink]="['/members', m.id, 'edit']" title="Edit member">Edit</a>

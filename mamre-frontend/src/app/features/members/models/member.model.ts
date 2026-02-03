@@ -8,6 +8,7 @@ export interface MemberDto {
     email?: string;
     address?: string;
     status?: string;
+    sectorId?: number;
     sectorName?: string;
     positionName?: string;
     joinedDate?: string; // format "YYYY-MM-DD"

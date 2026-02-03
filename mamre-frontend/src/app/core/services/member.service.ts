@@ -29,7 +29,7 @@ export class MemberService {
      * Server-side paging + search + status + sort
      * sort: e.g. 'firstName,asc'
      */
-    getPaged(page = 0, size = 20, sort?: string, search?: string, status?: string): Observable<PagedResult<MemberDto>> {
+    getPaged(page = 0, size = 20, sort?: string, search?: string, status?: string, sectorId?: number): Observable<PagedResult<MemberDto>> {
         let params = new HttpParams()
             .set('page', String(page))
             .set('size', String(size));
@@ -37,6 +37,7 @@ export class MemberService {
         if (sort) params = params.append('sort', sort);
         if (search) params = params.append('search', search);
         if (status) params = params.append('status', status);
+        if (sectorId != null) params = params.append('sectorId', String(sectorId));
 
         return this.http.get<any>(this.base, { params }).pipe(
             map(res => {
@@ -77,4 +78,12 @@ export class MemberService {
     update(id: string, payload: Partial<MemberDto>) { return this.http.put<MemberDto>(`${this.base}/${id}`, payload); }
     delete(id: string) { return this.http.delete<void>(`${this.base}/${id}`); }
     getById(id: string) { return this.http.get<MemberDto>(`${this.base}/${id}`); }
+
+    // new: download export (CSV/XLSX)
+    downloadExport(sectorId?: number, status?: string) {
+        let params = new HttpParams();
+        if (sectorId != null) params = params.append('sectorId', String(sectorId));
+        if (status) params = params.append('status', status);
+        return this.http.get(`${this.base}/export`, { params, responseType: 'blob' as 'json' });
+    }
 }

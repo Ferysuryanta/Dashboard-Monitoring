@@ -40,6 +40,8 @@ public class MemberDto {
     @Size(max = 100, message = "Nama sektor maksimal 100 karakter")
     private String sectorName;
 
+    private Long sectorId;
+
     @Size(max = 100, message = "Nama jabatan maksimal 100 karakter")
     private String positionName;
 

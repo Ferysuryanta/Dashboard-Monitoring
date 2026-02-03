@@ -1,0 +1,53 @@
+<section class="roster-page">
+  <div class="toolbar">
+    <div class="left">
+      <h2>Roster: {{ sectorName || (sectorId ? ('Sektor ' + sectorId) : 'Semua Sektor') }}</h2>
+      <div class="subtitle">{{ members.length }} anggota</div>
+    </div>
+
+    <div class="controls">
+      <mat-form-field appearance="outline" class="status-filter">
+        <mat-label>Filter Sektor</mat-label>
+        <mat-select [value]="selectedSectorId" (selectionChange)="onSectorChange($event.value)">
+          <mat-option [value]="undefined">Semua Sektor</mat-option>
+          <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" class="primary-btn" (click)="downloadCsv()">Download CSV</button>
+        <button mat-flat-button (click)="print()">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table class="roster-table" *ngIf="!loading && !error">
+    <thead>
+      <tr>
+        <th>NO</th>
+        <th>NAMA</th>
+        <th>PENGGELAREN</th>
+        <th>TANGGAL LAHIR</th>
+        <th>KODE MAMRE</th>
+        <th>KODE SAITUN</th>
+        <th>ALAMAT</th>
+        <th>NO HP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of members; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ m.firstName }} {{ m.lastName || '' }}</td>
+        <td><!-- guardian field not in DTO, leave blank or extend DTO --> </td>
+        <td>{{ m.birthDate || '' }}</td>
+        <td>{{ '' }}</td>
+        <td>{{ '' }}</td>
+        <td>{{ m.address }}</td>
+        <td>{{ m.phone }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

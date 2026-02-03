@@ -10,6 +10,7 @@ import { AuthGuard, GuestGuard } from './core/guards/auth.guard';
 // Members
 import { MemberListComponent } from './features/members/components/member-list/member-list.component';
 import { MemberFormComponent } from './features/members/components/member-form/member-form.component';
+import { MembersRosterComponent } from './features/members/components/members-roster/members-roster.component';
 
 // Sectors
 import { SectorListComponent } from "./features/members/components/sector-list/sector-list.component";
@@ -65,6 +66,7 @@ export const routes: Routes = [
             { path: 'members', component: MemberListComponent },
             { path: 'members/new', component: MemberFormComponent },
             { path: 'members/:id/edit', component: MemberFormComponent },
+            { path: 'members/roster', component: MembersRosterComponent },
 
             // 🌿 Sectors (master data)
             { path: 'sectors', component: SectorListComponent },

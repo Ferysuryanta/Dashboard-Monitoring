@@ -3,6 +3,7 @@ package com.mamregbkp.controller;
 import com.mamregbkp.dto.MemberDto;
 import com.mamregbkp.service.MemberService;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,8 +52,57 @@ public class MemberController {
     @GetMapping
     public ResponseEntity<Page<MemberDto>> list(@RequestParam(required=false) String search,
                                                 @RequestParam(required=false) String status,
+                                                @RequestParam(required=false) Long sectorId,
                                                 Pageable pageable) {
-        return ResponseEntity.ok(memberService.list(search, status, pageable));
+        return ResponseEntity.ok(memberService.list(search, status, sectorId, pageable));
+    }
+
+    /**
+     * Export members (CSV streaming). Example: /api/members/export?sectorId=1
+     */
+    @GetMapping(value = "/export", produces = "text/csv")
+    public ResponseEntity<org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody> exportCsv(
+            @RequestParam(required=false) String status,
+            @RequestParam(required=false) Long sectorId) {
+
+        org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody stream = out -> {
+            java.io.Writer writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(out, java.nio.charset.StandardCharsets.UTF_8));
+            // CSV header
+            writer.write("NO,NAMA,PENGGELAREN,TANGGAL_LAHIR,KODE_MAMRE,KODE_SAITUN,ALAMAT,NO_HP\n");
+
+            int page = 0;
+            int size = 500;
+            Page<com.mamregbkp.dto.MemberDto> p;
+            do {
+                Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+                p = this.memberService.list(null, status, sectorId, pageable);
+                for (com.mamregbkp.dto.MemberDto m : p) {
+                    // write CSV line safely (escape double quotes)
+                    String line = getLine(m);
+                    writer.write(line);
+                }
+                writer.flush();
+                page++;
+            } while (p.hasNext());
+            writer.flush();
+        };
+
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentDisposition(org.springframework.http.ContentDisposition.attachment().filename("members_export.csv").build());
+        headers.setContentType(org.springframework.http.MediaType.TEXT_PLAIN);
+        return org.springframework.http.ResponseEntity.ok().headers(headers).body(stream);
+    }
+
+    private static @NonNull String getLine(MemberDto m) {
+        String name = (m.getFirstName() == null ? "" : m.getFirstName()) + " " + (m.getLastName() == null ? "" : m.getLastName());
+        String guardian = ""; // guardian not present in DTO; leave empty or map if exists
+        String birth = m.getBirthDate() == null ? "" : m.getBirthDate().toString();
+        String mamre = ""; // if DTO had flags map here
+        String saitun = "";
+        String addr = m.getAddress() == null ? "" : m.getAddress().replace("\"", "\"\"");
+        String phone = m.getPhone() == null ? "" : m.getPhone();
+        return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n",
+                "", name, guardian, birth, mamre, saitun, addr, phone);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -51,5 +51,15 @@ public class MemberSpecification {
             }
         };
     }
-}
 
+    public static Specification<Member> filterSector(Long sectorId) {
+        return (root, query, cb) -> {
+            if (sectorId == null) return cb.conjunction();
+            try {
+                return cb.equal(root.join("sector", JoinType.LEFT).get("id"), sectorId);
+            } catch (Exception ex) {
+                return cb.conjunction();
+            }
+        };
+    }
+}

@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface MemberService {
     MemberDto create(MemberDto dto);
     MemberDto getById(UUID id);
-    Page<MemberDto> list(String search, String status, Pageable pageable);
+    Page<MemberDto> list(String search, String status, Long sectorId, Pageable pageable);
     MemberDto update(java.util.UUID id, MemberDto dto);
     void delete(java.util.UUID id);
 }

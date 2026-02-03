@@ -46,7 +46,10 @@ public class MemberServiceImpl implements MemberService {
         d.setEmail(m.getEmail());
         d.setAddress(m.getAddress());
         d.setStatus(m.getStatus());
-        if (m.getSector() != null) d.setSectorName(m.getSector().getName());
+        if (m.getSector() != null) {
+            d.setSectorName(m.getSector().getName());
+            d.setSectorId(m.getSector().getId());
+        }
         if (m.getPosition() != null) d.setPositionName(m.getPosition().getName());
         d.setJoinedDate(m.getJoinedDate());
         return d;
@@ -92,10 +95,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Page<MemberDto> list(String search, String status, Pageable pageable) {
+    public Page<MemberDto> list(String search, String status, Long sectorId, Pageable pageable) {
         Specification<Member> spec = Specification.allOf(
                 MemberSpecification.search(search),
-                MemberSpecification.filterStatus(status)
+                MemberSpecification.filterStatus(status),
+                MemberSpecification.filterSector(sectorId)
         );
         Page<Member> page = memberRepository.findAll(spec, pageable);
         return page.map(this::toDto);

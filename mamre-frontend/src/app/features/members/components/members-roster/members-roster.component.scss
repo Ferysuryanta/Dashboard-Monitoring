@@ -1,0 +1,290 @@
+/* Light (default) theme — make text/table readable on light background */
+.roster-page {
+  padding: 20px;
+  font-family: Inter, Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+  background: transparent; /* app background handled globally */
+  color: #1f2a37;
+}
+
+/* header / toolbar */
+.toolbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom: 12px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 16px 20px;
+  background: #f3f5f7;
+  border-bottom: 1px solid #e1e6ee;
+  border-radius: 6px;
+}
+.left h2 { margin: 0; font-size: 28px; font-weight:700; color: #16202b; }
+.left .subtitle { font-size: 13px; color: #68707a; margin-top: 6px; }
+
+.controls { display:flex; align-items:center; gap: 12px; }
+
+/* container card for the table to match member-list */
+.table-content-wrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  overflow-x: auto;
+  border: 1px solid #e6eef9;
+  padding: 0; /* rows have their own padding */
+}
+
+/* custom scrollbar like member-list */
+.table-content-wrapper::-webkit-scrollbar { height: 8px; }
+.table-content-wrapper::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+.table-content-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.table-content-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Replace grid-based section with table-based styles to match original roster markup */
+
+/* Use plain table styles (thead/tbody) since template uses <table class="roster-table"> */
+.roster-table { width:100%; border-collapse: collapse; font-size: 13px; background: #fff; color: #1f2a37; }
+.roster-table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #2b6fb3;
+  background: linear-gradient(180deg,#f7fbff 0%, #eef6ff 100%);
+  border-bottom: 2px solid #cfe3ff;
+}
+.roster-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #3a4a57;
+}
+.roster-table tbody tr:hover td { background: #fbfdff; }
+.roster-table th, .roster-table td { vertical-align: middle; }
+
+/* Make sure table is inside card container */
+.table-content-wrapper { padding: 0; }
+
+/* responsive: keep simple breakpoints */
+@media (max-width: 1000px) {
+  .roster-table thead th:nth-child(7), /* alamat */
+  .roster-table tbody td:nth-child(7) { display: none; }
+}
+
+/* small utilities - action/links */
+.edit-link { color:#3f51b5; text-decoration:none; font-weight:600; padding:6px 10px; border-radius:6px; background:#eef2ff; }
+.edit-link:hover { background:#3f51b5; color:#fff; }
+
+/* responsive breakpoints - simplified from member-list */
+@media (max-width: 1400px) {
+  .table-head, .row { grid-template-columns: 60px minmax(180px,1.8fr) minmax(140px,1.4fr) minmax(90px,1fr) minmax(90px,0.8fr) minmax(90px,0.8fr) minmax(160px,1.6fr) minmax(100px,0.9fr); padding:12px 14px; }
+}
+@media (max-width: 1000px) {
+  .table-head, .row { grid-template-columns: 50px minmax(140px,1.6fr) minmax(110px,1.2fr) minmax(85px,0.9fr) minmax(90px,1fr); }
+  .col-address { display:none; }
+}
+@media (max-width: 760px) {
+  .table-head, .row { grid-template-columns: 50px minmax(120px,1.5fr) minmax(80px,0.9fr) minmax(80px,0.9fr); }
+  .col-address, .col-kode-mamre, .col-kode-saitun { display:none; }
+}
+
+/* mat-select adjustments in component scope for readability */
+::ng-deep .mat-select-panel { border-radius:8px !important; }
+
+/* ACTION BUTTONS */
+.actions button { height:40px; border-radius:8px; }
+.primary-btn { background: linear-gradient(180deg,#4f6bff,#2f44b0); color:#fff; box-shadow: 0 6px 18px rgba(47,68,176,0.12); }
+.primary-btn:hover { transform: translateY(-1px); }
+
+/* remove label/badge rules if present */
+.filter-label { display: none !important; }
+.filter-badge { display: none !important; }
+
+/* modern inline filter wrap */
+.filter-wrap { display:flex; align-items:center; gap:8px; }
+.sector-select { min-width: 300px; }
+
+/* make select text more modern and bold */
+::ng-deep .mat-select-trigger { color: #102027 !important; font-weight: 600 !important; font-size: 14px !important; }
+::ng-deep .mat-select-placeholder { color: rgba(16,32,40,0.45) !important; font-weight: 500 !important; }
+
+/* clear button subtle */
+.clear-btn { height:36px; width:36px; border-radius:6px; background: transparent; border: 1px solid rgba(16,32,40,0.06); color: #3a4a57; }
+
+/* adjust actions spacing */
+.actions { display:flex; gap:10px; align-items:center; }
+
+/* Status/Sector filter style (copy from member-list) */
+.status-filter {
+  min-width: 180px;
+  max-width: 320px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+/* Dark mode overrides (use host-context to pick up global theme) */
+:host-context([data-theme="dark"]) {
+  .toolbar { background: rgba(12,18,28,0.88); border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .left h2 { color:#fff; }
+  .left .subtitle { color:#b9cfe6; }
+
+  /* make the card background lighter (less opaque) so rows stand out like member-list */
+  .table-content-wrapper {
+    background: rgba(6,10,14,0.12) !important; /* ensure override */
+    border: 1px solid rgba(255,255,255,0.03) !important;
+  }
+
+  /* FORCE roster table style in dark mode */
+  .roster-table {
+    background: transparent !important;
+    color: #dbeeff !important;
+    opacity: 1 !important;
+  }
+  .roster-table thead th {
+    color: #a6d0ff !important; /* header color like member-list */
+    background: rgba(255,255,255,0.02) !important;
+    border-bottom: 2px solid rgba(255,255,255,0.04) !important;
+  }
+  .roster-table tbody td {
+    color: rgba(235,245,255,0.92) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+    background: transparent !important;
+  }
+  .roster-table tbody tr { background: transparent !important; }
+  .roster-table tbody tr:hover td { background: rgba(255,255,255,0.02) !important; }
+
+  /* Ensure the mat-form-field (select control) uses dark background and light text */
+  .sector-select .mat-form-field, .sector-select ::ng-deep .mat-mdc-form-field, .sector-select ::ng-deep .mat-form-field {
+    background: rgba(255,255,255,0.02) !important; /* subtle dark input */
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    color: #e8f4ff !important;
+  }
+  /* mat-select trigger/text color */
+  .sector-select ::ng-deep .mat-select-trigger, .sector-select ::ng-deep .mat-select-value-text {
+    color: #eaf6ff !important;
+    font-weight: 600 !important;
+  }
+  /* prefix icon color */
+  .sector-select ::ng-deep .mat-icon { color: rgba(235,245,255,0.9) !important; }
+
+  /* fallback for older selectors used elsewhere */
+  .table-head { background: rgba(255,255,255,0.02) !important; color:#a6d0ff !important; border-bottom-color: rgba(255,255,255,0.04) !important; }
+  .row { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.03) !important; }
+  .col { color:#dbeeff !important; }
+
+  ::ng-deep .mat-select-panel { background:#07101a !important; color:#dfeeff !important; }
+
+  /* Strong overrides for Material form-field to avoid white box */
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
+  ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex,
+  ::ng-deep .mat-form-field-wrapper,
+  ::ng-deep .mat-mdc-form-field {
+    background: rgba(255,255,255,0.02) !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: none !important;
+    color: #eaf6ff !important;
+  }
+
+  /* Stronger, focused overrides for all Material form-field variants inside the sector-select */
+  .sector-select ::ng-deep .mat-form-field-wrapper,
+  .sector-select ::ng-deep .mat-mdc-form-field-flex,
+  .sector-select ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex,
+  .sector-select ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
+  .sector-select ::ng-deep .mat-form-field-infix,
+  .sector-select ::ng-deep .mat-mdc-form-field-infix,
+  .sector-select ::ng-deep .mat-mdc-text-field-wrapper,
+  .sector-select ::ng-deep .mat-form-field-outline,
+  .sector-select ::ng-deep .mat-mdc-form-field-outline {
+    background: rgba(255,255,255,0.02) !important; /* subtle dark input */
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: none !important;
+    color: #eaf6ff !important;
+  }
+
+  /* Ensure the inner trigger itself has transparent background and the text/icon are light */
+  .sector-select ::ng-deep .mat-select-trigger,
+  .sector-select ::ng-deep .mat-mdc-select-value-text,
+  .sector-select ::ng-deep .mat-select-value,
+  .sector-select ::ng-deep .mat-mdc-select-value {
+    background: transparent !important;
+    color: #eaf6ff !important;
+    font-weight: 600 !important;
+  }
+
+  /* Remove any explicit white background that could be applied to the form-field placeholder area */
+  .sector-select ::ng-deep .mat-form-field-infix,
+  .sector-select ::ng-deep .mat-mdc-form-field-infix {
+    background: transparent !important;
+  }
+
+  /* Also ensure the mat-select button (closed appearance) doesn't show white background */
+  .sector-select ::ng-deep .mat-mdc-select-trigger,
+  .sector-select ::ng-deep .mat-select-trigger {
+    background: transparent !important;
+  }
+
+  /* Hide any inner pseudo elements that might create a white box */
+  .sector-select ::ng-deep .mat-form-field-outline, .sector-select ::ng-deep .mat-mdc-form-field-outline {
+    box-shadow: none !important;
+  }
+
+  /* Hide leftover filter-badge/label just in case */
+  .filter-label, .filter-badge { display: none !important; }
+
+  /* Ensure sector-select wrapper centers the control */
+  .sector-select { display: flex; align-items: center; }
+
+  /* Force mat-form-field / mdc form-field to be transparent and properly sized */
+  .sector-select ::ng-deep .mat-form-field-wrapper,
+  .sector-select ::ng-deep .mat-mdc-form-field-flex,
+  .sector-select ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
+  .sector-select ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+    background: transparent !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: none !important;
+    height: 44px !important;
+    border-radius: 8px !important;
+    padding: 0 8px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Remove any inner fill area */
+  .sector-select ::ng-deep .mat-form-field-infix, .sector-select ::ng-deep .mat-mdc-form-field-infix {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure trigger text is bold and vertically centered */
+  .sector-select ::ng-deep .mat-select-trigger,
+  .sector-select ::ng-deep .mat-mdc-select-value-text,
+  .sector-select ::ng-deep .mat-select-value,
+  .sector-select ::ng-deep .mat-mdc-select-value {
+    color: #eaf6ff !important;
+    font-weight: 700 !important;
+    line-height: 44px !important;
+    height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* icon alignment */
+  .sector-select ::ng-deep .mat-icon { margin-right: 8px; color: rgba(235,245,255,0.9) !important; }
+
+  /* make the dropdown arrow subtle */
+  .sector-select ::ng-deep .mat-select-arrow { color: rgba(235,245,255,0.7) !important; }
+
+  /* clear button vertical align */
+  .clear-btn { display:flex; align-items:center; justify-content:center; height:36px; }
+}
+
+/* hide mat-divider as we use borders */
+::ng-deep mat-divider { display:none !important; }
+
+/* end of file */
