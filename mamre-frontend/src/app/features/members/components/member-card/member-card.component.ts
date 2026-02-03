@@ -4,14 +4,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MemberDto } from '../../models/member.model';
 import { RouterModule } from '@angular/router';
-import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
     selector: 'app-member-card',
     standalone: true,
-    imports: [CommonModule, MatCardModule, MatIconModule, MatChipsModule, MatButtonModule, RouterModule, MatTooltip],
+    imports: [CommonModule, MatCardModule, MatIconModule, MatChipsModule, MatButtonModule, MatTooltipModule, RouterModule],
     templateUrl: './member-card.component.html',
     styleUrls: ['./member-card.component.scss']
 })
