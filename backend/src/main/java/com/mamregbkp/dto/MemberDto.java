@@ -47,4 +47,10 @@ public class MemberDto {
 
     @PastOrPresent(message = "Tanggal bergabung tidak bisa di masa depan")
     private LocalDate joinedDate;
+
+    // new fields: flags and codes used by roster/export/template
+    private Boolean mamre;
+    private Boolean saitun;
+    private String kodeMamre;
+    private String kodeSaitun;
 }

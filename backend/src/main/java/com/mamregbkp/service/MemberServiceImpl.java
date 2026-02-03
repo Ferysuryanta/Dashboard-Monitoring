@@ -52,6 +52,11 @@ public class MemberServiceImpl implements MemberService {
         }
         if (m.getPosition() != null) d.setPositionName(m.getPosition().getName());
         d.setJoinedDate(m.getJoinedDate());
+        // map new flags/codes
+        d.setMamre(m.getMamre());
+        d.setSaitun(m.getSaitun());
+        d.setKodeMamre(m.getKodeMamre());
+        d.setKodeSaitun(m.getKodeSaitun());
         return d;
     }
 
@@ -68,12 +73,19 @@ public class MemberServiceImpl implements MemberService {
         m.setStatus(dto.getStatus() == null ? "ACTIVE" : dto.getStatus());
         m.setJoinedDate(dto.getJoinedDate());
 
+        // map new flags/codes
+        if (dto.getMamre() != null) m.setMamre(dto.getMamre());
+        if (dto.getSaitun() != null) m.setSaitun(dto.getSaitun());
+        if (dto.getKodeMamre() != null) m.setKodeMamre(dto.getKodeMamre());
+        if (dto.getKodeSaitun() != null) m.setKodeSaitun(dto.getKodeSaitun());
+
         if (dto.getSectorName() != null && !dto.getSectorName().isBlank()) {
             Sector sector = sectorRepository.findByNameIgnoreCase(dto.getSectorName().trim())
                     .orElseThrow(() -> new ResourceNotFoundException("Sector not found: " +
                             dto.getSectorName()));
             m.setSector(sector);
         }
+
         if (dto.getPositionName() != null && !dto.getPositionName().isBlank()) {
             Position p = positionRepository.findByNameIgnoreCase(dto.getPositionName().trim())
                     .orElseThrow(() -> new ResourceNotFoundException("Position not found: " +
@@ -108,36 +120,38 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDto update(UUID id, MemberDto dto) {
         Member m = memberRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Member not found: " + id));
-        m.setFirstName(dto.getFirstName());
-        m.setLastName(dto.getLastName());
-        m.setGender(dto.getGender());
-        m.setBirthDate(dto.getBirthDate());
-        m.setPhone(dto.getPhone());
-        m.setEmail(dto.getEmail());
-        m.setAddress(dto.getAddress());
+        if (dto.getFirstName() != null) m.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) m.setLastName(dto.getLastName());
+        if (dto.getGender() != null) m.setGender(dto.getGender());
+        if (dto.getBirthDate() != null) m.setBirthDate(dto.getBirthDate());
+        if (dto.getPhone() != null) m.setPhone(dto.getPhone());
+        if (dto.getEmail() != null) m.setEmail(dto.getEmail());
+        if (dto.getAddress() != null) m.setAddress(dto.getAddress());
         if (dto.getStatus() != null) m.setStatus(dto.getStatus());
-        m.setJoinedDate(dto.getJoinedDate());
+        if (dto.getJoinedDate() != null) m.setJoinedDate(dto.getJoinedDate());
 
-        if (dto.getSectorName() != null) {
-            if (dto.getSectorName().isBlank()) {
-                m.setSector(null);
-            } else {
-                Sector s = sectorRepository.findByNameIgnoreCase(dto.getSectorName().trim())
-                        .orElseThrow(() -> new ResourceNotFoundException("Sector not found: " + dto.getSectorName()));
-                m.setSector(s);
-            }
+        // map new flags/codes
+        if (dto.getMamre() != null) m.setMamre(dto.getMamre());
+        if (dto.getSaitun() != null) m.setSaitun(dto.getSaitun());
+        if (dto.getKodeMamre() != null) m.setKodeMamre(dto.getKodeMamre());
+        if (dto.getKodeSaitun() != null) m.setKodeSaitun(dto.getKodeSaitun());
+
+        if (dto.getSectorName() != null && !dto.getSectorName().isBlank()) {
+            Sector sector = sectorRepository.findByNameIgnoreCase(dto.getSectorName().trim())
+                    .orElseThrow(() -> new ResourceNotFoundException("Sector not found: " + dto.getSectorName()));
+            m.setSector(sector);
+        } else if (dto.getSectorName() == null) {
+            m.setSector(null);
         }
 
-        // Resolve position on update (same logic)
-        if (dto.getPositionName() != null) {
-            if (dto.getPositionName().isBlank()) {
-                m.setPosition(null);
-            } else {
-                Position p = positionRepository.findByNameIgnoreCase(dto.getPositionName().trim())
-                        .orElseThrow(() -> new ResourceNotFoundException("Position not found: " + dto.getPositionName()));
-                m.setPosition(p);
-            }
+        if (dto.getPositionName() != null && !dto.getPositionName().isBlank()) {
+            Position p = positionRepository.findByNameIgnoreCase(dto.getPositionName().trim())
+                    .orElseThrow(() -> new ResourceNotFoundException("Position not found: " + dto.getPositionName()));
+            m.setPosition(p);
+        } else if (dto.getPositionName() == null) {
+            m.setPosition(null);
         }
+
         memberRepository.save(m);
         return toDto(m);
     }

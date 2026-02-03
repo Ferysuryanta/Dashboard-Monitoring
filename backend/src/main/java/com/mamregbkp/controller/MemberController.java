@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,11 +73,11 @@ public class MemberController {
 
             int page = 0;
             int size = 500;
-            Page<com.mamregbkp.dto.MemberDto> p;
+            Page<MemberDto> p;
             do {
-                Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+                Pageable pageable = PageRequest.of(page, size);
                 p = this.memberService.list(null, status, sectorId, pageable);
-                for (com.mamregbkp.dto.MemberDto m : p) {
+                for (MemberDto m : p) {
                     // write CSV line safely (escape double quotes)
                     String line = getLine(m);
                     writer.write(line);

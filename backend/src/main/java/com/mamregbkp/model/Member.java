@@ -54,6 +54,19 @@ public class Member {
     @Column(name = "joined_date")
     private LocalDate joinedDate;
 
+    // flags / codes used for roster/export
+    @Column(name = "mamre")
+    private Boolean mamre = false;
+
+    @Column(name = "saitun")
+    private Boolean saitun = false;
+
+    @Column(name = "kode_mamre", length = 50)
+    private String kodeMamre;
+
+    @Column(name = "kode_saitun", length = 50)
+    private String kodeSaitun;
+
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
