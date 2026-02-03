@@ -617,3 +617,57 @@ table th {
   }
 }
 
+/* ========================================
+   FIX: Make MatSelect overlay options readable in both light and dark themes
+   The select panel is rendered inside the global overlay container so component
+   styles don't apply — add small global overrides here to guarantee contrast.
+   ======================================== */
+.mat-mdc-select-panel,
+.mat-mdc-select-panel .mat-mdc-option,
+.mat-mdc-select-panel .mdc-list-item {
+  background-color: var(--menu-bg, #ffffff) !important;
+  color: var(--text-primary, #1e293b) !important;
+}
+
+.mat-mdc-select-panel .mdc-list-item__primary-text,
+.mat-mdc-select-panel .mat-mdc-option .mat-mdc-option-text,
+.mat-mdc-select-panel .mat-mdc-option .mat-mdc-select-min-line {
+  color: inherit !important;
+}
+
+/* Ensure trigger text is visible as well */
+.mat-mdc-select .mat-mdc-select-value,
+.mat-mdc-select .mat-mdc-select-value-text {
+  color: var(--text-primary, #1e293b) !important;
+}
+
+/* Selected / hover states */
+.mat-mdc-select-panel .mat-mdc-option.mat-mdc-option-selected,
+.mat-mdc-select-panel .mdc-list-item--selected {
+  background-color: color-mix(in srgb, var(--primary-color, #6366f1) 12%, transparent) !important;
+  color: var(--text-primary, #1e293b) !important;
+}
+
+.mat-mdc-select-panel .mat-mdc-option:hover,
+.mat-mdc-select-panel .mdc-list-item:hover {
+  background-color: var(--menu-hover, #f8fafc) !important;
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] .mat-mdc-select-panel,
+[data-theme="dark"] .mat-mdc-select-panel .mat-mdc-option,
+[data-theme="dark"] .mat-mdc-select-panel .mdc-list-item {
+  background-color: var(--menu-bg, #1e293b) !important;
+  color: var(--text-primary, #f8fafc) !important;
+}
+
+[data-theme="dark"] .mat-mdc-select-panel .mdc-list-item__primary-text,
+[data-theme="dark"] .mat-mdc-select-panel .mat-mdc-option .mat-mdc-option-text {
+  color: inherit !important;
+}
+
+[data-theme="dark"] .mat-mdc-select-panel .mat-mdc-option.mat-mdc-option-selected,
+[data-theme="dark"] .mat-mdc-select-panel .mdc-list-item--selected {
+  background-color: rgba(139, 92, 246, 0.14) !important; /* subtle selected */
+  color: var(--text-primary, #f8fafc) !important;
+}
