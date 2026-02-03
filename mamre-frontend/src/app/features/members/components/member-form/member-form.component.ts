@@ -153,9 +153,9 @@ export class MemberFormComponent implements OnInit {
             catchError(err => { console.error('save error', err); this.saving = false; return of(null); })
         ).subscribe(res => {
             this.saving = false;
-            if (res) this.router.navigate(['/members']);
+            if (res) this.router.navigate(['/app/members']);
         });
     }
 
-    cancel() { this.router.navigate(['/members']); }
+    cancel() { this.router.navigate(['/app/members']); }
 }

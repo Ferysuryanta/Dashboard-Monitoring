@@ -30,7 +30,7 @@
             <mat-chip class="status" [ngClass]="member.status?.toLowerCase()">{{ member.status || '—' }}</mat-chip>
 
             <div class="actions">
-                <a mat-icon-button color="primary" [routerLink]="['/members', member.id, 'edit']" matTooltip="Edit">
+                <a mat-icon-button color="primary" [routerLink]="['/app/members', member.id, 'edit']" matTooltip="Edit">
                     <mat-icon>edit</mat-icon>
                 </a>
                 <button mat-icon-button matTooltip="More" aria-label="more">

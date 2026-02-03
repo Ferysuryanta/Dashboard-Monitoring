@@ -1,4 +1,4 @@
-e<section class="page">
+<section class="page">
     <div class="page-header">
         <div class="title">
             <h2>👥 Users</h2>
@@ -6,7 +6,7 @@ e<section class="page">
         </div>
 
         <div class="controls">
-            <button mat-flat-button color="primary" routerLink="/members/new">
+            <button mat-flat-button color="primary" routerLink="/app/members/new">
                 <mat-icon>person_add</mat-icon> Add New User
             </button>
             <!-- new: open roster (generic) -->
@@ -116,7 +116,7 @@ e<section class="page">
                     </div>
                     <div class="col col-address" [title]="m.address || ''">{{ m.address || '-' }}</div>
                     <div class="col col-action">
-                        <a class="edit-link" [routerLink]="['/members', m.id, 'edit']" title="Edit member">Edit</a>
+                        <a class="edit-link" [routerLink]="['/app/members', m.id, 'edit']" title="Edit member">Edit</a>
                         <button class="delete-btn" (click)="deleteMember(m)" title="Delete member">
                             <mat-icon>delete_outline</mat-icon>
                         </button>
