@@ -12,4 +12,10 @@ export interface MemberDto {
     sectorName?: string;
     positionName?: string;
     joinedDate?: string; // format "YYYY-MM-DD"
+
+    // optional flags/codes used by roster export/template
+    mamre?: boolean | string;
+    saitun?: boolean | string;
+    kodeMamre?: string;
+    kodeSaitun?: string;
 }

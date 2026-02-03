@@ -2,7 +2,7 @@
   <div class="toolbar">
     <div class="left">
       <h2>Roster: {{ sectorName || (sectorId ? ('Sektor ' + sectorId) : 'Semua Sektor') }}</h2>
-      <div class="subtitle">{{ members.length }} anggota</div>
+      <div class="subtitle">{{ totalElements }} anggota</div>
     </div>
 
     <div class="controls">
@@ -27,27 +27,44 @@
   <table class="roster-table" *ngIf="!loading && !error">
     <thead>
       <tr>
-        <th>NO</th>
-        <th>NAMA</th>
-        <th>PENGGELAREN</th>
-        <th>TANGGAL LAHIR</th>
-        <th>KODE MAMRE</th>
-        <th>KODE SAITUN</th>
-        <th>ALAMAT</th>
-        <th>NO HP</th>
+        <th rowspan="2" class="sortable" (click)="sortToggle('id')">NO
+          <mat-icon *ngIf="sortField==='id' && sortDir==='asc'">arrow_upward</mat-icon>
+          <mat-icon *ngIf="sortField==='id' && sortDir==='desc'">arrow_downward</mat-icon>
+        </th>
+        <th rowspan="2" class="sortable" (click)="sortToggle('firstName')">NAMA
+          <mat-icon *ngIf="sortField==='firstName' && sortDir==='asc'">arrow_upward</mat-icon>
+          <mat-icon *ngIf="sortField==='firstName' && sortDir==='desc'">arrow_downward</mat-icon>
+        </th>
+        <th rowspan="2">PENGGELAREN</th>
+        <th rowspan="2" class="sortable" (click)="sortToggle('birthDate')">TANGGAL LAHIR
+          <mat-icon *ngIf="sortField==='birthDate' && sortDir==='asc'">arrow_upward</mat-icon>
+          <mat-icon *ngIf="sortField==='birthDate' && sortDir==='desc'">arrow_downward</mat-icon>
+        </th>
+        <th colspan="2">KODE ( v )</th>
+        <th rowspan="2">ALAMAT</th>
+        <th rowspan="2" class="sortable" (click)="sortToggle('phone')">NO HP
+          <mat-icon *ngIf="sortField==='phone' && sortDir==='asc'">arrow_upward</mat-icon>
+          <mat-icon *ngIf="sortField==='phone' && sortDir==='desc'">arrow_downward</mat-icon>
+        </th>
+      </tr>
+      <tr>
+        <th>MAMRE</th>
+        <th>SAITUN</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let m of members; let i = index">
-        <td>{{ i + 1 }}</td>
+      <tr *ngFor="let m of displayedMembers; let i = index">
+        <td>{{ pageIndex * pageSize + i + 1 }}</td>
         <td>{{ m.firstName }} {{ m.lastName || '' }}</td>
-        <td><!-- guardian field not in DTO, leave blank or extend DTO --> </td>
+        <td><!-- guardian field not in DTO --></td>
         <td>{{ m.birthDate || '' }}</td>
-        <td>{{ '' }}</td>
-        <td>{{ '' }}</td>
+        <td>{{ m.mamre ? 'v' : '' }}</td>
+        <td>{{ m.saitun ? 'v' : '' }}</td>
         <td>{{ m.address }}</td>
         <td>{{ m.phone }}</td>
       </tr>
     </tbody>
   </table>
+
+  <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[5,10,20,50]" (page)="onPageEvent($event)"></mat-paginator>
 </section>

@@ -66,8 +66,28 @@
 .roster-table tbody tr:hover td { background: #fbfdff; }
 .roster-table th, .roster-table td { vertical-align: middle; }
 
-/* Make sure table is inside card container */
-.table-content-wrapper { padding: 0; }
+/* Grouped header style to match spreadsheet-like look */
+.roster-table thead tr:first-child th {
+  background: #bdbdbd;
+  color: #111;
+  border: 1px solid #6b6b6b;
+  padding: 10px 12px;
+}
+.roster-table thead tr:nth-child(2) th {
+  background: #cfcfcf;
+  color: #111;
+  border: 1px solid #6b6b6b;
+  padding: 8px 12px;
+}
+.roster-table thead th[rowspan] { vertical-align: middle; }
+.roster-table th, .roster-table td { border: 1px solid #8a8a8a; }
+.roster-table td { padding: 10px 12px; }
+
+/* Make table look like Excel printout (tight grid) */
+.roster-table { font-family: Arial, Helvetica, sans-serif; }
+
+/* ensure paginator spacing */
+mat-paginator { margin-top: 18px; display:flex; justify-content:flex-end; }
 
 /* responsive: keep simple breakpoints */
 @media (max-width: 1000px) {
@@ -126,7 +146,28 @@
   ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
+
+  /* Make select trigger and placeholder text pure white (minimal change requested) */
+  ::ng-deep .mat-select-trigger,
+  ::ng-deep .mat-mdc-select-value-text,
+  ::ng-deep .mat-select-placeholder,
+  ::ng-deep .mat-mdc-select-placeholder {
+    color: #ffffff !important;
+  }
+
+  /* Ensure the floating/inline label is also white (both legacy and MDC selectors) */
+  ::ng-deep .mat-form-field-label,
+  ::ng-deep .mat-mdc-form-field-label,
+  ::ng-deep .mat-mdc-floating-label,
+  mat-label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
 }
+
+/* sortable header look */
+.sortable { cursor: pointer; user-select: none; }
+.sortable mat-icon { font-size: 16px; vertical-align: middle; margin-left: 6px; }
 
 /* Dark mode overrides (use host-context to pick up global theme) */
 :host-context([data-theme="dark"]) {
@@ -286,5 +327,36 @@
 
 /* hide mat-divider as we use borders */
 ::ng-deep mat-divider { display:none !important; }
+
+/* Force .status-filter to appear dark even when app is in light mode */
+:host-context([data-theme="light"]) {
+  .status-filter ::ng-deep .mat-form-field-wrapper,
+  .status-filter ::ng-deep .mat-mdc-form-field-flex {
+    /* keep any existing background; do not force dark background here */
+  }
+
+  /* Make selected text and placeholder dark for light mode (better contrast) */
+  .status-filter ::ng-deep .mat-select-trigger,
+  .status-filter ::ng-deep .mat-mdc-select-value-text,
+  .status-filter ::ng-deep .mat-select-placeholder,
+  .status-filter ::ng-deep .mat-mdc-select-placeholder {
+    color: #102027 !important; /* dark slate */
+    font-weight: 600 !important;
+  }
+
+  /* Ensure the floating label is dark too */
+  .status-filter ::ng-deep .mat-form-field-label,
+  .status-filter ::ng-deep .mat-mdc-form-field-label,
+  .status-filter mat-label {
+    color: #102027 !important;
+    font-weight: 600 !important;
+  }
+
+  /* icons / arrow use muted dark color */
+  .status-filter ::ng-deep .mat-select-arrow,
+  .status-filter ::ng-deep .mat-icon {
+    color: rgba(16,32,40,0.7) !important;
+  }
+}
 
 /* end of file */
