@@ -61,6 +61,11 @@ export class MembersRosterComponent implements OnInit {
     });
   }
 
+  backToMembers() {
+    // navigate back to members list (keep query params minimal)
+    this.router.navigate(['/app/members']);
+  }
+
   onSectorChange(sectorIdStr?: string) {
     if (!sectorIdStr) {
       // clear filter
@@ -90,12 +95,12 @@ export class MembersRosterComponent implements OnInit {
     const sortParam = this.sortField ? `${this.sortField},${this.sortDir}` : undefined;
     this.svc.getPaged(this.pageIndex, this.pageSize, sortParam, undefined, undefined, this.sectorId).subscribe({
       next: res => {
-        // normalize flags: backend might provide kodeMamre/kodeSaitun or mamre/saitun boolean
-        this.displayedMembers = (res.content || []).map((m: MemberDto) => {
-          const mamreFlag = !!(m.mamre || m.kodeMamre || (m.kodeMamre === 'v'));
-          const saitunFlag = !!(m.saitun || m.kodeSaitun || (m.kodeSaitun === 'v'));
-          return {...m, mamre: mamreFlag, saitun: saitunFlag} as MemberDto;
-        });
+        // trust backend computed flags; normalize to booleans for template
+        this.displayedMembers = (res.content || []).map((m: MemberDto) => ({
+          ...m,
+          mamre: !!m.mamre,
+          saitun: !!m.saitun
+        } as MemberDto));
         this.totalElements = res.totalElements || (res.content ? res.content.length : 0);
         this.loading = false;
       },

@@ -17,6 +17,7 @@ import { MemberService } from '../../../../core/services/member.service';
 import { SectorService, SectorOption } from '../../../../core/services/sector.service';
 import { PositionService, PositionOption } from '../../../../core/services/position.service';
 import { MemberDto } from '../../models/member.model';
+import { formatToLocalDateString, parseIsoLocalDate } from '../../../../core/utils/date-utils';
 
 @Component({
     selector: 'app-member-form',
@@ -31,13 +32,26 @@ import { MemberDto } from '../../models/member.model';
     styleUrls: ['./member-form.component.scss']
 })
 export class MemberFormComponent implements OnInit {
-    form!: FormGroup;
-    loading = false;
-    saving = false;
-    id?: string;
-    sectors: SectorOption[] = [];
-    positions: PositionOption[] = [];
-    statuses = ['ACTIVE', 'INACTIVE', 'PENDING'];
+     form!: FormGroup;
+     loading = false;
+     saving = false;
+     id?: string;
+     sectors: SectorOption[] = [];
+     positions: PositionOption[] = [];
+     statuses = ['ACTIVE', 'INACTIVE', 'PENDING'];
+
+    // helper: normalize various gender representations to backend-accepted tokens
+    private normalizeGender(val: any): string | undefined {
+        if (!val && val !== '') return undefined;
+        const s = String(val).trim().toLowerCase();
+        if (!s) return '';
+        if (['male', 'm', 'laki-laki', 'laki laki', 'pria'].includes(s)) return 'MALE';
+        if (['female', 'f', 'perempuan', 'wanita'].includes(s)) return 'FEMALE';
+        // if already one of expected tokens, return uppercase
+        if (['male', 'female', 'pria', 'wanita', 'm', 'f'].includes(s)) return s.toUpperCase();
+        // unknown value: return it as-is (will likely fail backend validation)
+        return val;
+    }
 
     constructor(
         private fb: FormBuilder,
@@ -91,17 +105,19 @@ export class MemberFormComponent implements OnInit {
     }
 
     private patchForm(m: MemberDto) {
-        this.form.patchValue({
-            firstName: m.firstName || '',
-            lastName: m.lastName || '',
-            email: m.email || '',
-            phone: m.phone || '',
-            gender: m.gender || '',
-            birthDate: m.birthDate || '',
-            address: m.address || '',
-            status: m.status || 'ACTIVE',
-            joinedDate: m.joinedDate || ''
-        });
+         this.form.patchValue({
+             firstName: m.firstName || '',
+             lastName: m.lastName || '',
+             email: m.email || '',
+             phone: m.phone || '',
+             // normalize incoming gender so mat-select can match option values
+             gender: this.normalizeGender(m.gender) ?? '',
+             // mat-datepicker expects a Date object (or null). Convert ISO string to Date using deterministic parser.
+             birthDate: m.birthDate ? parseIsoLocalDate(m.birthDate) : null,
+             address: m.address || '',
+             status: m.status || 'ACTIVE',
+             joinedDate: m.joinedDate ? parseIsoLocalDate(m.joinedDate) : null
+         });
 
         // sectorId: try server-provided id, else match by sectorName to find id
         if ((m as any).sectorId) {
@@ -124,38 +140,49 @@ export class MemberFormComponent implements OnInit {
         if (this.form.invalid) { this.form.markAllAsTouched(); return; }
         this.saving = true;
 
+        // build payload and ensure gender is one of allowed tokens
+        const rawGender = this.normalizeGender(this.form.value.gender);
+        const allowedGenders = ['MALE', 'FEMALE', 'PRIA', 'WANITA'];
+        const finalGender = allowedGenders.includes(String(rawGender)) ? String(rawGender) : undefined;
+
+        // use shared util to convert Date/ISO to 'YYYY-MM-DD'
+        const toIsoDate = (v: any): string | undefined => formatToLocalDateString(v);
+
         const payload: Partial<MemberDto> = {
             firstName: this.form.value.firstName,
             lastName: this.form.value.lastName,
             email: this.form.value.email,
             phone: this.form.value.phone,
-            gender: this.form.value.gender,
-            birthDate: this.form.value.birthDate,
+            gender: finalGender,
+            birthDate: toIsoDate(this.form.value.birthDate),
             address: this.form.value.address,
             status: this.form.value.status,
-            joinedDate: this.form.value.joinedDate
-        };
+            joinedDate: toIsoDate(this.form.value.joinedDate)
+         };
 
-        const secId = this.form.value.sectorId;
-        if (secId) {
-            const sec = this.sectors.find(s => s.id === secId);
-            if (sec) payload.sectorName = sec.name;
-        }
-        const posId = this.form.value.positionId;
-        if (posId) {
-            const pos = this.positions.find(p => p.id === posId);
-            if (pos) payload.positionName = pos.name;
-        }
+         const secId = this.form.value.sectorId;
+         if (secId) {
+             const sec = this.sectors.find(s => s.id === secId);
+             if (sec) payload.sectorName = sec.name;
+         }
+         const posId = this.form.value.positionId;
+         if (posId) {
+             const pos = this.positions.find(p => p.id === posId);
+             if (pos) payload.positionName = pos.name;
+         }
 
-        const req$ = this.id ? this.memberService.update(this.id, payload) : this.memberService.create(payload);
+        // debug: log payload so developer can inspect network request body
+        console.debug('Member form payload before save:', payload);
 
-        req$.pipe(
-            catchError(err => { console.error('save error', err); this.saving = false; return of(null); })
-        ).subscribe(res => {
-            this.saving = false;
-            if (res) this.router.navigate(['/app/members']);
-        });
-    }
+         const req$ = this.id ? this.memberService.update(this.id, payload) : this.memberService.create(payload);
+
+         req$.pipe(
+             catchError(err => { console.error('save error', err); this.saving = false; return of(null); })
+         ).subscribe(res => {
+             this.saving = false;
+             if (res) this.router.navigate(['/app/members']);
+         });
+     }
 
     cancel() { this.router.navigate(['/app/members']); }
 }

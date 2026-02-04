@@ -69,7 +69,7 @@ public class MemberController {
         org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody stream = out -> {
             java.io.Writer writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(out, java.nio.charset.StandardCharsets.UTF_8));
             // CSV header
-            writer.write("NO,NAMA,PENGGELAREN,TANGGAL_LAHIR,KODE_MAMRE,KODE_SAITUN,ALAMAT,NO_HP\n");
+            writer.write("NO,NAMA,PENGGELAREN,TANGGAL_LAHIR,MAMRE,SAITUN,ALAMAT,NO_HP\n");
 
             int page = 0;
             int size = 500;
@@ -98,8 +98,8 @@ public class MemberController {
         String name = (m.getFirstName() == null ? "" : m.getFirstName()) + " " + (m.getLastName() == null ? "" : m.getLastName());
         String guardian = ""; // guardian not present in DTO; leave empty or map if exists
         String birth = m.getBirthDate() == null ? "" : m.getBirthDate().toString();
-        String mamre = ""; // if DTO had flags map here
-        String saitun = "";
+        String mamre = (m.getMamre() != null && m.getMamre()) ? "v" : "";
+        String saitun = (m.getSaitun() != null && m.getSaitun()) ? "v" : "";
         String addr = m.getAddress() == null ? "" : m.getAddress().replace("\"", "\"\"");
         String phone = m.getPhone() == null ? "" : m.getPhone();
         return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n",

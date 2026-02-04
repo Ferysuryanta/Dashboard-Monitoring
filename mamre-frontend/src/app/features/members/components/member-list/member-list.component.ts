@@ -45,7 +45,7 @@ export class MemberListComponent implements OnInit {
     statusFilter?: string;
 
     private page$ = new BehaviorSubject<number>(0);
-    private size$ = new BehaviorSubject<number>(20);
+    private size$ = new BehaviorSubject<number>(10);
     private sortField$ = new BehaviorSubject<string | undefined>(undefined);
     private sortDir$ = new BehaviorSubject<'asc' | 'desc' | undefined>(undefined);
 

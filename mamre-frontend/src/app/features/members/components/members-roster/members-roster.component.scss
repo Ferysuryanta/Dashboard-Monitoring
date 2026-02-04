@@ -373,4 +373,10 @@ mat-paginator { margin-top: 18px; display:flex; justify-content:flex-end; }
   }
 }
 
+/* center flag icon cell */
+.center-flag { text-align: center; vertical-align: middle; width: 60px; }
+.center-flag mat-icon { font-size: 20px; }
+.center-flag .flag-mamre { color: #2b6fb3; } /* blue */
+.center-flag .flag-saitun { color: #2fb86b; } /* green */
+
 /* end of file */
