@@ -35,6 +35,10 @@ public class AttendanceServiceImpl implements AttendanceService {
             String firstName = Optional.ofNullable(m.getFirstName()).orElse("");
             String lastName = Optional.ofNullable(m.getLastName()).orElse("");
             d.setMemberName((firstName + " " + lastName).trim());
+            if (m.getSector() != null) {
+                d.setSectorId(m.getSector().getId());
+                d.setSectorName(m.getSector().getName());
+            }
         }
         d.setAttendDate(a.getAttendDate());
         d.setEvent(a.getEvent());
@@ -110,62 +114,19 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Page<AttendanceDto> list(int page, int size, String member, LocalDate from, LocalDate to, Long sectorId, String sectorName) {
         PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "attendDate"));
 
-        // fetch all (could be optimized with repository queries)
-        List<Attendance> list = attendanceRepository.findAll();
+        // Delegate filtering & pagination to repository (DB-side) for performance
+        Page<Attendance> pageData = attendanceRepository.findByCriteria(
+                (member == null || member.isBlank()) ? null : member.trim(),
+                from,
+                to,
+                sectorId,
+                (sectorName == null || sectorName.isBlank()) ? null : sectorName.trim(),
+                pr
+        );
 
-        // filter by sector if provided
-        if (sectorId != null || (sectorName != null && !sectorName.isBlank())) {
-            String sName = sectorName != null ? sectorName.trim().toLowerCase() : null;
-            list = list.stream().filter(a -> {
-                if (a.getMember() == null || a.getMember().getSector() == null) return false;
-                if (sectorId != null) {
-                    Long mid = a.getMember().getSector().getId();
-                    if (mid != null && mid.equals(sectorId)) return true;
-                }
-                if (sName != null) {
-                    String name = Optional.ofNullable(a.getMember().getSector().getName()).orElse("").toLowerCase();
-                    return name.contains(sName);
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
-
-        // filter by member (if provided)
-        if (member != null && !member.isBlank()) {
-            member = member.trim();
-            UUID maybeUuid = tryParseUUID(member);
-            if (maybeUuid != null) {
-                list = list.stream()
-                        .filter(a -> a.getMember() != null && maybeUuid.equals(a.getMember().getId()))
-                        .collect(Collectors.toList());
-            } else {
-                // treat as name or email: try to resolve candidate members
-                List<Member> matched = resolveMembersByNameOrEmail(member);
-                // if no matches -> return empty page
-                if (matched.isEmpty()) {
-                    return new PageImpl<>(Collections.emptyList(), pr, 0);
-                }
-                Set<UUID> memberIds = matched.stream().map(Member::getId).collect(Collectors.toSet());
-                list = list.stream()
-                        .filter(a -> a.getMember() != null && memberIds.contains(a.getMember().getId()))
-                        .collect(Collectors.toList());
-            }
-        }
-
-        // filter by date range
-        if (from != null) {
-            list = list.stream().filter(a -> !a.getAttendDate().isBefore(from)).collect(Collectors.toList());
-        }
-        if (to != null) {
-            list = list.stream().filter(a -> !a.getAttendDate().isAfter(to)).collect(Collectors.toList());
-        }
-
-        // map to DTOs and paginate in-memory
-        List<AttendanceDto> dtos = list.stream().map(this::toDto).collect(Collectors.toList());
-        int start = Math.min((int) pr.getOffset(), dtos.size());
-        int end = Math.min(start + pr.getPageSize(), dtos.size());
-        List<AttendanceDto> pageContent = dtos.subList(start, end);
-        return new PageImpl<>(pageContent, pr, dtos.size());
+        // Map to DTOs
+        List<AttendanceDto> dtoList = pageData.getContent().stream().map(this::toDto).collect(Collectors.toList());
+        return new PageImpl<>(dtoList, pr, pageData.getTotalElements());
     }
 
 

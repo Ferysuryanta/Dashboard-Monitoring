@@ -11,6 +11,10 @@ export interface Attendance {
     event?: string;
     present: boolean;
     kolpiAmount?: number;  // Jumlah Kolekte/Persembahan
+
+    // sector info returned by backend
+    sectorId?: number;
+    sectorName?: string;
     note?: string;
 }
 

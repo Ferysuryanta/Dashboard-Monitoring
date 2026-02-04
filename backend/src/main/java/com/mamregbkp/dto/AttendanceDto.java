@@ -29,4 +29,8 @@ public class AttendanceDto {
 
     @Size(max = 500, message = "Catatan maksimal 500 karakter")
     private String note;
+
+    // new: sector info for frontend table
+    private Long sectorId;
+    private String sectorName;
 }

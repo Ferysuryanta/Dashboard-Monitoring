@@ -381,6 +381,20 @@ mat-paginator {
     }
 }
 
+.sector-select-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.col-sector {
+    width: 180px;
+}
+
+@media (max-width: 900px) {
+    .col-sector { display: none; }
+}
+
 // ========================================
 // DARK MODE OVERRIDES
 // ========================================

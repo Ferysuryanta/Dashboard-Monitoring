@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -19,6 +19,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 import { AttendanceService, Attendance, CHURCH_EVENTS } from '../../../../core/services/attendance.service';
 import { MemberService } from '../../../../core/services/member.service';
@@ -55,7 +57,7 @@ import {MemberDto} from "../../models/member.model";
     templateUrl: './attendance.component.html',
     styleUrls: ['./attendance.component.scss']
 })
-export class AttendanceComponent implements OnInit {
+export class AttendanceComponent implements OnInit, OnDestroy {
     private svc = inject(AttendanceService);
     private memberSvc = inject(MemberService);
     private sectorSvc = inject(SectorService);
@@ -68,6 +70,10 @@ export class AttendanceComponent implements OnInit {
     churchEvents = CHURCH_EVENTS;
     sectors: SectorOption[] = [];
     selectedSectorId?: string;
+    // debounce for sector filter
+    private sectorChange$ = new Subject<string | undefined>();
+    private sectorSub?: Subscription;
+    filterLoading = false;
 
     loading = false;
     showForm = false;
@@ -109,6 +115,16 @@ export class AttendanceComponent implements OnInit {
     ngOnInit(): void {
         this.loadMembers();
         this.loadSectors();
+        // subscribe sector changes with debounce
+        this.sectorSub = this.sectorChange$.pipe(debounceTime(250)).subscribe(() => {
+            this.filterLoading = true;
+            this.pageIndex = 0;
+            this.loadAttendances();
+            this.loadStats();
+            // small timeout to hide spinner after load completes (loadAttendances sets loading=false)
+            setTimeout(() => this.filterLoading = false, 350);
+        });
+
         this.loadAttendances();
         this.loadStats();
     }
@@ -189,9 +205,12 @@ export class AttendanceComponent implements OnInit {
     onSectorChange(value?: string) {
         // treat empty string or undefined as clear
         this.selectedSectorId = value && value !== '' ? value : undefined;
-        this.pageIndex = 0;
-        this.loadAttendances();
-        this.loadStats();
+        // emit change for debounced handling
+        this.sectorChange$.next(this.selectedSectorId);
+    }
+
+    ngOnDestroy(): void {
+        this.sectorSub?.unsubscribe();
     }
 
     // === INDIVIDUAL FORM ===
