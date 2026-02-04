@@ -45,17 +45,59 @@ mat-form-field.full-width {
   color: inherit !important;
 }
 
-/* Ensure autocomplete panel floats above other elements */
+/* Ensure autocomplete panel floats above other elements - keep generic z-index but add panel-specific tweaks */
 .mat-autocomplete-panel {
   z-index: 2000 !important;
 }
 
-mat-checkbox {
-  margin-bottom: 16px;
+// Target our dialog's autocomplete overlay specifically (added by panelClass on mat-autocomplete)
+:host ::ng-deep .attendance-autocomplete-panel,
+:host ::ng-deep .attendance-autocomplete-panel .mat-option {
+  max-width: calc(100vw - 48px) !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  max-height: 40vh !important;
+  overflow-y: auto !important;
+  z-index: 2400 !important;
+  background: var(--card-bg) !important; /* respects app theme via CSS vars */
+  border-radius: 4px !important;
+  box-shadow: 0 8px 18px rgba(2,6,23,0.6) !important;
 }
 
-/* Dialog sizing: use a reasonable max width and keep it responsive.
-   Removed earlier media queries that forced large min-width values and caused layout breakage. */
+/* Nudge overlay panel slightly upward so it visually connects to input better */
+:host ::ng-deep .attendance-autocomplete-panel {
+  margin-top: -6px !important; /* softer lift */
+  transform: translateY(-6px) !important; /* consistent rendering */
+}
+
+/* Tighter autocomplete option spacing to reduce vertical gaps and avoid pushing dialog */
+:host ::ng-deep .attendance-autocomplete-panel .mat-option,
+:host ::ng-deep .attendance-autocomplete-panel .mat-mdc-option {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  min-height: 40px !important;
+  line-height: 1.15 !important;
+  color: var(--app-text) !important;
+}
+
+/* Ensure option text is readable in dark theme (overlay is outside component so keep scope) */
+:host ::ng-deep body[data-theme="dark"] .attendance-autocomplete-panel .mat-option,
+:host ::ng-deep body[data-theme="dark"] .attendance-autocomplete-panel .mat-mdc-option {
+  color: rgba(255,255,255,0.95) !important;
+}
+
+/* Adjust floating label / top padding so label doesn't sit on top of input text in this dialog */
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  padding-top: 4px !important; /* slightly tighter */
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 10px 12px !important; /* control vertical spacing inside field */
+}
+
+/* Dialog sizing defaults (kept) */
 :host {
   display: block;
   box-sizing: border-box;

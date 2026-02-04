@@ -217,7 +217,11 @@ export class AttendanceComponent implements OnInit, OnDestroy {
     // === INDIVIDUAL FORM ===
     openAddForm(): void {
         const dialogRef = this.dialog.open(AttendanceCreateDialogComponent, {
-            width: '1000px'
+            width: '920px',
+            maxWidth: 'calc(100vw - 32px)',
+            // position slightly down from very top so dialog header isn't hidden by app chrome
+            position: { top: '6vh' },
+            panelClass: 'attendance-dialog-panel'
         });
 
         dialogRef.afterClosed().subscribe(result => {

@@ -7,7 +7,7 @@
       <mat-label>Nama Anggota</mat-label>
       <input type="text" matInput formControlName="memberName" [matAutocomplete]="auto">
 
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayAutocompleteValue.bind(this)" (optionSelected)="onMemberSelected($event)">
+      <mat-autocomplete #auto="matAutocomplete" panelClass="attendance-autocomplete-panel" [displayWith]="displayAutocompleteValue.bind(this)" (optionSelected)="onMemberSelected($event)">
         <mat-option *ngFor="let member of filteredMembers" [value]="member">
           <div class="option-line primary">{{ member.firstName }} {{ member.lastName }}</div>
         </mat-option>
