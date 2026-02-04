@@ -79,6 +79,10 @@ export class PositionListComponent implements OnInit {
             disableClose: true,
             data: null
         });
+
+        dialogRef.afterClosed().subscribe((res: any) => {
+            if (res) this.loadPage(this.pageIndex, this.pageSize);
+        });
     }
 
     openEdit(row: PositionOption) {
@@ -87,7 +91,12 @@ export class PositionListComponent implements OnInit {
             width: '640px',
             maxHeight: '80vh',
             disableClose: true,
-            data: null
+            data: row // pass the selected row so the form can patch values
+        });
+
+        // reload list if dialog closed with success
+        dialogRef.afterClosed().subscribe((res: any) => {
+            if (res) this.loadPage(this.pageIndex, this.pageSize);
         });
 
     }
