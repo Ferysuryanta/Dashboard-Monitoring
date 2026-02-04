@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
+import com.mamregbkp.service.spec.AttendanceSpecification;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -111,20 +114,20 @@ public class AttendanceServiceImpl implements AttendanceService {
      *  - a plain name or email: filter by resolved member(s) (partial/full/email)
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<AttendanceDto> list(int page, int size, String member, LocalDate from, LocalDate to, Long sectorId, String sectorName) {
         PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "attendDate"));
 
-        // Delegate filtering & pagination to repository (DB-side) for performance
-        Page<Attendance> pageData = attendanceRepository.findByCriteria(
+        Specification<Attendance> spec = AttendanceSpecification.withFilters(
                 (member == null || member.isBlank()) ? null : member.trim(),
                 from,
                 to,
                 sectorId,
-                (sectorName == null || sectorName.isBlank()) ? null : sectorName.trim(),
-                pr
+                (sectorName == null || sectorName.isBlank()) ? null : sectorName.trim()
         );
 
-        // Map to DTOs
+        Page<Attendance> pageData = attendanceRepository.findAll(spec, pr);
+
         List<AttendanceDto> dtoList = pageData.getContent().stream().map(this::toDto).collect(Collectors.toList());
         return new PageImpl<>(dtoList, pr, pageData.getTotalElements());
     }
