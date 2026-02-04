@@ -30,6 +30,15 @@
                 <mat-option value="INACTIVE">Inactive</mat-option>
             </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="sectors-filter">
+            <mat-label>Filter Sectors</mat-label>
+            <mat-select [value]="selectedSectorId" (selectionChange)="onSectorChange($event.value)">
+                <!-- use empty string for "all" option to avoid Number('') -> 0 earlier -->
+                <mat-option value="">Semua Sektor</mat-option>
+                <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
 
     <div *ngIf="error" class="error-box">{{ error }}</div>
