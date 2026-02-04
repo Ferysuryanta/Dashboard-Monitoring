@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>Add Attendance</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="attendance-form">
+
+    <mat-form-field appearance="outline" class="full-width" style="grid-column: 1 / -1;">
+      <mat-label>Nama Anggota</mat-label>
+      <input type="text" matInput formControlName="memberName" [matAutocomplete]="auto"
+             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important; opacity: 1 !important;">
+
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayAutocompleteValue.bind(this)" (optionSelected)="onMemberSelected($event)">
+        <mat-option *ngFor="let member of filteredMembers" [value]="member">
+          <div class="option-line primary">{{ member.firstName }} {{ member.lastName }}</div>
+        </mat-option>
+      </mat-autocomplete>
+
+      <mat-error *ngIf="form.get('memberName')?.invalid && form.get('memberName')?.touched">
+        Nama anggota wajib diisi
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tanggal Kehadiran</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="attendDate"
+             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Acara</mat-label>
+      <mat-select formControlName="event">
+        <mat-option *ngFor="let event of churchEvents" [value]="event">{{ event }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="present">Hadir</mat-checkbox>
+
+    <mat-form-field appearance="outline" class="full-width">
+     <mat-label>Jumlah Kolekte</mat-label>
+      <input type="number" matInput formControlName="kolpiAmount" min="0"
+             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" style="grid-column: 1 / -1;">
+      <mat-label>Catatan</mat-label>
+      <textarea matInput formControlName="note" rows="4"
+                style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;"></textarea>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Batal</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Simpan</button>
+</mat-dialog-actions>

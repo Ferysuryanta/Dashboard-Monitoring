@@ -63,9 +63,7 @@
 // DARK MODE OVERRIDES
 // ========================================
 :host-context([data-theme="dark"]) {
-  ::ng-deep .mat-mdc-dialog-container {
-    background: var(--card-bg) !important;
-  }
+  /* remove overlay-level container override (centralized in styles.scss) */
 
   .dialog-body {
     background: var(--card-bg);

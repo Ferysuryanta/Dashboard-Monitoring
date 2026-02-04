@@ -26,6 +26,7 @@ import { AttendanceService, Attendance, CHURCH_EVENTS } from '../../../../core/s
 import { MemberService } from '../../../../core/services/member.service';
 import { SectorService, SectorOption } from '../../../../core/services/sector.service';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
+import { AttendanceCreateDialogComponent } from './attendance-create-dialog.component';
 import {MemberDto} from "../../models/member.model";
 
 @Component({
@@ -215,16 +216,16 @@ export class AttendanceComponent implements OnInit, OnDestroy {
 
     // === INDIVIDUAL FORM ===
     openAddForm(): void {
-        this.editingId = null;
-        this.form.reset({
-            memberName: '',
-            attendDate: new Date(),
-            event: 'Ibadah Minggu',
-            present: true,
-            note: ''
+        const dialogRef = this.dialog.open(AttendanceCreateDialogComponent, {
+            width: '1000px'
         });
-        this.showForm = true;
-        this.showBatchForm = false;
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loadAttendances();
+                this.loadStats();
+            }
+        });
     }
 
     openEditForm(attendance: Attendance): void {

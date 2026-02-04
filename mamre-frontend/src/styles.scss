@@ -135,6 +135,14 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* When MatDialog opens Angular CDK adds cdk-global-scrollblock to body to prevent background scrolling.
+   Ensure it takes effect by forcing overflow hidden globally. */
+body.cdk-global-scrollblock {
+  overflow: hidden !important;
+  position: fixed !important; /* prevent content shift */
+  width: 100% !important;
+}
+
 // ========================================
 // LIGHT MODE - Table Header Styling
 // ========================================
@@ -619,8 +627,7 @@ table th {
 
 /* ========================================
    FIX: Make MatSelect overlay options readable in both light and dark themes
-   The select panel is rendered inside the global overlay container so component
-   styles don't apply — add small global overrides here to guarantee contrast.
+   (existing rules above)
    ======================================== */
 .mat-mdc-select-panel,
 .mat-mdc-select-panel .mat-mdc-option,
@@ -670,4 +677,218 @@ table th {
 [data-theme="dark"] .mat-mdc-select-panel .mdc-list-item--selected {
   background-color: rgba(139, 92, 246, 0.14) !important; /* subtle selected */
   color: var(--text-primary, #f8fafc) !important;
+}
+
+/* CENTRALIZED OVERLAY THEME RULES
+   Ensure all overlayed Material panels (autocomplete/select/menus) follow the app theme
+   by targeting the overlay container. This keeps overlay styling in one place.
+*/
+
+/* Overlay theme variables (fallbacks provided) */
+:root {
+  --overlay-bg: var(--menu-bg, #ffffff);
+  --overlay-text: var(--text-primary, #1e293b);
+}
+
+[data-theme="dark"] {
+  --overlay-bg: #1e293b; /* darker surface */
+  --overlay-text: #f8fafc; /* on-surface text */
+}
+
+/* Target both legacy Material and MDC selectors */
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-panel,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-autocomplete-panel,
+.cdk-overlay-container[data-theme="dark"] .mat-select-panel,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-select-panel,
+.cdk-overlay-container[data-theme="dark"] .mat-menu-panel,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-menu-panel {
+  background: var(--overlay-bg) !important;
+  color: var(--overlay-text) !important;
+  z-index: 2000 !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-panel .mat-option,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-autocomplete-panel .mat-mdc-option,
+.cdk-overlay-container[data-theme="dark"] .mat-select-panel .mat-option,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-select-panel .mat-mdc-option,
+.cdk-overlay-container[data-theme="dark"] .mat-menu-panel .mat-mdc-list-item {
+  color: var(--overlay-text) !important;
+}
+
+/* Light (default) overlay rules */
+.cdk-overlay-container[data-theme="light"] .mat-autocomplete-panel,
+.cdk-overlay-container[data-theme="light"] .mat-mdc-autocomplete-panel,
+.cdk-overlay-container[data-theme="light"] .mat-select-panel,
+.cdk-overlay-container[data-theme="light"] .mat-mdc-select-panel,
+.cdk-overlay-container[data-theme="light"] .mat-menu-panel,
+.cdk-overlay-container[data-theme="light"] .mat-mdc-menu-panel {
+  background: var(--overlay-bg) !important;
+  color: var(--overlay-text) !important;
+  z-index: 2000 !important;
+}
+
+.cdk-overlay-container[data-theme="light"] .mat-autocomplete-panel .mat-option,
+.cdk-overlay-container[data-theme="light"] .mat-mdc-autocomplete-panel .mat-mdc-option,
+.cdk-overlay-container[data-theme="light"] .mat-select-panel .mat-option,
+.cdk-overlay-container[data-theme="light"] .mat-mdc-select-panel .mat-mdc-option {
+  color: var(--overlay-text) !important;
+}
+
+/* Force text-fill override for WebKit browsers inside overlays (fixes autofill/text painting issues) */
+.cdk-overlay-container .mat-autocomplete-panel input.mat-input-element,
+.cdk-overlay-container .mat-mdc-autocomplete-panel input.mat-input-element,
+.cdk-overlay-container .mat-select-panel input.mat-input-element,
+.cdk-overlay-container .mat-mdc-select-panel input.mat-input-element {
+  color: var(--overlay-text) !important;
+  -webkit-text-fill-color: var(--overlay-text) !important;
+  caret-color: var(--overlay-text) !important;
+  opacity: 1 !important;
+}
+
+/* Fallback: if overlay container doesn't have data-theme, use body[data-theme] as fallback */
+body[data-theme="dark"] .cdk-overlay-container .mat-autocomplete-panel,
+body[data-theme="dark"] .cdk-overlay-container .mat-mdc-autocomplete-panel {
+  background: var(--overlay-bg) !important;
+  color: var(--overlay-text) !important;
+}
+
+/* Dialog container theme rules: ensure dialog modals follow the app theme
+   (target both legacy and MDC dialog container selectors). */
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container .mat-mdc-dialog-content,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container .mat-dialog-content {
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Broader dialog surface coverage: target common internal surface classes so dialogs are themed correctly */
+.cdk-overlay-container[data-theme="dark"] .cdk-overlay-pane .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .cdk-overlay-pane .mat-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container {
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Internal surface selectors used by MDC and legacy implementations */
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container .mdc-dialog__surface,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container .mat-mdc-dialog-surface,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container .mat-dialog-content,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container .mat-dialog-actions,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container .mat-dialog-title {
+  background: transparent !important; /* let container background show */
+  color: var(--text-primary) !important;
+}
+
+/* As a fallback, ensure any descendant inside a dialog uses overlay text color/background where appropriate */
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container *,
+.cdk-overlay-container[data-theme="dark"] .mat-dialog-container * {
+  color: inherit !important;
+}
+
+/* Ensure the dialog overlay pane itself isn't forcing a white background */
+.cdk-overlay-container[data-theme="dark"] .cdk-overlay-pane {
+  background: transparent !important;
+}
+
+/* Ensure form controls (input/select/autocomplete) inside overlays/dialogs show readable text in dark theme */
+.cdk-overlay-container[data-theme="dark"] .mat-form-field .mat-input-element,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-form-field .mat-mdc-input-element,
+.cdk-overlay-container[data-theme="dark"] .mat-form-field .mat-form-field-label,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-form-field .mat-mdc-floating-label,
+.cdk-overlay-container[data-theme="dark"] .mat-select-trigger,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-select-value-text,
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-trigger,
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-origin,
+.cdk-overlay-container[data-theme="dark"] input.mat-input-element,
+.cdk-overlay-container[data-theme="dark"] textarea.mat-input-element {
+  color: var(--overlay-text) !important;
+  -webkit-text-fill-color: var(--overlay-text) !important;
+  caret-color: var(--overlay-text) !important;
+  opacity: 1 !important;
+}
+
+/* Also ensure placeholder/floating label contrast inside overlays */
+.cdk-overlay-container[data-theme="dark"] input.mat-input-element::placeholder,
+.cdk-overlay-container[data-theme="dark"] textarea.mat-input-element::placeholder {
+  color: rgba(248,250,252,0.6) !important; /* lighter placeholder in dark */
+}
+
+/* Fallbacks for body[data-theme] (in case overlay container lacks data-theme) */
+body[data-theme="dark"] .mat-form-field .mat-input-element,
+body[data-theme="dark"] .mat-mdc-form-field .mat-mdc-input-element,
+body[data-theme="dark"] .mat-select-trigger,
+body[data-theme="dark"] .mat-mdc-select-value-text,
+body[data-theme="dark"] input.mat-input-element {
+  color: var(--overlay-text) !important;
+  -webkit-text-fill-color: var(--overlay-text) !important;
+}
+
+/* Aggressive fallback: force input/autocomplete value color to white in dark theme
+   This handles regular typing, selected autocomplete value, and Chrome autofill. */
+.cdk-overlay-container[data-theme="dark"] .mat-form-field .mat-input-element,
+.cdk-overlay-container[data-theme="dark"] input.mat-input-element,
+.cdk-overlay-container[data-theme="dark"] textarea.mat-input-element,
+.cdk-overlay-container[data-theme="dark"] .mat-form-field .mat-input-element:-webkit-autofill,
+.cdk-overlay-container[data-theme="dark"] input.mat-input-element:-webkit-autofill,
+.cdk-overlay-container[data-theme="dark"] textarea.mat-input-element:-webkit-autofill {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Extra-high-specificity overrides for autocomplete values/options in dark theme */
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-panel .mat-option,
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-panel .mat-option *,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-autocomplete-panel .mat-mdc-option,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-autocomplete-panel .mat-mdc-option *,
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-panel .mat-option .mat-option-text,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-autocomplete-panel .mat-mdc-option .mat-mdc-option-text {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Ensure the selected/typed value inside the input is white too (covers input + placeholder fallbacks) */
+.cdk-overlay-container[data-theme="dark"] input.mat-input-element,
+.cdk-overlay-container[data-theme="dark"] .mat-form-field .mat-input-element,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-form-field .mat-mdc-input-element {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Cover any inner span that displays the value (some templates use span inside trigger) */
+.cdk-overlay-container[data-theme="dark"] .mat-select-trigger span,
+.cdk-overlay-container[data-theme="dark"] .mat-mdc-select-value-text span,
+.cdk-overlay-container[data-theme="dark"] .mat-autocomplete-trigger span {
+  color: #ffffff !important;
+}
+
+/* Additional aggressive fallback using body[data-theme] in case overlay lacks data-theme */
+body[data-theme="dark"] .mat-autocomplete-panel .mat-option,
+body[data-theme="dark"] .mat-mdc-autocomplete-panel .mat-mdc-option,
+body[data-theme="dark"] input.mat-input-element {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Global guard: prevent overlay panels from exceeding viewport width and causing horizontal scroll */
+.cdk-overlay-container .mat-autocomplete-panel,
+.cdk-overlay-container .mat-mdc-autocomplete-panel,
+.cdk-overlay-container .mat-select-panel,
+.cdk-overlay-container .mat-mdc-select-panel,
+.cdk-overlay-container .mat-menu-panel,
+.cdk-overlay-container .mat-mdc-menu-panel {
+  max-width: calc(100vw - 32px) !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+.cdk-overlay-container .mat-autocomplete-panel,
+.cdk-overlay-container .mat-mdc-autocomplete-panel {
+  max-height: 50vh !important;
+  overflow-y: auto !important;
 }

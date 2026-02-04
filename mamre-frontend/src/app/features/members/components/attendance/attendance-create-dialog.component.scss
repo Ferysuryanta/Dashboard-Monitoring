@@ -1,0 +1,111 @@
+.attendance-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+  min-width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Autocomplete option spacing and typography (kept: spacing only, not overlay coloring) */
+.mat-autocomplete-panel .mat-option {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  min-height: 48px;
+}
+
+.option-line.primary {
+  font-weight: 600;
+  color: rgba(0,0,0,0.87);
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.option-line.secondary {
+  font-size: 12px;
+  color: rgba(0,0,0,0.54);
+  line-height: 1.1;
+}
+
+/* Make form labels and inputs explicitly visible within this component - use inherit so overlay/theme can override */
+.mat-form-field-label {
+  color: inherit !important;
+}
+
+.mat-form-field .mat-input-element {
+  color: inherit !important;
+}
+
+/* Ensure autocomplete panel floats above other elements */
+.mat-autocomplete-panel {
+  z-index: 2000 !important;
+}
+
+mat-checkbox {
+  margin-bottom: 16px;
+}
+
+/* Dialog sizing: use a reasonable max width and keep it responsive.
+   Removed earlier media queries that forced large min-width values and caused layout breakage. */
+:host {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 920px !important; /* preferred desktop width */
+  min-width: 320px !important; /* allow small screens */
+  padding: 16px 18px !important;
+  margin: 0 auto !important;
+}
+
+/* Small screens adjustments */
+@media (max-width: 600px) {
+  :host {
+    width: 94vw !important;
+    padding: 10px !important;
+  }
+}
+
+/* Make dialog content scrollable so long lists / panels don't push layout */
+mat-dialog-content {
+  padding-top: 8px;
+  max-height: calc(80vh - 140px);
+  overflow-y: auto;
+}
+
+/* Constrain autocomplete/select overlay when opened from this dialog so it won't overflow viewport
+   Use ::ng-deep because overlays are placed outside component DOM. */
+:host ::ng-deep .mat-autocomplete-panel,
+:host ::ng-deep .mat-mdc-autocomplete-panel,
+:host ::ng-deep .mat-select-panel,
+:host ::ng-deep .mat-mdc-select-panel {
+  max-width: calc(100vw - 48px) !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  max-height: 40vh !important;
+  overflow-y: auto !important;
+  z-index: 2200 !important;
+  left: auto !important;
+  right: auto !important;
+}
+
+:host ::ng-deep .mat-autocomplete-panel .mat-option,
+:host ::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option,
+:host ::ng-deep .mat-select-panel .mat-option,
+:host ::ng-deep .mat-mdc-select-panel .mat-mdc-option {
+  padding: 10px 16px !important;
+}
+
+/* Ensure the dialog doesn't cause page horizontal scroll while open
+   (MatDialog adds cdk-global-scrollblock to body when open; make sure it's effective) */
+:host ::ng-deep body.cdk-global-scrollblock {
+  overflow: hidden !important;
+}

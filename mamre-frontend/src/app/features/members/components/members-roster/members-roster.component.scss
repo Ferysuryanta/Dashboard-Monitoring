@@ -233,8 +233,6 @@ mat-paginator { margin-top: 18px; display:flex; justify-content:flex-end; }
   .row { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.03) !important; }
   .col { color:#dbeeff !important; }
 
-  ::ng-deep .mat-select-panel { background:#07101a !important; color:#dfeeff !important; }
-
   /* Strong overrides for Material form-field to avoid white box */
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
   ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex,
