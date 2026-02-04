@@ -1,11 +1,11 @@
-<h2 mat-dialog-title>Add Attendance</h2>
+<h2 mat-dialog-title class="center-flag">Add Attendance</h2>
+<div class="dialog-spacer" aria-hidden="true"></div>
 <mat-dialog-content>
   <form [formGroup]="form" class="attendance-form">
 
     <mat-form-field appearance="outline" class="full-width" style="grid-column: 1 / -1;">
       <mat-label>Nama Anggota</mat-label>
-      <input type="text" matInput formControlName="memberName" [matAutocomplete]="auto"
-             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important; opacity: 1 !important;">
+      <input type="text" matInput formControlName="memberName" [matAutocomplete]="auto">
 
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayAutocompleteValue.bind(this)" (optionSelected)="onMemberSelected($event)">
         <mat-option *ngFor="let member of filteredMembers" [value]="member">
@@ -20,8 +20,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Tanggal Kehadiran</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="attendDate"
-             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;">
+      <input matInput [matDatepicker]="picker" formControlName="attendDate">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -37,14 +36,12 @@
 
     <mat-form-field appearance="outline" class="full-width">
      <mat-label>Jumlah Kolekte</mat-label>
-      <input type="number" matInput formControlName="kolpiAmount" min="0"
-             style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;">
+      <input type="number" matInput formControlName="kolpiAmount" min="0">
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width" style="grid-column: 1 / -1;">
       <mat-label>Catatan</mat-label>
-      <textarea matInput formControlName="note" rows="4"
-                style="color: var(--app-text) !important; -webkit-text-fill-color: var(--app-text) !important; caret-color: var(--app-text) !important;"></textarea>
+      <textarea matInput formControlName="note" rows="4"></textarea>
     </mat-form-field>
 
   </form>

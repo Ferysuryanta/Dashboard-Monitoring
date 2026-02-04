@@ -97,15 +97,49 @@ mat-dialog-content {
   right: auto !important;
 }
 
-:host ::ng-deep .mat-autocomplete-panel .mat-option,
-:host ::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option,
-:host ::ng-deep .mat-select-panel .mat-option,
-:host ::ng-deep .mat-mdc-select-panel .mat-mdc-option {
-  padding: 10px 16px !important;
+/* Nudge overlay panel slightly upward so it visually connects to input better
+   (scoped to this dialog overlay panels). */
+:host ::ng-deep .mat-autocomplete-panel,
+:host ::ng-deep .mat-mdc-autocomplete-panel,
+:host ::ng-deep .mat-select-panel,
+:host ::ng-deep .mat-mdc-select-panel {
+  margin-top: -6px !important; /* softer lift */
+  transform: translateY(-6px) !important; /* additional nudge for consistent rendering */
 }
 
-/* Ensure the dialog doesn't cause page horizontal scroll while open
-   (MatDialog adds cdk-global-scrollblock to body when open; make sure it's effective) */
-:host ::ng-deep body.cdk-global-scrollblock {
-  overflow: hidden !important;
+@media (max-width: 600px) {
+  :host ::ng-deep .mat-autocomplete-panel,
+  :host ::ng-deep .mat-mdc-autocomplete-panel,
+  :host ::ng-deep .mat-select-panel,
+  :host ::ng-deep .mat-mdc-select-panel {
+    margin-top: 0 !important; /* avoid overlaps on small screens */
+    transform: none !important;
+  }
+}
+
+/* Tighter autocomplete option spacing to reduce vertical gaps */
+:host ::ng-deep .mat-autocomplete-panel .mat-option,
+:host ::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  min-height: 40px !important; /* slightly smaller */
+  line-height: 1.15 !important;
+}
+
+:host ::ng-deep .mat-autocomplete-panel .mat-option .mat-option-text,
+:host ::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .mat-mdc-option-text {
+  font-size: 14px !important;
+}
+
+/* Remove extra bottom margin for primary line */
+.option-line.primary {
+  margin-bottom: 0 !important;
+}
+
+/* small spacer below title */
+.dialog-spacer {
+  height: 8px;
+  width: 100%;
 }
