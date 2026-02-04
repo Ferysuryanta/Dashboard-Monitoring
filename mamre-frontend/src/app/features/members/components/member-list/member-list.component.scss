@@ -335,6 +335,24 @@
   }
 }
 
+/* Improve visibility of sector link/text (Yasmin etc.), especially in dark mode */
+.col-sector a, .col-sector span {
+  color: #0e0101; /* default readable purple */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+:host-context([data-theme="dark"]) .col-sector a,
+:host-context([data-theme="dark"]) .col-sector span {
+  color: #f1f5f9 !important; /* brighter on dark background */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+}
+
+:host-context([data-theme="light"]) .col-sector a,
+:host-context([data-theme="light"]) .col-sector span {
+  color: #0525f3; /* slightly darker purple on light bg */
+}
+
 /* responsive */
 @media (max-width: 1600px) {
   .page .table-head, .page .row {
