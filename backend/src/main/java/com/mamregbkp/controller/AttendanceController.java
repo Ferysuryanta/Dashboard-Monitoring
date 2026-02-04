@@ -5,6 +5,7 @@ import com.mamregbkp.service.AttendanceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,16 +46,18 @@ public class AttendanceController {
     @GetMapping
     public ResponseEntity<Page<AttendanceDto>> list(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String member,
             @RequestParam(required = false)
-            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate from,
             @RequestParam(required = false)
-            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
-            LocalDate to) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate to,
+            @RequestParam(required = false) Long sectorId,
+            @RequestParam(required = false) String sectorName) {
 
-        Page<AttendanceDto> p = attendanceService.list(page, size, member, from, to);
+        Page<AttendanceDto> p = attendanceService.list(page, size, member, from, to, sectorId, sectorName);
         return ResponseEntity.ok(p);
     }
 

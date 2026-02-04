@@ -107,11 +107,28 @@ public class AttendanceServiceImpl implements AttendanceService {
      *  - a plain name or email: filter by resolved member(s) (partial/full/email)
      */
     @Override
-    public Page<AttendanceDto> list(int page, int size, String member, LocalDate from, LocalDate to) {
+    public Page<AttendanceDto> list(int page, int size, String member, LocalDate from, LocalDate to, Long sectorId, String sectorName) {
         PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "attendDate"));
 
         // fetch all (could be optimized with repository queries)
         List<Attendance> list = attendanceRepository.findAll();
+
+        // filter by sector if provided
+        if (sectorId != null || (sectorName != null && !sectorName.isBlank())) {
+            String sName = sectorName != null ? sectorName.trim().toLowerCase() : null;
+            list = list.stream().filter(a -> {
+                if (a.getMember() == null || a.getMember().getSector() == null) return false;
+                if (sectorId != null) {
+                    Long mid = a.getMember().getSector().getId();
+                    if (mid != null && mid.equals(sectorId)) return true;
+                }
+                if (sName != null) {
+                    String name = Optional.ofNullable(a.getMember().getSector().getName()).orElse("").toLowerCase();
+                    return name.contains(sName);
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
 
         // filter by member (if provided)
         if (member != null && !member.isBlank()) {

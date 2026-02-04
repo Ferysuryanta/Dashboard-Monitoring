@@ -184,6 +184,14 @@
                 <input matInput type="date" [(ngModel)]="filterTo">
             </mat-form-field>
 
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Filter Sektor</mat-label>
+                <mat-select [value]="selectedSectorId" (selectionChange)="onSectorChange($event.value)">
+                    <mat-option value="">Semua Sektor</mat-option>
+                    <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
             <div class="filter-actions">
                 <button mat-stroked-button (click)="applyFilter()">
                     <mat-icon>filter_list</mat-icon> Filter

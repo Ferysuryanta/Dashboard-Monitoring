@@ -22,14 +22,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { AttendanceService, Attendance, CHURCH_EVENTS } from '../../../../core/services/attendance.service';
 import { MemberService } from '../../../../core/services/member.service';
+import { SectorService, SectorOption } from '../../../../core/services/sector.service';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
-
-interface Member {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email?: string;
-}
+import {MemberDto} from "../../models/member.model";
 
 @Component({
     selector: 'app-attendance',
@@ -63,13 +58,16 @@ interface Member {
 export class AttendanceComponent implements OnInit {
     private svc = inject(AttendanceService);
     private memberSvc = inject(MemberService);
+    private sectorSvc = inject(SectorService);
     private dialog = inject(MatDialog);
     private snackBar = inject(MatSnackBar);
     private fb = inject(FormBuilder);
 
     attendances: Attendance[] = [];
-    members: Member[] = [];
+    members: MemberDto[] = [];
     churchEvents = CHURCH_EVENTS;
+    sectors: SectorOption[] = [];
+    selectedSectorId?: string;
 
     loading = false;
     showForm = false;
@@ -78,7 +76,7 @@ export class AttendanceComponent implements OnInit {
 
     // Pagination
     totalElements = 0;
-    pageSize = 20;
+    pageSize = 10;
     pageIndex = 0;
 
     // Filter
@@ -110,6 +108,7 @@ export class AttendanceComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadMembers();
+        this.loadSectors();
         this.loadAttendances();
         this.loadStats();
     }
@@ -126,9 +125,15 @@ export class AttendanceComponent implements OnInit {
         });
     }
 
+    loadSectors(): void {
+        this.sectorSvc.getAll().subscribe(list => this.sectors = list || []);
+    }
+
     loadAttendances(): void {
         this.loading = true;
-        this.svc.getAll(this.pageIndex, this.pageSize, this.filterMember || undefined, this.filterFrom || undefined, this.filterTo || undefined)
+        const sectorIdNum = this.selectedSectorId ? Number(this.selectedSectorId) : undefined;
+        const sectorName = this.selectedSectorId ? (this.sectors.find(s => String(s.id) === this.selectedSectorId)?.name) : undefined;
+        this.svc.getAll(this.pageIndex, this.pageSize, this.filterMember || undefined, this.filterFrom || undefined, this.filterTo || undefined, sectorIdNum, sectorName)
             .subscribe(res => {
                 this.attendances = res.content;
                 this.totalElements = res.totalElements;
@@ -146,14 +151,15 @@ export class AttendanceComponent implements OnInit {
         const weekAgoStr = this.formatDate(weekAgo);
         const monthStartStr = this.formatDate(monthStart);
 
-        // Today
-        this.svc.getAll(0, 1, undefined, todayStr, todayStr).subscribe(res => this.todayCount = res.totalElements);
+        const sectorIdNum = this.selectedSectorId ? Number(this.selectedSectorId) : undefined;
+        const sectorName = this.selectedSectorId ? (this.sectors.find(s => String(s.id) === this.selectedSectorId)?.name) : undefined;
+        this.svc.getAll(0, 1, undefined, todayStr, todayStr, sectorIdNum, sectorName).subscribe(res => this.todayCount = res.totalElements);
 
         // This week
-        this.svc.getAll(0, 1, undefined, weekAgoStr, todayStr).subscribe(res => this.weekCount = res.totalElements);
+        this.svc.getAll(0, 1, undefined, weekAgoStr, todayStr, sectorIdNum, sectorName).subscribe(res => this.weekCount = res.totalElements);
 
         // This month
-        this.svc.getAll(0, 1, undefined, monthStartStr, todayStr).subscribe(res => this.monthCount = res.totalElements);
+        this.svc.getAll(0, 1, undefined, monthStartStr, todayStr, sectorIdNum, sectorName).subscribe(res => this.monthCount = res.totalElements);
     }
 
     formatDate(date: Date): string {
@@ -176,7 +182,16 @@ export class AttendanceComponent implements OnInit {
         this.filterFrom = '';
         this.filterTo = '';
         this.pageIndex = 0;
+        this.selectedSectorId = undefined;
         this.loadAttendances();
+    }
+
+    onSectorChange(value?: string) {
+        // treat empty string or undefined as clear
+        this.selectedSectorId = value && value !== '' ? value : undefined;
+        this.pageIndex = 0;
+        this.loadAttendances();
+        this.loadStats();
     }
 
     // === INDIVIDUAL FORM ===
@@ -354,7 +369,7 @@ export class AttendanceComponent implements OnInit {
         });
     }
 
-    getMemberDisplayName(member: Member): string {
+    getMemberDisplayName(member: MemberDto): string {
         if (member.email) return `${member.firstName} ${member.lastName} (${member.email})`;
         return `${member.firstName} ${member.lastName}`.trim();
     }

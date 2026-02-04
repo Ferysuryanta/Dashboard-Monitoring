@@ -41,7 +41,7 @@ export class AttendanceService {
 
     constructor(private http: HttpClient) {}
 
-    getAll(page = 0, size = 20, member?: string, from?: string, to?: string): Observable<PagedAttendance> {
+    getAll(page = 0, size = 10, member?: string, from?: string, to?: string, sectorId?: number, sectorName?: string): Observable<PagedAttendance> {
         let params = new HttpParams()
             .set('page', String(page))
             .set('size', String(size));
@@ -49,6 +49,8 @@ export class AttendanceService {
         if (member) params = params.set('member', member);
         if (from) params = params.set('from', from);
         if (to) params = params.set('to', to);
+        if (sectorId != null) params = params.set('sectorId', String(sectorId));
+        if (sectorName) params = params.set('sectorName', sectorName);
 
         return this.http.get<any>(this.base, { params })
             .pipe(
