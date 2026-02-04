@@ -1,13 +1,13 @@
 <section class="roster-page">
   <div class="toolbar">
     <div class="left">
-      <h2>Roster: {{ sectorName || (sectorId ? ('Sektor ' + sectorId) : 'Semua Sektor') }}</h2>
+      <h2>Sectors: {{ sectorName || (sectorId ? ('Sektor ' + sectorId) : 'All Sectors') }}</h2>
       <div class="subtitle">{{ totalElements }} anggota</div>
     </div>
 
     <div class="controls">
       <mat-form-field appearance="outline" class="status-filter">
-        <mat-label>Filter Sektor</mat-label>
+        <mat-label>Filter Sectors</mat-label>
         <mat-select [value]="selectedSectorId" (selectionChange)="onSectorChange($event.value)">
           <mat-option [value]="undefined">Semua Sektor</mat-option>
           <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
@@ -15,10 +15,9 @@
       </mat-form-field>
 
       <div class="actions">
-        <button mat-stroked-button color="primary" class="back-btn" (click)="backToMembers()">
-          <mat-icon>arrow_back</mat-icon>
-          Back Members
-        </button>
+          <button mat-flat-button color="primary" (click)="backToMembers()">
+              <mat-icon>arrow_back</mat-icon> Back Members
+          </button>
         <button mat-flat-button color="primary" class="primary-btn" (click)="downloadCsv()">Download CSV</button>
         <button mat-flat-button (click)="print()">Print</button>
       </div>
