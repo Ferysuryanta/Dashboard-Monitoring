@@ -113,6 +113,9 @@
     overflow-x: auto;
     border: 1px solid #e2e8f0;
 
+    /* Reserve space for scrollbar to avoid layout shift when scrollbar appears/disappears */
+    scrollbar-gutter: stable;
+
     /* Custom scrollbar */
     &::-webkit-scrollbar {
       height: 8px;
@@ -170,7 +173,7 @@
     padding: 16px 20px;
     align-items: center;
     border-bottom: 1px solid #f1f5f9;
-    transition: all 0.2s ease;
+    transition: background-color 0.16s ease, box-shadow 0.16s ease; /* avoid layout-changing transforms */
 
     &:last-child {
       border-bottom: none;
@@ -178,7 +181,8 @@
 
     &:hover {
       background-color: #f8fafc;
-      transform: scale(1.001);
+      /* use box-shadow for visual emphasis instead of transform to avoid layout shift */
+      box-shadow: 0 4px 16px rgba(16,24,40,0.04);
     }
   }
 
