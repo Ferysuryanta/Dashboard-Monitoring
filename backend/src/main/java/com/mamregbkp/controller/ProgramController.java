@@ -2,6 +2,7 @@ package com.mamregbkp.controller;
 
 import com.mamregbkp.dto.ProgramDto;
 import com.mamregbkp.service.ProgramService;
+import com.mamregbkp.repository.ProgramRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +14,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.data.domain.Page;
 
-import com.mamregbkp.model.Program;
 import com.mamregbkp.model.ProgramDocument;
 import com.mamregbkp.repository.ProgramDocumentRepository;
 import com.mamregbkp.service.FileStorageService;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/programs")
@@ -28,12 +27,18 @@ public class ProgramController {
     private final ProgramService svc;
     private final FileStorageService storage;
     private final ProgramDocumentRepository docRepo;
+    private final ProgramRepository programRepo;
 
-    public ProgramController(ProgramService svc, FileStorageService storage, ProgramDocumentRepository docRepo) { this.svc = svc; this.storage = storage; this.docRepo = docRepo; }
+    public ProgramController(ProgramService svc, FileStorageService storage, ProgramDocumentRepository docRepo, ProgramRepository programRepo) { this.svc = svc; this.storage = storage; this.docRepo = docRepo; this.programRepo = programRepo; }
 
     @GetMapping
     public ResponseEntity<List<ProgramDto>> all() {
         return ResponseEntity.ok(svc.findAll());
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> categories() {
+        return ResponseEntity.ok(programRepo.findDistinctCategories());
     }
 
     @GetMapping("/{id}")
@@ -64,14 +69,9 @@ public class ProgramController {
 
     // Paged list + search
     @GetMapping(params = {"page","size"})
-    public ResponseEntity<?> paged(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String q) {
-        Page<?> p = ((com.mamregbkp.service.impl.ProgramServiceImpl)svc).findPaged(page, size, q);
-        // map to DTOs
-        List<ProgramDto> content = p.getContent().stream().map(obj -> {
-            Program pr = (Program) obj;
-            ProgramDto dto = new ProgramDto(); dto.id = pr.getId(); dto.title = pr.getTitle(); dto.description = pr.getDescription(); dto.type = pr.getType(); dto.status = pr.getStatus(); return dto;
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(p.getTotalElements())).body(content);
+    public ResponseEntity<?> paged(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String q, @RequestParam(required = false) String status, @RequestParam(required = false) String type, @RequestParam(required = false) String category) {
+        Page<ProgramDto> p = svc.findPaged(page, size, q, status, type, category);
+        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(p.getTotalElements())).body(p.getContent());
     }
 
     // Documents

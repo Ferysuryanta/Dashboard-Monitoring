@@ -1,20 +1,64 @@
 <div class="program-form-root">
-  <h2 *ngIf="!editingId">Tambah Kegiatan / Program</h2>
-  <h2 *ngIf="editingId">Edit Kegiatan / Program</h2>
-
+  <h2>Tambah Kegiatan / Program</h2>
   <form [formGroup]="form" (ngSubmit)="save()">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Judul</mat-label>
-      <input matInput formControlName="title" required>
+    <mat-form-field appearance="outline" class="full">
+      <input matInput placeholder="Judul*" formControlName="title" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Deskripsi</mat-label>
-      <textarea matInput formControlName="description" rows="4"></textarea>
+    <mat-form-field appearance="outline" class="full">
+      <textarea matInput placeholder="Deskripsi" formControlName="description" rows="6"></textarea>
     </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half">
+        <mat-select formControlName="type">
+          <mat-option value="Kegiatan">Kegiatan</mat-option>
+          <mat-option value="Program">Program</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half">
+        <mat-select formControlName="category">
+          <mat-option value="Bidang Umum & Sekretariat">Bidang Umum & Sekretariat</mat-option>
+          <mat-option value="Bidang Persekutuan">Bidang Persekutuan</mat-option>
+          <mat-option value="Bidang Kesaksian">Bidang Kesaksian</mat-option>
+          <mat-option value="Bidang Pelayanan">Bidang Pelayanan</mat-option>
+          <mat-option value="Bidang Dana & Usaha">Bidang Dana & Usaha</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="third">
+        <input matInput type="number" placeholder="Target fisik" formControlName="targetPhysical" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="third">
+        <input matInput type="number" placeholder="Anggaran Lokal" formControlName="budgetLocal" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="third">
+        <input matInput type="number" placeholder="Anggaran Subsidi" formControlName="budgetSubsidy" />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half">
+        <input matInput placeholder="Pelaksana" formControlName="executor" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="half">
+        <input matInput placeholder="Jadwal (teks)" formControlName="scheduleText" />
+      </mat-form-field>
+    </div>
+
+    <div class="file-upload">
+      <label for="fileUpload" class="file-label">Unggah dokumentasi (opsional)</label>
+      <input type="file" id="fileUpload" (change)="selectedFile = $any($event.target).files?.[0]" />
+      <div class="file-meta" *ngIf="selectedFile">{{ selectedFile.name }}</div>
+    </div>
 
     <div class="actions">
-      <button mat-flat-button color="primary" type="submit">Simpan</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Simpan</button>
       <button mat-button type="button" (click)="cancel()">Batal</button>
     </div>
   </form>

@@ -1,3 +1,29 @@
 .program-form-root { padding:16px; }
 .full-width { width:100%; }
-.actions { display:flex; gap:8px; margin-top:12px }
+.actions { display:flex; gap:12px; margin-top:18px; align-items:center }
+
+.form-header { display:flex; align-items:center; gap:12px; margin-bottom:12px }
+.form-header .icon-wrap { background: rgba(74,20,140,0.08); padding:12px; border-radius:12px; display:flex; align-items:center; justify-content:center }
+.form-header .icon-wrap mat-icon { font-size:42px; color:#6a5af9 }
+.form-header .title-wrap h2 { margin:0; font-size:20px; font-weight:800 }
+.form-header .subtitle { color:#6b7280; font-size:13px; margin-top:6px }
+
+/* Ensure spinner sits nicely inside button */
+.actions mat-progress-spinner { margin-right:8px }
+
+/* Make textarea visually larger for description */
+.full-width textarea { min-height:120px }
+
+/* layout helpers */
+.two-col { display:flex; gap:12px; }
+.three-col { display:flex; gap:12px; }
+.col { flex:1 }
+
+.file-row { margin-top:12px; display:flex; align-items:center; gap:12px }
+.file-row input[type="file"] { border-radius:6px }
+.file-meta { font-size:13px; color:#374151 }
+
+/* responsive */
+@media (max-width: 800px) {
+  .two-col, .three-col { flex-direction:column }
+}

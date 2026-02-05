@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Program } from './program.model';
@@ -19,13 +19,14 @@ export class ProgramService {
     );
   }
 
-  // New: paged + search
-  getPaged(page = 0, size = 10, q?: string) {
+  // Paged search with filters. Returns observable of HttpResponse containing body and headers.
+  getPaged(page = 0, size = 10, q?: string, status?: string, type?: string, category?: string): Observable<HttpResponse<Program[]>> {
     let params = new HttpParams().set('page', String(page)).set('size', String(size));
     if (q) params = params.set('q', q);
-    return this.http.get<Program[]>(this.base, { params, observe: 'response' as const }).pipe(
-      catchError(err => { console.error('program.getPaged', err); throw err; })
-    );
+    if (status) params = params.set('status', status);
+    if (type) params = params.set('type', type);
+    if (category) params = params.set('category', category);
+    return this.http.get<Program[]>(this.base, { params, observe: 'response' }).pipe(catchError(err => { console.error('program.getPaged', err); throw err; }));
   }
 
   getById(id: number): Observable<Program | null> {
@@ -57,5 +58,57 @@ export class ProgramService {
 
   downloadDocument(docId: number) {
     return `${this.base}/documents/download/${docId}`; // URL to download
+  }
+
+  // categories for filter dropdown
+  getCategories() {
+    return this.http.get<string[]>(`${this.base}/categories`).pipe(catchError(err => { console.error('getCategories', err); return of([] as string[]); }));
+  }
+
+  // Grouping logic moved from component: returns grouped array and pageBudgetTotal
+  groupPrograms(data: any[], categories: string[], page: number, size: number) {
+    const groups: any[] = [];
+    let cumulativeIndex = 0;
+    let pageBudgetTotal = 0;
+
+    for (const cat of categories) {
+      const items = data.filter(x => (x.category || '').toLowerCase() === (cat.replace(/^\w+ - /, '') || cat).toLowerCase() || (x.category === cat));
+      if (items.length === 0) continue;
+      const totals = items.reduce((acc: any, it: any) => {
+        const local = Number(it.budgetLocal) || 0;
+        const subsidy = Number(it.budgetSubsidy) || 0;
+        const total = Number(it.budgetTotal) || (local + subsidy);
+        acc.local += local; acc.subsidy += subsidy; acc.total += total; return acc;
+      }, { local: 0, subsidy: 0, total: 0 });
+
+      groups.push({ category: cat.replace(/^\w+ - /, (m: string)=>m), items, totals, startIndex: cumulativeIndex });
+      cumulativeIndex += items.length;
+      pageBudgetTotal += totals.total;
+    }
+
+    const uncategorized = data.filter(x => !x.category);
+    if (uncategorized.length) {
+      const totals = uncategorized.reduce((acc: any, it: any) => {
+        const local = Number(it.budgetLocal) || 0;
+        const subsidy = Number(it.budgetSubsidy) || 0;
+        const total = Number(it.budgetTotal) || (local + subsidy);
+        acc.local += local; acc.subsidy += subsidy; acc.total += total; return acc;
+      }, { local: 0, subsidy: 0, total: 0 });
+      groups.push({ category: 'Lain-lain', items: uncategorized, totals, startIndex: cumulativeIndex });
+      cumulativeIndex += uncategorized.length;
+      pageBudgetTotal += totals.total;
+    }
+
+    return { groups, pageBudgetTotal };
+  }
+
+  // CSV export helper
+  exportCsv(data: any[], page: number, size: number, filename = 'programs.csv') {
+    const headers = ['No','Kegiatan','Tempat','Tujuan','Target Fisik','Anggaran Lokal','Anggaran Subsidi','Anggaran Total','Pelaksana','Jadwal','Keterangan'];
+    const rows = data.map((r, i) => [ (page-1)*size + i +1, r.title, r.place, r.purpose, r.targetPhysical, r.budgetLocal, r.budgetSubsidy, r.budgetTotal, r.executor, r.scheduleText, r.notes]);
+    const csv = [headers, ...rows].map(r => r.map(c => '"' + (c ?? '') + '"').join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); window.URL.revokeObjectURL(url);
   }
 }

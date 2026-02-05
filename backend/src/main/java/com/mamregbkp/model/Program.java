@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -27,6 +28,25 @@ public class Program {
 
     private String type;
     private String status;
+
+    // new fields for extended program table
+    private String place;
+    @Column(columnDefinition = "TEXT")
+    private String purpose;
+
+    private Integer targetPhysical;
+
+    private Long budgetLocal;
+    private Long budgetSubsidy;
+    private Long budgetTotal;
+
+    private String executor;
+    private String scheduleText;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    private String category;
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

@@ -19,6 +19,10 @@
       <div class="card-title">Dokumentasi</div>
       <input type="file" (change)="selectFile($event)" />
       <button mat-button color="primary" (click)="upload()" [disabled]="!selectedFile">Upload</button>
+      <div class="upload-area">
+        <input type="file" (change)="selectAndPreview($event)" />
+        <div *ngIf="previewData" class="preview"><img [src]="previewData" alt="preview" /></div>
+      </div>
       <div class="docs-list">
         <div class="doc-item" *ngFor="let d of docs">
           <mat-icon>insert_drive_file</mat-icon>
