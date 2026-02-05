@@ -688,10 +688,17 @@ mat-divider {
     min-height: 280px;
     position: relative;
 
+    /* Make canvas participate in normal layout to avoid overlap with legends */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
+      position: relative !important;
+      width: 90% !important; /* Provide breathing space for legends */
+      height: 90% !important;
+      max-width: 560px;
+      max-height: 420px;
     }
   }
 }
@@ -735,10 +742,16 @@ mat-divider {
     position: relative;
     min-height: 200px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
+      position: relative !important;
+      width: 85% !important;
+      height: 85% !important;
+      max-width: 380px;
+      max-height: 300px;
     }
   }
 
@@ -1324,6 +1337,49 @@ mat-divider {
   height: 300px;
 }
 
+// Styles for chart action buttons (export)
+.chart-actions {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+
+// Mobile legend (compact pill list)
+.legend-mobile {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin-top: 12px;
+  padding-bottom: 6px;
+}
+.legend-mobile button {
+  background: rgba(0,0,0,0.04);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.legend-mobile button.hidden {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+// Skeleton placeholder (if needed later)
+.chart-skeleton {
+  height: 240px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 // ========================================
 // RESPONSIVE ADJUSTMENTS

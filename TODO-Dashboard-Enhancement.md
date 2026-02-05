@@ -14,7 +14,6 @@
 ### 2. **Chart Improvements**
 - [ ] Tambahkan animasi loading skeleton untuk charts
 - [ ] Implementasi chart tooltip yang lebih informatif
-- [ ] Tambahkan opsi export chart ke PNG/PDF
 - [ ] Responsive legend untuk mobile view
 
 ### 3. **Dashboard Widgets**

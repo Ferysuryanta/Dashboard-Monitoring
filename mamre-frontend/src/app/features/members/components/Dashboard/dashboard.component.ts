@@ -1,6 +1,7 @@
 // dashboard.component.ts
 
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -25,6 +26,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
 import {Chart, ChartConfiguration, ChartOptions, ChartType} from "chart.js";
 import {AttendanceSummaryDto} from "../../models/attendance.summary.model";
 import {SectorApiResult} from "../../models/sector.response.model";
+import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
     selector: 'app-dashboard',
@@ -60,6 +62,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     protected router = inject(Router);
     private themeSubscription?: Subscription;
     isDarkMode = false;
+
+    // ViewChild references for charts (ng2-charts BaseChartDirective)
+    @ViewChild('lineChart') public lineChart?: BaseChartDirective;
+    @ViewChild('pieChart') public pieChart?: BaseChartDirective;
+    @ViewChild('attendanceChart') public attendanceChart?: BaseChartDirective;
+    @ViewChild('genderChart') public genderChart?: BaseChartDirective;
+    @ViewChild('statusChart') public statusChart?: BaseChartDirective;
+
+    // Mobile detection
+    isMobile = window.innerWidth <= 600;
+
+    @HostListener('window:resize') onResize() {
+        this.isMobile = window.innerWidth <= 600;
+    }
 
     loading = true;
     today = new Date();
@@ -100,7 +116,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         indexAxis: 'y', // Horizontal bar chart
         layout: {
             padding: {
-                left: 0,
+                left: 48,
                 right: 15,
                 top: 10,
                 bottom: 10
@@ -235,8 +251,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         datasets: [{
             data: [],
             borderColor: '#ffffff',
-            borderWidth: 4,
-            hoverOffset: 15
+            borderWidth: 2,
+            hoverOffset: 8
         }]
     };
 
@@ -256,8 +272,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         datasets: [{
             data: [],
             borderColor: '#ffffff',
-            borderWidth: 4,
-            hoverOffset: 15
+            borderWidth: 2,
+            hoverOffset: 8
         }]
     };
 
@@ -332,8 +348,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
             data: [],
             backgroundColor: ['#3b82f6', '#ec4899', '#9ca3af'],
             borderColor: '#ffffff',
-            borderWidth: 4,
-            hoverOffset: 15
+            borderWidth: 2,
+            hoverOffset: 8
         }]
     };
 
@@ -471,8 +487,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 data: [uniqueMembers, membersAbsent],
                 backgroundColor: ['#20c997', '#e63946'], // Hijau (Hadir), Merah (Absen)
                 borderColor: '#ffffff',
-                borderWidth: 4,
-                hoverOffset: 15
+                borderWidth: 2,
+                hoverOffset: 8
             }];
 
             // PENTING: Trigger update chart agar plugin menggambar teks
@@ -560,8 +576,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 data: this.sectorData,
                 backgroundColor: this.sectorData.map((_, i) => colorPalette[i % colorPalette.length]),
                 borderColor: '#ffffff',
-                borderWidth: 4,
-                hoverOffset: 15
+                borderWidth: 2,
+                hoverOffset: 8
             }];
         }, err => console.error('sector err', err));
 
@@ -607,8 +623,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 data: genderCounts,
                 backgroundColor: genderLabels.map(g => genderColors[g] || '#9ca3af'),
                 borderColor: '#ffffff',
-                borderWidth: 4,
-                hoverOffset: 15
+                borderWidth: 2,
+                hoverOffset: 8
             }];
         }, err => console.error('gender err', err));
 
@@ -655,5 +671,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (daysUntil <= 3) return 'birthday-soon';
         if (daysUntil <= 7) return 'birthday-week';
         return 'birthday-later';
+    }
+
+    // ------------------ CHART UTIL HELPERS ------------------
+    hasChartData(data: any): boolean {
+        try {
+            if (!data || !data.datasets) return false;
+            return data.datasets.some((ds: any) => Array.isArray(ds.data) && ds.data.length > 0 && ds.data.some((v: any) => v !== null && v !== undefined));
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // Toggle dataset visibility using BaseChartDirective.hideDataset
+    toggleDataset(index: number, chartDirective?: BaseChartDirective | undefined) {
+        try {
+            if (!chartDirective) return;
+            const isHidden = chartDirective.isDatasetHidden(index) === true;
+            chartDirective.hideDataset(index, !isHidden);
+        } catch (e) {
+            console.error('toggleDataset error', e);
+        }
+    }
+
+    isDatasetHidden(index: number, chartDirective?: BaseChartDirective | undefined): boolean {
+        try {
+            return !!chartDirective?.isDatasetHidden(index);
+        } catch (e) {
+            return false;
+        }
     }
 }

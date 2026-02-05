@@ -110,14 +110,30 @@
                     </button>
                 </div>
                 <div class="chart-area">
-                    <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
+                    <ng-container *ngIf="!loading && hasChartData(lineChartData); else skeletonLine">
+                        <canvas baseChart #lineChart="base-chart" [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
+                        <div class="legend-mobile" *ngIf="isMobile && lineChartData?.labels?.length">
+                            <button (click)="toggleDataset(0, lineChart)" [class.hidden]="isDatasetHidden(0, lineChart)">Toggle Series</button>
+                        </div>
+                    </ng-container>
+                    <ng-template #skeletonLine>
+                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                    </ng-template>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card">
                 <div class="card-title">Distribusi Sektor</div>
                 <div class="chart-area">
-                    <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
+                    <ng-container *ngIf="!loading && hasChartData(pieChartData); else skeletonPie">
+                        <canvas baseChart #pieChart="base-chart" [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
+                        <div class="legend-mobile" *ngIf="isMobile && pieChartData?.labels?.length">
+                            <button *ngFor="let lbl of pieChartData.labels; let i = index" (click)="toggleDataset(i, pieChart)" [class.hidden]="isDatasetHidden(i, pieChart)">{{ lbl }}</button>
+                        </div>
+                    </ng-container>
+                    <ng-template #skeletonPie>
+                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                    </ng-template>
                 </div>
             </mat-card>
 
@@ -129,13 +145,18 @@
                     </button>
                 </div>
                 <div class="chart-area">
-                    <canvas baseChart
-                            id="attendanceChartCanvas"
-                            [data]="attendanceChartData"
-                            [options]="attendanceChartOptions"
-                            [type]="attendanceChartType"
-                            [plugins]="attendanceChartPlugins">
-                    </canvas>
+                    <ng-container *ngIf="!loading && hasChartData(attendanceChartData); else skeletonAttendance">
+                        <canvas baseChart #attendanceChart="base-chart"
+                                 id="attendanceChartCanvas"
+                                 [data]="attendanceChartData"
+                                 [options]="attendanceChartOptions"
+                                 [type]="attendanceChartType"
+                                 [plugins]="attendanceChartPlugins">
+                        </canvas>
+                    </ng-container>
+                    <ng-template #skeletonAttendance>
+                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                    </ng-template>
                 </div>
             </mat-card>
         </div>
@@ -145,14 +166,30 @@
             <mat-card class="chart-card-small">
                 <div class="card-title">Distribusi Gender</div>
                 <div class="chart-area-small">
-                    <canvas baseChart [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
+                    <ng-container *ngIf="!loading && hasChartData(genderChartData); else skeletonGender">
+                        <canvas baseChart #genderChart="base-chart" [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
+                        <div class="legend-mobile" *ngIf="isMobile && genderChartData?.labels?.length">
+                            <button *ngFor="let lbl of genderChartData.labels; let i = index" (click)="toggleDataset(i, genderChart)" [class.hidden]="isDatasetHidden(i, genderChart)">{{ lbl }}</button>
+                        </div>
+                    </ng-container>
+                    <ng-template #skeletonGender>
+                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                    </ng-template>
                 </div>
             </mat-card>
 
             <mat-card class="chart-card-small">
                 <div class="card-title">Distribusi Status</div>
                 <div class="chart-area-small">
-                    <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
+                    <ng-container *ngIf="!loading && hasChartData(statusChartData); else skeletonStatus">
+                        <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
+                        <div class="legend-mobile" *ngIf="isMobile && statusChartData?.labels?.length">
+                            <button *ngFor="let lbl of statusChartData.labels; let i = index" (click)="toggleDataset(i, statusChart)" [class.hidden]="isDatasetHidden(i, statusChart)">{{ lbl }}</button>
+                        </div>
+                    </ng-container>
+                    <ng-template #skeletonStatus>
+                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                    </ng-template>
                 </div>
             </mat-card>
 
@@ -295,3 +332,4 @@
         </div>
     </div>
 </div>
+
