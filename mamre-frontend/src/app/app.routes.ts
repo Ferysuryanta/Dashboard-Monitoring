@@ -86,6 +86,11 @@ export const routes: Routes = [
             { path: 'attendance', component: AttendanceComponent },
             { path: 'attendance-report', component: AttendanceReportComponent },
 
+            // 📅 Programs / Kegiatan
+            { path: 'programs', loadComponent: () => import('./features/programs/program-list.component').then(m => m.ProgramListComponent) },
+            { path: 'programs/new', loadComponent: () => import('./features/programs/program-form.component').then(m => m.ProgramFormComponent) },
+            { path: 'programs/:id', loadComponent: () => import('./features/programs/program-detail.component').then(m => m.ProgramDetailComponent) },
+
             // 👤 Profile & Settings
             { path: 'profile', component: ProfileComponent },
             { path: 'settings', component: ProfileComponent }, // Redirect to profile for now

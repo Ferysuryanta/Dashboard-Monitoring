@@ -1,0 +1,21 @@
+<div class="program-form-root">
+  <h2 *ngIf="!editingId">Tambah Kegiatan / Program</h2>
+  <h2 *ngIf="editingId">Edit Kegiatan / Program</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Judul</mat-label>
+      <input matInput formControlName="title" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Deskripsi</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-flat-button color="primary" type="submit">Simpan</button>
+      <button mat-button type="button" (click)="cancel()">Batal</button>
+    </div>
+  </form>
+</div>

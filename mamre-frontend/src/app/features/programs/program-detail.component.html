@@ -1,0 +1,31 @@
+<div class="program-detail-root">
+  <mat-card *ngIf="program">
+    <div class="header">
+      <h2>{{ program.title }}</h2>
+      <div class="meta">{{ program.type }} • <span class="status">{{ program.status }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="desc">{{ program.description || 'Tidak ada deskripsi' }}</div>
+    <div class="divider"></div>
+    <div class="actions">
+      <button mat-flat-button color="primary">Tambah Jadwal</button>
+      <button mat-button>Unduh Dokumen</button>
+    </div>
+  </mat-card>
+  <div *ngIf="!program && !loading" class="empty">Data tidak ditemukan</div>
+  <div *ngIf="loading" class="loading">Memuat...</div>
+  <div *ngIf="program">
+    <mat-card>
+      <div class="card-title">Dokumentasi</div>
+      <input type="file" (change)="selectFile($event)" />
+      <button mat-button color="primary" (click)="upload()" [disabled]="!selectedFile">Upload</button>
+      <div class="docs-list">
+        <div class="doc-item" *ngFor="let d of docs">
+          <mat-icon>insert_drive_file</mat-icon>
+          <div class="doc-name">{{ d.filename }}</div>
+          <button mat-button (click)="download(d.id)">Download</button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

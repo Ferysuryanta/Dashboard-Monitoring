@@ -1,0 +1,56 @@
+<div class="programs-root modern">
+  <div class="header">
+    <div class="header-left">
+      <div class="icon-wrap">
+        <mat-icon>event_note</mat-icon>
+      </div>
+      <div class="title-wrap">
+        <h1>Kegiatan & Program</h1>
+        <div class="subtitle">Jadwal kegiatan Mamre, dokumentasi, dan status pelaksanaan</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Cari kegiatan</mat-label>
+        <input matInput (keyup)="search($any($event.target).value)" placeholder="Cari berdasarkan judul" />
+        <button mat-icon-button matSuffix *ngIf="q" (click)="search('')"><mat-icon>close</mat-icon></button>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="add-btn" (click)="create()"><mat-icon>add</mat-icon> Tambah</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-area">
+    <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="!loading">
+    <div *ngIf="programs.length === 0" class="empty-state">
+      <div class="empty-illustration">📅</div>
+      <div class="empty-text">Belum ada kegiatan</div>
+      <div class="empty-sub">Buat kegiatan baru dengan tombol Tambah</div>
+    </div>
+
+    <div class="grid">
+      <div class="card" *ngFor="let p of programs; trackBy: trackById" (click)="open(p)">
+        <div class="card-left">
+          <div class="circle-icon"><mat-icon>event</mat-icon></div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">{{ p.title }}</div>
+          <div class="card-sub">{{ p.nextSchedule ? (p.nextSchedule | date:'dd MMM yyyy HH:mm') : 'Belum dijadwalkan' }}</div>
+        </div>
+        <div class="card-action">
+          <mat-icon>arrow_forward</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="pager" *ngIf="total > size">
+      <button mat-button (click)="prevPage()" [disabled]="page === 0">Sebelumnya</button>
+      <span class="pager-info">Halaman {{ page + 1 }} dari {{ Math.ceil(total / size) }}</span>
+      <button mat-button (click)="nextPage()" [disabled]="(page+1)*size >= total">Selanjutnya</button>
+    </div>
+  </div>
+</div>

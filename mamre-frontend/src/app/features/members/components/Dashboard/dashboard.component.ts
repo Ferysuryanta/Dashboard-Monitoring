@@ -657,6 +657,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     goSectors() { this.router.navigateByUrl('/app/sectors'); }
     goPositions() { this.router.navigateByUrl('/app/positions'); }
     goMembers() { this.router.navigateByUrl('/app/members'); }
+    // Navigate to Programs/Kegiatan page
+    goPrograms() { this.router.navigateByUrl('/app/programs'); }
 
     // Helper untuk menentukan label hari ulang tahun
     getBirthdayLabel(daysUntil: number): string {

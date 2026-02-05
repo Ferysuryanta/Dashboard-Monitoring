@@ -398,11 +398,30 @@ mat-divider {
 
     .nav-icon-wrap {
       background: rgba(white, 0.2);
-      backdrop-filter: blur(4px);
+
     }
 
     &:hover {
       box-shadow: 0 8px 30px rgba($accent, 0.45);
+    }
+  }
+
+  // Programs - Blue / Neutral (custom for Kegiatan & Program)
+  &.programs {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    box-shadow: 0 4px 20px rgba(#3b82f6, 0.28);
+
+    .nav-icon-wrap {
+      background: rgba(255,255,255,0.12);
+      mat-icon { color: #fff; }
+    }
+
+    .nav-title { color: #fff; }
+    .nav-subtitle { color: rgba(255,255,255,0.85); }
+
+    &:hover {
+      box-shadow: 0 10px 40px rgba(#3b82f6, 0.35);
+      transform: translateY(-4px) scale(1.02);
     }
   }
 }
