@@ -103,22 +103,50 @@ public class ProgramServiceImpl implements ProgramService {
     // New: paged + search + filters using Specification
     @Override
     public Page<ProgramDto> findPaged(int page, int size, String q, String status, String type, String category) {
+        log.info("findPaged called with page={}, size={}, q={}, status={}, type={}, category={}", page, size, q, status, type, category);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Specification<Program> spec = (root, query, cb) -> {
             List<Predicate> preds = new ArrayList<>();
+
+            // build q predicates (title OR description)
             if (q != null && !q.trim().isEmpty()) {
                 String like = "%" + q.toLowerCase() + "%";
-                try { preds.add(cb.like(cb.lower(root.get("title")), like)); } catch (Exception ignored) {}
-                try { preds.add(cb.like(cb.lower(root.get("description")), like)); } catch (Exception ignored) {}
+                List<Predicate> qPreds = new ArrayList<>();
+                try { qPreds.add(cb.like(cb.lower(root.get("title")), like)); } catch (Exception ignored) {}
+                try { qPreds.add(cb.like(cb.lower(root.get("description")), like)); } catch (Exception ignored) {}
+                if (!qPreds.isEmpty()) {
+                    preds.add(cb.or(qPreds.toArray(new Predicate[0])));
+                }
             }
+
             if (status != null && !status.trim().isEmpty()) {
-                preds.add(cb.equal(root.get("status"), status));
+                String sTrim = status.trim();
+                if (!sTrim.equalsIgnoreCase("semua") && !sTrim.equalsIgnoreCase("all")) {
+                    // case-insensitive match
+                    preds.add(cb.equal(cb.lower(root.get("status")), sTrim.toLowerCase()));
+                }
             }
             if (type != null && !type.trim().isEmpty()) {
-                preds.add(cb.equal(root.get("type"), type));
+                String tTrim = type.trim();
+                if (!tTrim.equalsIgnoreCase("semua") && !tTrim.equalsIgnoreCase("all")) {
+                    // case-insensitive match
+                    preds.add(cb.equal(cb.lower(root.get("type")), tTrim.toLowerCase()));
+                }
             }
             if (category != null && !category.trim().isEmpty()) {
-                preds.add(cb.equal(root.get("category"), category));
+                String trimmed = category.trim();
+                if (!trimmed.equalsIgnoreCase("semua") && !trimmed.equalsIgnoreCase("all")) {
+                    // allow matching by prefix before ' - ' as frontend may send 'A - BIDANG ...'
+                    String beforeDash = trimmed.split(" - ")[0].trim();
+                    String catCode = !beforeDash.isEmpty() ? beforeDash : String.valueOf(trimmed.charAt(0));
+                    // compare lower-case for robustness
+                    try {
+                        preds.add(cb.or(cb.equal(cb.lower(root.get("category")), trimmed.toLowerCase()), cb.equal(cb.lower(root.get("category")), catCode.toLowerCase())));
+                    } catch (Exception ignored) {
+                        // fallback to exact match
+                        preds.add(cb.equal(cb.lower(root.get("category")), trimmed.toLowerCase()));
+                    }
+                }
             }
             if (preds.isEmpty()) return cb.conjunction();
             return cb.and(preds.toArray(new Predicate[0]));

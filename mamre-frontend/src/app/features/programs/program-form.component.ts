@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { ProgramService } from './program.service';
+import ProgramService from './program.service';
 
 @Component({
   selector: 'app-program-form',

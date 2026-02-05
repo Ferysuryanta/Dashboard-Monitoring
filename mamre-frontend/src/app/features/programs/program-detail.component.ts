@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { ProgramService } from './program.service';
+import ProgramService from './program.service';
 import { Program } from './program.model';
 
 @Component({
