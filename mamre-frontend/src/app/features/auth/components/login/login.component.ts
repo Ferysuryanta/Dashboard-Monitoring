@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
+import { SharedPipesModule } from 'src/app/shared/shared-pipes.module';
 
 @Component({
     selector: 'app-login',
@@ -27,7 +28,8 @@ import { DashboardService } from '../../../../core/services/dashboard.service';
         MatIconModule,
         MatCheckboxModule,
         MatProgressSpinnerModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        SharedPipesModule
     ],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']

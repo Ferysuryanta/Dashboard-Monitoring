@@ -74,7 +74,7 @@
             <mat-card class="stat-card">
                 <div class="stat-left">
                     <div class="stat-label">Total Anggota</div>
-                    <div class="stat-value">{{ summary.totalMembers | number }}</div>
+                    <div class="stat-value">{{ summary.totalMembers | countUp }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay total">groups</mat-icon>
                 <mat-icon class="stat-icon-bg total">groups</mat-icon>
@@ -83,7 +83,7 @@
             <mat-card class="stat-card">
                 <div class="stat-left">
                     <div class="stat-label">Aktif</div>
-                    <div class="stat-value">{{ summary.activeMembers | number }}</div>
+                    <div class="stat-value">{{ summary.activeMembers | countUp }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay active">check_circle</mat-icon>
                 <mat-icon class="stat-icon-bg active">check_circle</mat-icon>
@@ -92,7 +92,7 @@
             <mat-card class="stat-card">
                 <div class="stat-left">
                     <div class="stat-label">Sektor</div>
-                    <div class="stat-value">{{ summary.sectors }}</div>
+                    <div class="stat-value">{{ summary.sectors | countUp }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay sectors">account_tree</mat-icon>
                 <mat-icon class="stat-icon-bg sectors">account_tree</mat-icon>
@@ -101,7 +101,7 @@
             <mat-card class="stat-card">
                 <div class="stat-left">
                     <div class="stat-label">Jabatan</div>
-                    <div class="stat-value">{{ summary.positions }}</div>
+                    <div class="stat-value">{{ summary.positions | countUp }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay positions">work</mat-icon>
                 <mat-icon class="stat-icon-bg positions">work</mat-icon>
@@ -110,7 +110,7 @@
             <mat-card class="stat-card" *ngIf="attendanceSummary">
                 <div class="stat-left">
                     <div class="stat-label">Total Kehadiran</div>
-                    <div class="stat-value">{{ attendanceSummary.totalAttendances | number }}</div>
+                    <div class="stat-value">{{ attendanceSummary.totalAttendances | countUp }}</div>
                 </div>
                 <mat-icon class="stat-icon-overlay attendance">event_available</mat-icon>
                 <mat-icon class="stat-icon-bg attendance">event_available</mat-icon>
@@ -293,7 +293,7 @@
                             <mat-icon>groups</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ summary.totalMembers }}</div>
+                            <div class="q-value-modern">{{ summary.totalMembers | countUp }}</div>
                             <div class="q-label-modern">Total Anggota</div>
                         </div>
                     </div>
@@ -302,7 +302,7 @@
                             <mat-icon>verified</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ summary.activeMembers }}</div>
+                            <div class="q-value-modern">{{ summary.activeMembers | countUp }}</div>
                             <div class="q-label-modern">Anggota Aktif</div>
                         </div>
                     </div>
@@ -311,7 +311,7 @@
                             <mat-icon>account_tree</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ summary.sectors }}</div>
+                            <div class="q-value-modern">{{ summary.sectors | countUp }}</div>
                             <div class="q-label-modern">Jumlah Sektor</div>
                         </div>
                     </div>
@@ -320,7 +320,7 @@
                             <mat-icon>work</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ summary.positions }}</div>
+                            <div class="q-value-modern">{{ summary.positions | countUp }}</div>
                             <div class="q-label-modern">Jumlah Jabatan</div>
                         </div>
                     </div>
@@ -330,7 +330,7 @@
                             <mat-icon>how_to_reg</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ attendanceSummary.uniqueMembers | number }}</div>
+                            <div class="q-value-modern">{{ attendanceSummary.uniqueMembers | countUp }}</div>
                             <div class="q-label-modern">Anggota Hadir</div>
                         </div>
                     </div>
@@ -339,7 +339,7 @@
                             <mat-icon>calendar_month</mat-icon>
                         </div>
                         <div class="q-content">
-                            <div class="q-value-modern">{{ attendanceSummary.totalAttendances | number }}</div>
+                            <div class="q-value-modern">{{ attendanceSummary.totalAttendances | countUp }}</div>
                             <div class="q-label-modern">Kehadiran ({{ attendanceSummary.month }})</div>
                         </div>
                     </div>

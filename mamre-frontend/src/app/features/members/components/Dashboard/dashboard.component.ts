@@ -27,6 +27,7 @@ import {Chart, ChartConfiguration, ChartOptions, ChartType} from "chart.js";
 import {AttendanceSummaryDto} from "../../models/attendance.summary.model";
 import {SectorApiResult} from "../../models/sector.response.model";
 import { BaseChartDirective } from 'ng2-charts';
+import { CountUpPipe } from 'src/app/shared/pipes/count-up.pipe';
 
 @Component({
     selector: 'app-dashboard',
@@ -42,7 +43,8 @@ import { BaseChartDirective } from 'ng2-charts';
         MatListModule,
         MatProgressSpinnerModule,
         NgChartsModule,
-        MatTooltipModule
+        MatTooltipModule,
+        CountUpPipe
     ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],

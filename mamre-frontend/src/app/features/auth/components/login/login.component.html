@@ -49,21 +49,21 @@
                 <div class="stat-card">
                     <span class="stat-icon">🏘️</span>
                     <div class="stat-info">
-                        <span class="stat-value">{{ sectorCount }}</span>
+                        <span class="stat-value">{{ sectorCount | countUp }}</span>
                         <span class="stat-label">Sektor</span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-icon">👥</span>
                     <div class="stat-info">
-                        <span class="stat-value">{{ memberCount }}</span>
+                        <span class="stat-value">{{ memberCount | countUp }}</span>
                         <span class="stat-label">Anggota</span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-icon">✅</span>
                     <div class="stat-info">
-                        <span class="stat-value">{{ activeMemberCount }}</span>
+                        <span class="stat-value">{{ activeMemberCount | countUp }}</span>
                         <span class="stat-label">Aktif</span>
                     </div>
                 </div>

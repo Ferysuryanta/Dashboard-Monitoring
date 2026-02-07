@@ -4,10 +4,11 @@ import { MemberCardComponent } from './components/member-card/member-card.compon
 import { MemberListComponent } from './components/member-list/member-list.component';
 import { SharedMaterialModule } from '../../shared/material.module';
 import {DashboardComponent} from "./components/Dashboard/dashboard.component";
+import { SharedPipesModule } from '../../shared/shared-pipes.module';
 
 @NgModule({
   declarations: [],
-    imports: [CommonModule, SharedMaterialModule, MemberCardComponent, MemberListComponent, DashboardComponent],
+    imports: [CommonModule, SharedMaterialModule, MemberCardComponent, MemberListComponent, DashboardComponent, SharedPipesModule],
   exports: [MemberCardComponent, MemberListComponent]
 })
 export class MembersModule {}
