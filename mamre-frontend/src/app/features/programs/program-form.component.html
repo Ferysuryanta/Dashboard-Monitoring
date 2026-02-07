@@ -1,24 +1,38 @@
 <div class="program-form-root">
   <h2>Tambah Kegiatan / Program</h2>
   <form [formGroup]="form" (ngSubmit)="save()">
-    <mat-form-field appearance="outline" class="full">
-      <input matInput placeholder="Judul*" formControlName="title" />
-    </mat-form-field>
+    <!-- Top row: compact title + large description -->
+    <div class="row top">
+      <div class="left-col">
+        <mat-form-field appearance="outline" class="small mat-form-field">
+          <mat-label>Judul *</mat-label>
+          <input matInput formControlName="title" aria-label="Judul" />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full">
-      <textarea matInput placeholder="Deskripsi" formControlName="description" rows="6"></textarea>
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="small mat-form-field">
+          <mat-label>Tempat</mat-label>
+          <input matInput formControlName="place" aria-label="Tempat" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="large mat-form-field">
+        <mat-label>Deskripsi</mat-label>
+        <textarea matInput formControlName="description" rows="6" aria-label="Deskripsi"></textarea>
+      </mat-form-field>
+    </div>
 
     <div class="row">
-      <mat-form-field appearance="outline" class="half">
-        <mat-select formControlName="type">
+      <mat-form-field appearance="outline" class="half mat-form-field">
+        <mat-label>Tipe</mat-label>
+        <mat-select formControlName="type" aria-label="Tipe">
           <mat-option value="Kegiatan">Kegiatan</mat-option>
           <mat-option value="Program">Program</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="half">
-        <mat-select formControlName="category">
+      <mat-form-field appearance="outline" class="half mat-form-field">
+        <mat-label>Bidang</mat-label>
+        <mat-select formControlName="category" aria-label="Bidang">
           <mat-option value="Bidang Umum & Sekretariat">Bidang Umum & Sekretariat</mat-option>
           <mat-option value="Bidang Persekutuan">Bidang Persekutuan</mat-option>
           <mat-option value="Bidang Kesaksian">Bidang Kesaksian</mat-option>
@@ -29,32 +43,59 @@
     </div>
 
     <div class="row">
-      <mat-form-field appearance="outline" class="third">
-        <input matInput type="number" placeholder="Target fisik" formControlName="targetPhysical" />
+      <mat-form-field appearance="outline" class="third mat-form-field">
+        <mat-label>Target fisik</mat-label>
+        <input matInput type="number" inputmode="numeric" step="1" formControlName="targetPhysical" aria-label="Target fisik" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="third">
-        <input matInput type="number" placeholder="Anggaran Lokal" formControlName="budgetLocal" />
+      <mat-form-field appearance="outline" class="third mat-form-field">
+        <mat-label>Anggaran Lokal</mat-label>
+        <input matInput type="text" [value]="displayBudgetLocal" (input)="$event && onNumberInput('budgetLocal', $any($event.target).value)" (focus)="onNumberFocus('budgetLocal')" (blur)="onNumberBlur('budgetLocal')" aria-label="Anggaran Lokal" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="third">
-        <input matInput type="number" placeholder="Anggaran Subsidi" formControlName="budgetSubsidy" />
+      <mat-form-field appearance="outline" class="third mat-form-field">
+        <mat-label>Anggaran Subsidi</mat-label>
+        <input matInput type="text" [value]="displayBudgetSubsidy" (input)="$event && onNumberInput('budgetSubsidy', $any($event.target).value)" (focus)="onNumberFocus('budgetSubsidy')" (blur)="onNumberBlur('budgetSubsidy')" aria-label="Anggaran Subsidi" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="third mat-form-field">
+        <mat-label>Anggaran Total</mat-label>
+        <input matInput type="text" [value]="formatNumber(form.get('budgetTotal')?.value || 0)" readonly aria-label="Anggaran Total" />
       </mat-form-field>
     </div>
 
     <div class="row">
-      <mat-form-field appearance="outline" class="half">
-        <input matInput placeholder="Pelaksana" formControlName="executor" />
+      <mat-form-field appearance="outline" class="half mat-form-field">
+        <mat-label>Pelaksana</mat-label>
+        <input matInput formControlName="executor" aria-label="Pelaksana" />
       </mat-form-field>
-      <mat-form-field appearance="outline" class="half">
-        <input matInput placeholder="Jadwal (teks)" formControlName="scheduleText" />
+      <mat-form-field appearance="outline" class="half mat-form-field">
+        <mat-label>Jadwal (teks)</mat-label>
+        <input matInput formControlName="scheduleText" aria-label="Jadwal" />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="full mat-form-field">
+        <mat-label>Tujuan / Purpose</mat-label>
+        <input matInput formControlName="purpose" aria-label="Tujuan" />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="full mat-form-field">
+        <mat-label>Catatan / Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="3" aria-label="Notes"></textarea>
       </mat-form-field>
     </div>
 
     <div class="file-upload">
-      <label for="fileUpload" class="file-label">Unggah dokumentasi (opsional)</label>
-      <input type="file" id="fileUpload" (change)="selectedFile = $any($event.target).files?.[0]" />
-      <div class="file-meta" *ngIf="selectedFile">{{ selectedFile.name }}</div>
+      <button type="button" class="file-label" (click)="triggerFileDialog()">Unggah dokumentasi (opsional)</button>
+      <input type="file" id="fileUpload" (change)="onFileSelected($event)" />
+      <div class="file-meta" *ngIf="selectedFile">
+        <span>{{ selectedFile.name }}</span>
+        <button type="button" class="remove-file" (click)="removeFile()">Hapus</button>
+      </div>
     </div>
 
     <div class="actions">

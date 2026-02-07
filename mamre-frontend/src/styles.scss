@@ -1,5 +1,5 @@
 // Font is loaded in index.html for better performance
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 html, body {
   height: 100%;
@@ -58,6 +58,9 @@ h1, h2, h3, h4, h5, h6 {
   --text-secondary: #475569;
   --text-muted: #94a3b8;
 
+ /* compatibility token used in some templates / inline styles */
+  --app-text: var(--text-primary);
+
   // Card & surfaces
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
@@ -98,6 +101,9 @@ h1, h2, h3, h4, h5, h6 {
   --text-primary: #f8fafc;
   --text-secondary: #e2e8f0;
   --text-muted: #94a3b8;
+
+  /* compatibility token used in some templates / inline styles */
+  --app-text: var(--text-primary);
 
   // Card & surfaces
   --card-bg: #1e293b;

@@ -10,3 +10,12 @@
 .doc-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; background: #fafafa }
 .doc-item mat-icon { color:#6b7280 }
 .doc-name { flex:1 }
+
+:host-context([data-theme='dark']) {
+  .program-detail-root { color: #e6eef8 }
+  .header h2 { color: #fff }
+  .meta { color: #9aa6b6 }
+  .desc { color: #e6eef8 }
+  .doc-item { background: rgba(255,255,255,0.02); }
+  .doc-item mat-icon { color: #cbd5e1 }
+}

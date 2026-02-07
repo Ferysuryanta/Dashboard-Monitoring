@@ -1,29 +1,920 @@
-.program-form-root { padding:16px; }
-.full-width { width:100%; }
-.actions { display:flex; gap:12px; margin-top:18px; align-items:center }
+.program-form-root { padding:24px; max-width:1200px; margin:28px auto; }
 
-.form-header { display:flex; align-items:center; gap:12px; margin-bottom:12px }
-.form-header .icon-wrap { background: rgba(74,20,140,0.08); padding:12px; border-radius:12px; display:flex; align-items:center; justify-content:center }
-.form-header .icon-wrap mat-icon { font-size:42px; color:#6a5af9 }
-.form-header .title-wrap h2 { margin:0; font-size:20px; font-weight:800 }
-.form-header .subtitle { color:#6b7280; font-size:13px; margin-top:6px }
+/* Prevent accidental clipping of actions/buttons */
+.program-form-root { overflow: visible !important; }
 
-/* Ensure spinner sits nicely inside button */
-.actions mat-progress-spinner { margin-right:8px }
+/* Top row: left narrow column + right large description */
+.row.top { display:flex; gap:20px; align-items:flex-start; }
+.left-col { flex: 0 0 32%; display:flex; flex-direction:column; gap:12px; }
+.mat-form-field.large { flex: 1 1 68%; }
 
-/* Make textarea visually larger for description */
-.full-width textarea { min-height:120px }
+/* Make small/half/third/full widths consistent */
+.mat-form-field.small { width:100%; }
+.mat-form-field.half { flex: 0 0 calc(50% - 6px); }
+.mat-form-field.third { flex: 0 0 calc(25% - 9px); }
+.mat-form-field.full { width:100%; }
 
-/* layout helpers */
-.two-col { display:flex; gap:12px; }
-.three-col { display:flex; gap:12px; }
-.col { flex:1 }
+/* Ensure textarea occupies full height visually like image */
+.mat-form-field.large textarea.mat-input-element { min-height:170px; }
 
-.file-row { margin-top:12px; display:flex; align-items:center; gap:12px }
-.file-row input[type="file"] { border-radius:6px }
-.file-meta { font-size:13px; color:#374151 }
+/* Slightly increase gap between rows for readability */
+.row { display:flex; gap:12px; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap }
+
+/* Improve spacing before actions */
+.actions { display:flex; gap:12px; margin-top:22px; align-items:center }
+
+/* Subtle focus ring for accessibility */
+.mat-form-field.mat-focused .mat-form-field-wrapper { box-shadow: 0 0 0 4px rgba(99,102,241,0.06); border-radius:8px }
+
+/* Make inputs visually consistent */
+.mat-form-field .mat-form-field-wrapper { padding: 6px 8px; border-radius:6px }
+
+/* Right-align numeric inputs for readability */
+.program-form-root input[type="number"] { text-align: right; padding-right: 8px; }
+
+/* Custom file control styles */
+.file-upload { display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-upload input[type="file"] { position:absolute; left:-9999px }
+.file-upload .file-label { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; color:#e6eef8; cursor:pointer; font-weight:600 }
+.file-upload .file-meta { display:flex; align-items:center; gap:8px; color:#cbd5e1 }
+.file-upload .remove-file { background: transparent; border: none; color:#f87171; cursor:pointer; padding:4px 6px; border-radius:4px }
+
+/* Number inputs (text-based) - monospace and right aligned */
+.mat-form-field input[aria-label^="Anggaran"] { font-family: 'Roboto Mono', monospace; text-align: right; }
+
+/* Brighten field labels and inputs in dark mode further */
+:host-context([data-theme='dark']) {
+  .program-form-root .mat-form-field-label { color: #f1f5f9 !important; }
+  .program-form-root input.mat-input-element, .program-form-root textarea.mat-input-element { color: #f8fafc !important }
+  .program-form-root .mat-select-value { color: #f8fafc !important }
+}
+
+/* responsive: fall back to stacked layout */
+@media (max-width: 860px) {
+  .row.top { flex-direction:column; }
+  .left-col { flex: none; width:100%; }
+  .mat-form-field.large { width:100%; }
+}
+
+/* Dark mode improvements for the program form */
+:host-context([data-theme='dark']) {
+  .program-form-root {
+    /* make input fields subtle but readable */
+  }
+
+  /* Give form fields a subtle dark background and clearer borders */
+  .program-form-root .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    background: rgba(255,255,255,0.02);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  /* Force white text on all form inputs, labels, selects to maximize contrast */
+  .program-form-root input.mat-input-element,
+  .program-form-root textarea.mat-input-element,
+  .program-form-root .mat-select-value,
+  .program-form-root .mat-form-field-label,
+  .program-form-root .mat-select-trigger,
+  .program-form-root .mat-option-text {
+    color: #ffffff !important;
+  }
+
+  /* Stronger overrides for Material internals to ensure white text */
+  ::ng-deep .program-form-root .mat-form-field .mat-form-field-infix,
+  ::ng-deep .program-form-root .mat-form-field .mat-input-element,
+  ::ng-deep .program-form-root .mat-form-field .mat-select-value,
+  ::ng-deep .program-form-root .mat-form-field .mat-form-field-label,
+  ::ng-deep .program-form-root .mat-form-field .mat-select-trigger,
+  ::ng-deep .program-form-root textarea.mat-input-element,
+  ::ng-deep .program-form-root .mat-option-text,
+  ::ng-deep .program-form-root .mat-select-value-text {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+  }
+
+  /* ensure placeholder is slightly muted but visible */
+  ::ng-deep .program-form-root input::placeholder,
+  ::ng-deep .program-form-root textarea::placeholder {
+    color: #acb4bf !important;
+    opacity: 1;
+  }
+
+  /* ensure label float color even when not focused */
+  ::ng-deep .program-form-root .mat-form-field-label {
+    color: #ffffff !important;
+  }
+
+  /* read-only field styling (budgetTotal) */
+  .program-form-root input[readonly] { color: #ffffff !important; background: rgba(255,255,255,0.01); }
+
+  /* Increase contrast for label/floatplaceholder */
+  .program-form-root .mat-form-field-label {
+    color: #ffffff !important;
+  }
+
+  /* Textarea background and border tweak */
+  .program-form-root textarea.mat-input-element {
+    background: transparent !important;
+    min-height: 120px;
+  }
+
+  /* Select trigger readability */
+  .program-form-root .mat-select-trigger {
+    color: #ffffff !important;
+  }
+
+  /* File label & meta */
+  .program-form-root .file-label,
+  .program-form-root .file-meta {
+    color: #ffffff;
+  }
+
+  /* Buttons: stronger primary style and visible disabled state */
+  .program-form-root .actions button.mat-flat-button.mat-primary {
+    background: linear-gradient(180deg, #6366f1, #4f46e5) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 14px rgba(79,70,229,0.12);
+  }
+  .program-form-root .actions button[disabled] {
+    opacity: 0.45 !important;
+    filter: none !important;
+  }
+
+  /* Make helper text / minor info slightly muted but readable */
+  .program-form-root .mat-hint,
+  .program-form-root .mat-error {
+    color: #9aa6b6 !important;
+  }
+
+  .program-form-root h2 { color: #ffffff; }
+  .program-form-root .mat-form-field-label { color: #e2e8f0 !important; font-weight:600 }
+  .program-form-root input.mat-input-element, .program-form-root textarea.mat-input-element { color: #f1f5f9 !important }
+}
 
 /* responsive */
 @media (max-width: 800px) {
   .two-col, .three-col { flex-direction:column }
+  .mat-form-field.half, .mat-form-field.third { flex: 1 1 100%; }
 }
+
+.left-col { flex: 0 0 32%; display:flex; flex-direction:column; gap:12px; }
+
+/* ensure small fields in left-col stretch */
+.left-col .mat-form-field.small { width:100%; }
+
+/* Force white text on all form fields inside this component (unconditional) */
+.program-form-root .mat-form-field .mat-form-field-infix,
+.program-form-root .mat-form-field .mat-input-element,
+.program-form-root input.mat-input-element,
+.program-form-root textarea.mat-input-element,
+.program-form-root .mat-select-value,
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-select-trigger,
+::ng-deep .program-form-root .mat-option-text,
+::ng-deep .program-form-root .mat-placeholder {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* keep placeholder slightly muted */
+.program-form-root input::placeholder,
+.program-form-root textarea::placeholder {
+  color: #acb4bf !important;
+  opacity: 1;
+}
+
+/* make file label look like a button on left area (per image) */
+.file-upload { display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-upload .file-label { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; color:#e6eef8; cursor:pointer; font-weight:600 }
+
+/* Balance actions to the left like image (save button left) */
+.actions { display:flex; gap:12px; margin-top:22px; align-items:center; justify-content:flex-start }
+
+/* Small responsive tweaks to keep layout similar on medium screens */
+@media (max-width: 1100px) {
+  .left-col { flex: 0 0 40%; }
+  .mat-form-field.large { flex: 1 1 58%; }
+}
+
+/* Stronger label emphasis: make labels pop more in dark mode and always be readable */
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-mdc-floating-label,
+.program-form-root .mat-form-field .mat-label,
+::ng-deep .program-form-root .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field-label,
+::ng-deep .program-form-root .mat-form-field .mat-label {
+  color: #ffffff !important; /* bright white for high contrast */
+  font-weight: 600 !important; /* slightly bolder */
+  opacity: 1 !important; /* ensure not dimmed */
+  letter-spacing: 0.2px !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35) !important; /* subtle lift on dark backgrounds */
+}
+
+/* Focus & Hover: keep the label clear and slightly brighter when field focused */
+.program-form-root .mat-form-field.mat-focused .mat-form-field-label,
+.program-form-root .mat-form-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field.mat-focused .mat-label {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(79,70,229,0.06) !important;
+}
+
+/* Ensure small helper labels above grouped controls (if present) are readable */
+.program-form-root .mat-form-field-prefix,
+.program-form-root .mat-form-field-suffix,
+.program-form-root .mat-form-field-subscript-wrapper {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Stronger select trigger label (when value present) */
+.program-form-root .mat-select-value,
+.program-form-root .mat-mdc-select-value-text,
+::ng-deep .program-form-root .mat-select-trigger span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* For floating small labels that sit above the control, ensure background contrast */
+.program-form-root .mat-form-field-appearance-outline .mat-form-field-outline,
+.program-form-root .mat-form-field-appearance-outline .mat-mdc-notched-outline-stroke {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+
+/* Submit button improvements (size, contrast, hover, disabled state) */
+.program-form-root .actions button.mat-flat-button.mat-primary,
+.program-form-root button.mat-flat-button.mat-primary {
+  min-width: 140px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.14);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, opacity 120ms ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  text-transform: none !important;
+  color: #ffffff !important;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary mat-icon,
+.program-form-root .actions button.mat-flat-button.mat-primary .mat-icon {
+  color: #ffffff !important;
+  font-size: 18px;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(79,70,229,0.20);
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary[disabled] {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Ensure mat-flat-button and MDC button variants (primary) are always visible in the form */
+.program-form-root button[mat-flat-button][color="primary"],
+.program-form-root button.mat-flat-button.mat-primary,
+.program-form-root .mat-mdc-button.mat-primary,
+.program-form-root button.mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.16) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  z-index: 2 !important;
+}
+
+/* Final high-specificity overrides to guarantee the submit button is visible */
+.program-form-root .actions > button[mat-flat-button][color="primary"],
+.program-form-root .actions > button.mat-flat-button.mat-primary,
+.program-form-root .actions > button.mat-mdc-button.mat-primary,
+.program-form-root .actions > .mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg,#6366f1 0%,#4f46e5 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 10px 22px rgba(79,70,229,0.22) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important; /* bring above potential overlays */
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Ensure disabled primary still visible but signals disabled */
+.program-form-root .actions > button[mat-flat-button][color="primary"][disabled],
+.program-form-root .actions > button.mat-flat-button.mat-primary[disabled],
+.program-form-root .actions > button.mat-mdc-button.mat-primary[disabled] {
+  background: linear-gradient(180deg, rgba(99,102,241,0.24), rgba(79,70,229,0.16)) !important;
+  color: #e6eef8 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.24) !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+/* Force button icon / spinner visible */
+.program-form-root .actions > button mat-icon,
+.program-form-root .actions > button .mat-icon,
+.program-form-root .actions > button mat-progress-spinner {
+  color: #ffffff !important;
+}
+
+/* Ensure actions container isn't clipped by parents */
+.program-form-root .actions,
+.program-form-root .row,
+.program-form-root { overflow: visible !important; }
+
+/* responsive */
+@media (max-width: 800px) {
+  .two-col, .three-col { flex-direction:column }
+  .mat-form-field.half, .mat-form-field.third { flex: 1 1 100%; }
+}
+
+.left-col { flex: 0 0 32%; display:flex; flex-direction:column; gap:12px; }
+
+/* ensure small fields in left-col stretch */
+.left-col .mat-form-field.small { width:100%; }
+
+/* Force white text on all form fields inside this component (unconditional) */
+.program-form-root .mat-form-field .mat-form-field-infix,
+.program-form-root .mat-form-field .mat-input-element,
+.program-form-root input.mat-input-element,
+.program-form-root textarea.mat-input-element,
+.program-form-root .mat-select-value,
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-select-trigger,
+::ng-deep .program-form-root .mat-option-text,
+::ng-deep .program-form-root .mat-placeholder {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* keep placeholder slightly muted */
+.program-form-root input::placeholder,
+.program-form-root textarea::placeholder {
+  color: #acb4bf !important;
+  opacity: 1;
+}
+
+/* make file label look like a button on left area (per image) */
+.file-upload { display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-upload .file-label { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; color:#e6eef8; cursor:pointer; font-weight:600 }
+
+/* Balance actions to the left like image (save button left) */
+.actions { display:flex; gap:12px; margin-top:22px; align-items:center; justify-content:flex-start }
+
+/* Small responsive tweaks to keep layout similar on medium screens */
+@media (max-width: 1100px) {
+  .left-col { flex: 0 0 40%; }
+  .mat-form-field.large { flex: 1 1 58%; }
+}
+
+/* Stronger label emphasis: make labels pop more in dark mode and always be readable */
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-mdc-floating-label,
+.program-form-root .mat-form-field .mat-label,
+::ng-deep .program-form-root .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field-label,
+::ng-deep .program-form-root .mat-form-field .mat-label {
+  color: #ffffff !important; /* bright white for high contrast */
+  font-weight: 600 !important; /* slightly bolder */
+  opacity: 1 !important; /* ensure not dimmed */
+  letter-spacing: 0.2px !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35) !important; /* subtle lift on dark backgrounds */
+}
+
+/* Focus & Hover: keep the label clear and slightly brighter when field focused */
+.program-form-root .mat-form-field.mat-focused .mat-form-field-label,
+.program-form-root .mat-form-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field.mat-focused .mat-label {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(79,70,229,0.06) !important;
+}
+
+/* Ensure small helper labels above grouped controls (if present) are readable */
+.program-form-root .mat-form-field-prefix,
+.program-form-root .mat-form-field-suffix,
+.program-form-root .mat-form-field-subscript-wrapper {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Stronger select trigger label (when value present) */
+.program-form-root .mat-select-value,
+.program-form-root .mat-mdc-select-value-text,
+::ng-deep .program-form-root .mat-select-trigger span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* For floating small labels that sit above the control, ensure background contrast */
+.program-form-root .mat-form-field-appearance-outline .mat-form-field-outline,
+.program-form-root .mat-form-field-appearance-outline .mat-mdc-notched-outline-stroke {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+
+/* Submit button improvements (size, contrast, hover, disabled state) */
+.program-form-root .actions button.mat-flat-button.mat-primary,
+.program-form-root button.mat-flat-button.mat-primary {
+  min-width: 140px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.14);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, opacity 120ms ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  text-transform: none !important;
+  color: #ffffff !important;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary mat-icon,
+.program-form-root .actions button.mat-flat-button.mat-primary .mat-icon {
+  color: #ffffff !important;
+  font-size: 18px;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(79,70,229,0.20);
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary[disabled] {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Ensure mat-flat-button and MDC button variants (primary) are always visible in the form */
+.program-form-root button[mat-flat-button][color="primary"],
+.program-form-root button.mat-flat-button.mat-primary,
+.program-form-root .mat-mdc-button.mat-primary,
+.program-form-root button.mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.16) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  z-index: 2 !important;
+}
+
+/* Final high-specificity overrides to guarantee the submit button is visible */
+.program-form-root .actions > button[mat-flat-button][color="primary"],
+.program-form-root .actions > button.mat-flat-button.mat-primary,
+.program-form-root .actions > button.mat-mdc-button.mat-primary,
+.program-form-root .actions > .mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg,#6366f1 0%,#4f46e5 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 10px 22px rgba(79,70,229,0.22) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important; /* bring above potential overlays */
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Ensure disabled primary still visible but signals disabled */
+.program-form-root .actions > button[mat-flat-button][color="primary"][disabled],
+.program-form-root .actions > button.mat-flat-button.mat-primary[disabled],
+.program-form-root .actions > button.mat-mdc-button.mat-primary[disabled] {
+  background: linear-gradient(180deg, rgba(99,102,241,0.24), rgba(79,70,229,0.16)) !important;
+  color: #e6eef8 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.24) !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+/* Force button icon / spinner visible */
+.program-form-root .actions > button mat-icon,
+.program-form-root .actions > button .mat-icon,
+.program-form-root .actions > button mat-progress-spinner {
+  color: #ffffff !important;
+}
+
+/* Ensure actions container isn't clipped by parents */
+.program-form-root .actions,
+.program-form-root .row,
+.program-form-root { overflow: visible !important; }
+
+/* responsive */
+@media (max-width: 800px) {
+  .two-col, .three-col { flex-direction:column }
+  .mat-form-field.half, .mat-form-field.third { flex: 1 1 100%; }
+}
+
+.left-col { flex: 0 0 32%; display:flex; flex-direction:column; gap:12px; }
+
+/* ensure small fields in left-col stretch */
+.left-col .mat-form-field.small { width:100%; }
+
+/* Force white text on all form fields inside this component (unconditional) */
+.program-form-root .mat-form-field .mat-form-field-infix,
+.program-form-root .mat-form-field .mat-input-element,
+.program-form-root input.mat-input-element,
+.program-form-root textarea.mat-input-element,
+.program-form-root .mat-select-value,
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-select-trigger,
+::ng-deep .program-form-root .mat-option-text,
+::ng-deep .program-form-root .mat-placeholder {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* keep placeholder slightly muted */
+.program-form-root input::placeholder,
+.program-form-root textarea::placeholder {
+  color: #acb4bf !important;
+  opacity: 1;
+}
+
+/* make file label look like a button on left area (per image) */
+.file-upload { display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-upload .file-label { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; color:#e6eef8; cursor:pointer; font-weight:600 }
+
+/* Balance actions to the left like image (save button left) */
+.actions { display:flex; gap:12px; margin-top:22px; align-items:center; justify-content:flex-start }
+
+/* Small responsive tweaks to keep layout similar on medium screens */
+@media (max-width: 1100px) {
+  .left-col { flex: 0 0 40%; }
+  .mat-form-field.large { flex: 1 1 58%; }
+}
+
+/* Stronger label emphasis: make labels pop more in dark mode and always be readable */
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-mdc-floating-label,
+.program-form-root .mat-form-field .mat-label,
+::ng-deep .program-form-root .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field-label,
+::ng-deep .program-form-root .mat-form-field .mat-label {
+  color: #ffffff !important; /* bright white for high contrast */
+  font-weight: 600 !important; /* slightly bolder */
+  opacity: 1 !important; /* ensure not dimmed */
+  letter-spacing: 0.2px !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35) !important; /* subtle lift on dark backgrounds */
+}
+
+/* Focus & Hover: keep the label clear and slightly brighter when field focused */
+.program-form-root .mat-form-field.mat-focused .mat-form-field-label,
+.program-form-root .mat-form-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field.mat-focused .mat-label {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(79,70,229,0.06) !important;
+}
+
+/* Ensure small helper labels above grouped controls (if present) are readable */
+.program-form-root .mat-form-field-prefix,
+.program-form-root .mat-form-field-suffix,
+.program-form-root .mat-form-field-subscript-wrapper {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Stronger select trigger label (when value present) */
+.program-form-root .mat-select-value,
+.program-form-root .mat-mdc-select-value-text,
+::ng-deep .program-form-root .mat-select-trigger span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* For floating small labels that sit above the control, ensure background contrast */
+.program-form-root .mat-form-field-appearance-outline .mat-form-field-outline,
+.program-form-root .mat-form-field-appearance-outline .mat-mdc-notched-outline-stroke {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+
+/* Submit button improvements (size, contrast, hover, disabled state) */
+.program-form-root .actions button.mat-flat-button.mat-primary,
+.program-form-root button.mat-flat-button.mat-primary {
+  min-width: 140px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.14);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, opacity 120ms ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  text-transform: none !important;
+  color: #ffffff !important;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary mat-icon,
+.program-form-root .actions button.mat-flat-button.mat-primary .mat-icon {
+  color: #ffffff !important;
+  font-size: 18px;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(79,70,229,0.20);
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary[disabled] {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Ensure mat-flat-button and MDC button variants (primary) are always visible in the form */
+.program-form-root button[mat-flat-button][color="primary"],
+.program-form-root button.mat-flat-button.mat-primary,
+.program-form-root .mat-mdc-button.mat-primary,
+.program-form-root button.mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.16) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  z-index: 2 !important;
+}
+
+/* Final high-specificity overrides to guarantee the submit button is visible */
+.program-form-root .actions > button[mat-flat-button][color="primary"],
+.program-form-root .actions > button.mat-flat-button.mat-primary,
+.program-form-root .actions > button.mat-mdc-button.mat-primary,
+.program-form-root .actions > .mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg,#6366f1 0%,#4f46e5 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 10px 22px rgba(79,70,229,0.22) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important; /* bring above potential overlays */
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Ensure disabled primary still visible but signals disabled */
+.program-form-root .actions > button[mat-flat-button][color="primary"][disabled],
+.program-form-root .actions > button.mat-flat-button.mat-primary[disabled],
+.program-form-root .actions > button.mat-mdc-button.mat-primary[disabled] {
+  background: linear-gradient(180deg, rgba(99,102,241,0.24), rgba(79,70,229,0.16)) !important;
+  color: #e6eef8 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.24) !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+/* Force button icon / spinner visible */
+.program-form-root .actions > button mat-icon,
+.program-form-root .actions > button .mat-icon,
+.program-form-root .actions > button mat-progress-spinner {
+  color: #ffffff !important;
+}
+
+/* Ensure actions container isn't clipped by parents */
+.program-form-root .actions,
+.program-form-root .row,
+.program-form-root { overflow: visible !important; }
+
+/* responsive */
+@media (max-width: 800px) {
+  .two-col, .three-col { flex-direction:column }
+  .mat-form-field.half, .mat-form-field.third { flex: 1 1 100%; }
+}
+
+.left-col { flex: 0 0 32%; display:flex; flex-direction:column; gap:12px; }
+
+/* ensure small fields in left-col stretch */
+.left-col .mat-form-field.small { width:100%; }
+
+/* Force white text on all form fields inside this component (unconditional) */
+.program-form-root .mat-form-field .mat-form-field-infix,
+.program-form-root .mat-form-field .mat-input-element,
+.program-form-root input.mat-input-element,
+.program-form-root textarea.mat-input-element,
+.program-form-root .mat-select-value,
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-select-trigger,
+::ng-deep .program-form-root .mat-option-text,
+::ng-deep .program-form-root .mat-placeholder {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* keep placeholder slightly muted */
+.program-form-root input::placeholder,
+.program-form-root textarea::placeholder {
+  color: #acb4bf !important;
+  opacity: 1;
+}
+
+/* make file label look like a button on left area (per image) */
+.file-upload { display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-upload .file-label { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; color:#e6eef8; cursor:pointer; font-weight:600 }
+
+/* Balance actions to the left like image (save button left) */
+.actions { display:flex; gap:12px; margin-top:22px; align-items:center; justify-content:flex-start }
+
+/* Small responsive tweaks to keep layout similar on medium screens */
+@media (max-width: 1100px) {
+  .left-col { flex: 0 0 40%; }
+  .mat-form-field.large { flex: 1 1 58%; }
+}
+
+/* Stronger label emphasis: make labels pop more in dark mode and always be readable */
+.program-form-root .mat-form-field-label,
+.program-form-root .mat-mdc-floating-label,
+.program-form-root .mat-form-field .mat-label,
+::ng-deep .program-form-root .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field-label,
+::ng-deep .program-form-root .mat-form-field .mat-label {
+  color: #ffffff !important; /* bright white for high contrast */
+  font-weight: 600 !important; /* slightly bolder */
+  opacity: 1 !important; /* ensure not dimmed */
+  letter-spacing: 0.2px !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35) !important; /* subtle lift on dark backgrounds */
+}
+
+/* Focus & Hover: keep the label clear and slightly brighter when field focused */
+.program-form-root .mat-form-field.mat-focused .mat-form-field-label,
+.program-form-root .mat-form-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .program-form-root .mat-form-field.mat-focused .mat-label {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(79,70,229,0.06) !important;
+}
+
+/* Ensure small helper labels above grouped controls (if present) are readable */
+.program-form-root .mat-form-field-prefix,
+.program-form-root .mat-form-field-suffix,
+.program-form-root .mat-form-field-subscript-wrapper {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Stronger select trigger label (when value present) */
+.program-form-root .mat-select-value,
+.program-form-root .mat-mdc-select-value-text,
+::ng-deep .program-form-root .mat-select-trigger span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* For floating small labels that sit above the control, ensure background contrast */
+.program-form-root .mat-form-field-appearance-outline .mat-form-field-outline,
+.program-form-root .mat-form-field-appearance-outline .mat-mdc-notched-outline-stroke {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+
+/* Submit button improvements (size, contrast, hover, disabled state) */
+.program-form-root .actions button.mat-flat-button.mat-primary,
+.program-form-root button.mat-flat-button.mat-primary {
+  min-width: 140px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.14);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, opacity 120ms ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  text-transform: none !important;
+  color: #ffffff !important;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary mat-icon,
+.program-form-root .actions button.mat-flat-button.mat-primary .mat-icon {
+  color: #ffffff !important;
+  font-size: 18px;
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(79,70,229,0.20);
+}
+
+.program-form-root .actions button.mat-flat-button.mat-primary[disabled] {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Ensure mat-flat-button and MDC button variants (primary) are always visible in the form */
+.program-form-root button[mat-flat-button][color="primary"],
+.program-form-root button.mat-flat-button.mat-primary,
+.program-form-root .mat-mdc-button.mat-primary,
+.program-form-root button.mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 8px 18px rgba(79,70,229,0.16) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  z-index: 2 !important;
+}
+
+/* Final high-specificity overrides to guarantee the submit button is visible */
+.program-form-root .actions > button[mat-flat-button][color="primary"],
+.program-form-root .actions > button.mat-flat-button.mat-primary,
+.program-form-root .actions > button.mat-mdc-button.mat-primary,
+.program-form-root .actions > .mat-mdc-button.mat-primary {
+  background: linear-gradient(180deg,#6366f1 0%,#4f46e5 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 10px 22px rgba(79,70,229,0.22) !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important; /* bring above potential overlays */
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Ensure disabled primary still visible but signals disabled */
+.program-form-root .actions > button[mat-flat-button][color="primary"][disabled],
+.program-form-root .actions > button.mat-flat-button.mat-primary[disabled],
+.program-form-root .actions > button.mat-mdc-button.mat-primary[disabled] {
+  background: linear-gradient(180deg, rgba(99,102,241,0.24), rgba(79,70,229,0.16)) !important;
+  color: #e6eef8 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.24) !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+/* Force button icon / spinner visible */
+.program-form-root .actions > button mat-icon,
+.program-form-root .actions > button .mat-icon,
+.program-form-root .actions > button mat-progress-spinner {
+  color: #ffffff !important;
+}
+
+/* Ensure actions container isn't clipped by parents */
+.program-form-root .actions,
+.program-form-root .row,
+.program-form-root { overflow: visible !important; }

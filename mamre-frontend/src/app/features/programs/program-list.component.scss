@@ -362,3 +362,37 @@ table.mat-table td.mat-cell { padding:14px 10px; vertical-align:top; font-size:1
     box-shadow: none;
   }
 }
+
+/* Dark-mode color tokens for consistency */
+:host-context([data-theme='dark']) {
+  /* tokens */
+  --pf-text: #e6eef8; /* main text */
+  --pf-text-strong: #ffffff; /* stronger */
+  --pf-muted: #9aa6b6; /* muted */
+  --pf-accent: #8b5cf6; /* accent */
+  --pf-border: rgba(255,255,255,0.06);
+
+  /* Header/title */
+  .title-wrap h1 { color: var(--pf-text-strong); }
+  .title-wrap .subtitle { color: var(--pf-muted); }
+
+  /* Controls */
+  .controls .search input, .controls .search .mat-form-field-infix { color: var(--pf-text) !important; }
+  .controls button, .header-actions-desktop button { color: var(--pf-text) !important; }
+  /* force white text for inline controls and labels */
+  .controls .mat-form-field .mat-form-field-label, .controls .mat-form-field .mat-input-element, .controls .mat-form-field .mat-select-value { color: #ffffff !important; }
+
+  /* Table / list */
+  table.mat-table td.mat-cell, table.mat-table th.mat-header-cell { color: var(--pf-text); }
+  table.mat-table th.mat-header-cell { background: linear-gradient(180deg,#071024,#0b1424); color: var(--pf-text-strong); border-bottom-color: rgba(255,255,255,0.06); }
+  .table-wrap { border-color: var(--pf-border); }
+
+  /* improve contrast for small text */
+  .loading-text, .empty, .empty-text { color: var(--pf-muted); }
+
+  /* icon accent */
+  .icon-wrap mat-icon { color: var(--pf-accent); }
+
+  /* tweak dropdown panel option color */
+  ::ng-deep .cdk-overlay-container .category-panel .mat-option-text { color: var(--pf-text); }
+}
