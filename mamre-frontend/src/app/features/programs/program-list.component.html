@@ -30,7 +30,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="small">
-        <mat-select [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" placeholder="Bidang">
+        <mat-select #categorySelectRef [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" placeholder="Bidang" panelClass="category-panel" (opened)="onCategoryOpen()" (closed)="onCategoryClose()">
           <mat-option [value]="''">Semua</mat-option>
           <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
         </mat-select>
@@ -39,16 +39,13 @@
       <button mat-flat-button color="primary" (click)="openCreate()">+ Tambah</button>
       <button mat-icon-button (click)="exportTable()" title="Export CSV"><mat-icon>file_download</mat-icon></button>
       <button mat-icon-button (click)="printTable()" title="Print"><mat-icon>print</mat-icon></button>
-
-      <!-- Toggle load all -->
-      <button mat-stroked-button color="primary" (click)="toggleLoadAll()" style="margin-left:8px;">{{ loadAll ? 'Paged' : 'Tampilkan Semua' }}</button>
     </div>
   </div>
 
   <mat-card>
     <div class="table-wrap">
 
-      <div class="summary">Total items: {{ total }} &nbsp; Halaman: {{ (loadAll ? 1 : (page + 1)) }} &nbsp; Jumlah Anggaran (halaman): {{ pageBudgetTotal | number:'1.0-0' }}</div>
+      <div class="summary">Total items: {{ total }} &nbsp; Jumlah Anggaran: {{ pageBudgetTotal | number:'1.0-0' }}</div>
 
       <!-- Printable-style table matching the provided design -->
       <table class="print-full-table" *ngIf="!loading">
@@ -74,7 +71,7 @@
           <ng-container *ngFor="let g of grouped">
             <tr class="group-row"><td colspan="11">{{ g.category }}</td></tr>
             <tr *ngFor="let item of g.items; let idx = index">
-              <td>{{ page*size + g.startIndex + idx + 1 }}</td>
+              <td>{{ g.startIndex + idx + 1 }}</td>
               <td class="col-title">{{ item.title }}</td>
               <td>{{ item.place || '' }}</td>
               <td class="col-tujuan">{{ item.purpose }}</td>
@@ -111,12 +108,6 @@
       </div>
 
       <div *ngIf="!loading && (!grouped || grouped.length === 0)" class="empty">Belum ada kegiatan</div>
-
-      <div class="pager" *ngIf="!loadAll">
-        <button mat-button (click)="prevPage()" [disabled]="page === 0">Prev</button>
-        <span>{{ page*size + 1 }} - {{ Math.min((page+1)*size, total) }} dari {{ total }}</span>
-        <button mat-button (click)="nextPage()" [disabled]="(page+1)*size >= total">Next</button>
-      </div>
     </div>
   </mat-card>
 </div>

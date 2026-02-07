@@ -270,3 +270,95 @@ table.mat-table td.mat-cell { padding:14px 10px; vertical-align:top; font-size:1
   .controls, .header .title .icon, button { display:none !important; }
   .program-list-root { position: absolute; left:0; top:0; width:100%; }
 }
+
+/* Ensure mat-select overlay for category shows full text (no ellipsis) */
+::ng-deep .cdk-overlay-container .category-panel {
+  max-width: 520px !important; /* wider panel so long labels fit */
+  min-width: 320px !important;
+}
+
+::ng-deep .cdk-overlay-container .category-panel .mat-option-text {
+  white-space: normal !important; /* allow wrap */
+  word-break: break-word !important;
+  overflow: visible !important;
+}
+
+::ng-deep .cdk-overlay-container .category-panel .mat-option {
+  height: auto !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+::ng-deep .cdk-overlay-container .category-panel .mat-select-panel-wrap {
+  max-height: 60vh !important; /* make scrollable but tall */
+}
+
+/* Dark mode adjustments: target when <html data-theme="dark"> is set */
+:host-context([data-theme='dark']) {
+  .program-list-root {
+    /* slight darker background handled by global theme; ensure table area stands out */
+  }
+
+  .print-full-table {
+    color: #e6eef8; /* readable main text */
+    background: transparent !important; /* ensure no white table body */
+  }
+
+  .print-full-table thead th {
+    background: linear-gradient(180deg, #081022, #0b1224); /* dark header */
+    color: #dbeafe; /* light header text */
+    border-color: rgba(255,255,255,0.06);
+  }
+
+  .print-full-table th,
+  .print-full-table td {
+    border-color: rgba(255,255,255,0.06);
+    /* ensure text visible; use brighter color for body */
+    color: #e6eef8 !important;
+    background: transparent !important; /* remove white boxes */
+    opacity: 1 !important;
+  }
+
+  /* ensure table body rows don't show white backgrounds (override earlier rules) */
+  .print-full-table tbody tr td,
+  .print-full-table tbody tr {
+    background: transparent !important;
+  }
+
+  /* Right-aligned numeric columns should be slightly brighter */
+  .print-full-table td.col-right,
+  .print-full-table th.col-right {
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+
+  /* Group rows and footers need stronger contrast */
+  .group-row td {
+    background: rgba(99,102,241,0.06) !important; /* subtle accent */
+    color: #e6eef8 !important;
+    font-weight: 700;
+    border-top-color: rgba(255,255,255,0.08) !important;
+  }
+  .group-footer td {
+    background: rgba(255,255,255,0.01) !important;
+    color: #d1d5db !important;
+    font-weight: 600;
+  }
+
+  /* Notes / muted cells: keep slightly dimmer but readable */
+  .print-full-table td.col-note,
+  .print-full-table td.col-center {
+    color: #9aa6b6 !important;
+  }
+
+  /* Ensure header-sub row (sub-headers) also visible */
+  .print-full-table thead .head-sub th {
+    background: rgba(255,255,255,0.02) !important;
+    color: #cbd5e1 !important;
+  }
+
+  /* Make table borders a bit more visible on dark backgrounds */
+  .print-full-table td, .print-full-table th {
+    box-shadow: none;
+  }
+}

@@ -28,16 +28,6 @@ class ProgramService {
     );
   }
 
-  // Paged search with filters. Returns observable of HttpResponse containing body and headers.
-  getPaged(page = 0, size = 10, q?: string, status?: string, type?: string, category?: string): Observable<HttpResponse<Program[]>> {
-    let params = new HttpParams().set('page', String(page)).set('size', String(size));
-    if (q) params = params.set('q', q);
-    if (status) params = params.set('status', status);
-    if (type) params = params.set('type', type);
-    if (category) params = params.set('category', category);
-    return this.http.get<Program[]>(this.base, { params, observe: 'response' }).pipe(catchError(err => { console.error('program.getPaged', err); throw err; }));
-  }
-
   getById(id: number): Observable<Program | null> {
     return this.http.get<Program>(`${this.base}/${id}`).pipe(catchError(err => { console.error('program.getById', err); return of(null); }));
   }
@@ -75,7 +65,7 @@ class ProgramService {
   }
 
   // Grouping logic moved from component: returns grouped array and pageBudgetTotal
-  groupPrograms(data: any[], categories: string[], page: number, size: number) {
+  groupPrograms(data: any[], categories: string[]) {
     const groups: any[] = [];
     let cumulativeIndex = 0;
     let pageBudgetTotal = 0;
@@ -126,11 +116,10 @@ class ProgramService {
     return { groups, pageBudgetTotal };
   }
 
-  // CSV export helper
-  exportCsv(data: any[], page: number, size: number, filename = 'programs.csv') {
+  // CSV export helper (pagination removed) - outputs sequential numbering starting at 1
+  exportCsv(data: any[], filename = 'programs.csv') {
     const headers = ['No','Kegiatan','Tempat','Tujuan','Target Fisik','Anggaran Lokal','Anggaran Subsidi','Anggaran Total','Pelaksana','Jadwal','Keterangan'];
-    // use 0-based page when computing absolute row number
-    const rows = data.map((r, i) => [ page*size + i + 1, r.title, r.place, r.purpose, r.targetPhysical, r.budgetLocal, r.budgetSubsidy, r.budgetTotal, r.executor, r.scheduleText, r.notes]);
+    const rows = data.map((r, i) => [ i + 1, r.title, r.place, r.purpose, r.targetPhysical, r.budgetLocal, r.budgetSubsidy, r.budgetTotal, r.executor, r.scheduleText, r.notes]);
     const csv = [headers, ...rows].map(r => r.map(c => '"' + (c ?? '') + '"').join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
