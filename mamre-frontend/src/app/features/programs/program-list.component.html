@@ -30,7 +30,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="small">
-        <mat-select #categorySelectRef [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" placeholder="Bidang" panelClass="category-panel" (opened)="onCategoryOpen()" (closed)="onCategoryClose()">
+        <mat-select [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" placeholder="Bidang" panelClass="category-panel" appAutoWidthSelect>
           <mat-option [value]="''">Semua</mat-option>
           <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
         </mat-select>

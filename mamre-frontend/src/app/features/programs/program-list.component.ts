@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -12,20 +12,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import ProgramService from './program.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { MatSelect } from '@angular/material/select';
+import { AutoWidthSelectDirective } from 'src/app/shared/directives/auto-width-select.directive';
 
 @Component({
   selector: 'app-program-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatTableModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatTableModule, MatProgressSpinnerModule, AutoWidthSelectDirective],
   templateUrl: './program-list.component.html',
   styleUrls: ['./program-list.component.scss']
 })
 export class ProgramListComponent implements OnInit {
   private svc = inject(ProgramService);
   private router = inject(Router);
-
-  @ViewChild('categorySelectRef', { read: MatSelect, static: false }) categorySelect?: MatSelect;
 
   data: any[] = [];
   grouped: any[] = [];
@@ -83,64 +81,5 @@ export class ProgramListComponent implements OnInit {
 
   printTable() { window.print(); }
 
-  // Dynamic sizing for category select overlay
-  onCategoryOpen() {
-    // wait a tick for overlay to render
-    setTimeout(() => {
-      try {
-        const overlayRoot = document.querySelector('.cdk-overlay-container');
-        if (!overlayRoot) return;
-        const panel = overlayRoot.querySelector('.category-panel');
-        if (!panel) return;
-
-        // find trigger element width
-        // best-effort: use public panelId to find trigger via aria-owns; fallback to .mat-select-trigger
-        let triggerEl: HTMLElement | null = null;
-        const panelId = (this.categorySelect as any)?.panelId as string | undefined;
-        if (panelId) {
-          triggerEl = document.querySelector(`[aria-owns="${panelId}"]`) as HTMLElement | null;
-        }
-        if (!triggerEl) {
-          // fallback: try to find a visible mat-select-trigger inside the component's controls
-          triggerEl = document.querySelector('.mat-select-trigger') as HTMLElement | null;
-        }
-        const triggerRect = triggerEl ? triggerEl.getBoundingClientRect() : null;
-        const triggerWidth = triggerRect ? Math.round(triggerRect.width) : 0;
-
-        // measure widest option text inside panel
-        let maxTextWidth = 0;
-        const optionTexts = panel.querySelectorAll('.mat-option-text');
-        optionTexts.forEach((el) => {
-          const text = (el as HTMLElement).innerText || '';
-          // temporary canvas measure for text width
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            // mirror font used in options
-            ctx.font = window.getComputedStyle(el as Element).font || '13px Arial';
-            const w = ctx.measureText(text).width;
-            if (w > maxTextWidth) maxTextWidth = w;
-          }
-        });
-
-        const padding = 48; // account for checkbox, icon, padding
-        const desired = Math.ceil(Math.max(triggerWidth, maxTextWidth + padding, 320));
-        const maxAllowed = Math.min(window.innerWidth - 32, 900);
-        const finalWidth = Math.min(desired, maxAllowed);
-
-        (panel as HTMLElement).style.width = finalWidth + 'px';
-      } catch (e) {
-        // noop
-      }
-    }, 50);
-  }
-
-  onCategoryClose() {
-    // remove inline width to let default styles apply
-    const overlayRoot = document.querySelector('.cdk-overlay-container');
-    if (!overlayRoot) return;
-    const panel = overlayRoot.querySelector('.category-panel');
-    if (!panel) return;
-    (panel as HTMLElement).style.width = '';
-  }
+  // directive handles dynamic sizing for category select overlay
 }
