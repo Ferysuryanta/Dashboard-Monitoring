@@ -1,18 +1,24 @@
 <div class="dashboard-root">
     <div class="header-section-modern">
-        <div class="header-left">
-            <div class="greeting-row">
-                <span class="greeting-text">{{ getGreeting() }}</span>
-                <span class="greeting-wave">👋</span>
+        <div class="header-top">
+            <div class="header-left">
+                <div class="greeting-row">
+                    <span class="greeting-text">{{ getGreeting() }}</span>
+                    <span class="greeting-wave">👋</span>
+                </div>
+                <h1 class="header-title">Dashboard <span class="brand-text">Mamre GBKP</span></h1>
             </div>
-            <h1 class="header-title">Dashboard <span class="brand-text">Mamre GBKP</span></h1>
-            <div class="header-date">
-                <div class="date-badge">
-                    <mat-icon>calendar_today</mat-icon>
-                    <span>{{ today | date:'EEEE, dd MMMM yyyy' }}</span>
+
+            <div class="header-right">
+                <div class="header-date">
+                    <div class="date-badge">
+                        <mat-icon>calendar_today</mat-icon>
+                        <span>{{ today | date:'EEEE, dd MMMM yyyy' }}</span>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="quick-nav-actions">
             <div class="nav-card primary" (click)="goMembers()">
                 <div class="nav-icon-wrap">
