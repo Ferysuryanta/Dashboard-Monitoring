@@ -37,40 +37,51 @@ export class AutoWidthSelectDirective implements AfterViewInit, OnDestroy {
             panel = document.getElementById(panelId) as HTMLElement | null;
           }
 
-          // fallback: try to find panel by panelClass or generic mat-select-panel
+          // fallback: try to find panel by panelClass or generic mat-select-panel (legacy + MDC)
           if (!panel) {
             const pc = (this.matSelect as any)?.panelClass;
             if (pc) {
-              const el = document.querySelector('.cdk-overlay-container .' + pc) as HTMLElement | null;
-              if (el) panel = el;
+              // panelClass can be string or array
+              const cls = Array.isArray(pc) ? pc[0] : String(pc || '');
+              if (cls) {
+                const el = document.querySelector('.cdk-overlay-container .' + cls) as HTMLElement | null;
+                if (el) panel = el;
+              }
             }
           }
+
           if (!panel) {
-            const el = document.querySelector('.cdk-overlay-container .mat-select-panel') as HTMLElement | null;
+            // support both legacy and MDC panel class names
+            const el = document.querySelector('.cdk-overlay-container .mat-select-panel, .cdk-overlay-container .mat-mdc-select-panel') as HTMLElement | null;
             if (el) panel = el;
           }
+
           if (!panel) return;
 
-          // find trigger via aria-owns (preferred) or fallback to first visible .mat-select-trigger
+          // find trigger via aria-owns (preferred) or fallback to common trigger selectors
           let triggerEl: HTMLElement | null = null;
           if (panelId) {
             triggerEl = document.querySelector(`[aria-owns="${panelId}"]`) as HTMLElement | null;
           }
           if (!triggerEl) {
-            triggerEl = document.querySelector('.mat-select-trigger') as HTMLElement | null;
+            // legacy and mdc triggers
+            triggerEl = document.querySelector('.mat-select-trigger, .mat-mdc-select .mat-mdc-select-value-text, .mat-mdc-select-trigger') as HTMLElement | null;
           }
 
           const triggerWidth = triggerEl ? Math.round(triggerEl.getBoundingClientRect().width) : 0;
 
-          // measure widest option text
+          // measure widest option text - try several selectors (legacy + MDC)
           let maxTextWidth = 0;
-          const optionTexts = panel.querySelectorAll('.mat-option-text');
+          const optionSelector = '.mat-option-text, .mat-mdc-select-panel .mdc-list-item__primary-text, .mdc-list-item__primary-text';
+          const optionTexts = panel.querySelectorAll(optionSelector);
           optionTexts.forEach((node) => {
             const text = (node as HTMLElement).innerText || '';
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             if (ctx) {
-              ctx.font = window.getComputedStyle(node as Element).font || '13px Arial';
+              // pick the computed font from the option node if available
+              const computed = window.getComputedStyle(node as Element);
+              ctx.font = (computed && computed.font) ? computed.font : ((computed && computed.fontSize ? computed.fontSize + ' ' + (computed.fontFamily || 'Arial') : '13px Arial'));
               const w = ctx.measureText(text).width;
               if (w > maxTextWidth) maxTextWidth = w;
             }
@@ -82,9 +93,13 @@ export class AutoWidthSelectDirective implements AfterViewInit, OnDestroy {
           const maxAllowed = Math.min(window.innerWidth - 32, Number(this.appAutoWidthSelectMax) || 900);
           const finalWidth = Math.min(desired, maxAllowed);
 
+          // apply safely
+          (panel as HTMLElement).style.boxSizing = 'border-box';
+          (panel as HTMLElement).style.minWidth = minWidth + 'px';
+          (panel as HTMLElement).style.maxWidth = maxAllowed + 'px';
           (panel as HTMLElement).style.width = finalWidth + 'px';
         } catch (e) {
-          // ignore
+          // ignore - best-effort sizing
         }
       }, 50);
     });
@@ -96,8 +111,14 @@ export class AutoWidthSelectDirective implements AfterViewInit, OnDestroy {
         const panelId = (this.matSelect as any)?.panelId as string | undefined;
         let panel: HTMLElement | null = null;
         if (panelId) panel = document.getElementById(panelId) as HTMLElement | null;
-        if (!panel) panel = document.querySelector('.cdk-overlay-container .mat-select-panel') as HTMLElement | null;
-        if (panel) (panel as HTMLElement).style.width = '';
+        if (!panel) panel = document.querySelector('.cdk-overlay-container .mat-select-panel, .cdk-overlay-container .mat-mdc-select-panel') as HTMLElement | null;
+        if (panel) {
+          // reset the inline styles we set
+          panel.style.width = '';
+          panel.style.minWidth = '';
+          panel.style.maxWidth = '';
+          panel.style.boxSizing = '';
+        }
       } catch (e) {
         // ignore
       }

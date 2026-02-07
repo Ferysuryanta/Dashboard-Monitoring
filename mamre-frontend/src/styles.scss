@@ -895,3 +895,76 @@ body[data-theme="dark"] input.mat-input-element {
   max-height: 50vh !important;
   overflow-y: auto !important;
 }
+
+[data-theme="dark"] {
+  /* Ensure all form control text (labels, placeholders, values) are readable in dark mode */
+  .mat-form-field, .mat-mdc-form-field {
+    color: var(--text-primary) !important; /* uses --text-primary = white */
+  }
+
+  /* Input / textarea / select trigger text */
+  input.mat-input-element,
+  textarea.mat-input-element,
+  .mat-mdc-input-element,
+  .mat-select-trigger,
+  .mat-mdc-select-value-text,
+  .mat-select-value,
+  .mat-mdc-select-value {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    opacity: 1 !important;
+  }
+
+  /* Floating labels & placeholders slightly muted but readable */
+  .mat-form-field-label,
+  .mat-mdc-floating-label,
+  .mat-form-field-placeholder,
+  input::placeholder,
+  textarea::placeholder {
+    color: rgba(255,255,255,0.72) !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.72) !important;
+  }
+
+  /* Ensure selected value in select trigger (sometimes span) is white */
+  .mat-select-value-text span,
+  .mat-mdc-select-value-text span {
+    color: #ffffff !important;
+  }
+
+  /* Mat-select panel items */
+  .cdk-overlay-container[data-theme="dark"] .mat-option,
+  .cdk-overlay-container[data-theme="dark"] .mat-mdc-select-panel .mat-mdc-option,
+  .cdk-overlay-container[data-theme="dark"] .mat-mdc-select-panel .mdc-list-item {
+    color: #ffffff !important;
+  }
+
+  /* Error/help text */
+  .mat-form-field-subscript-wrapper,
+  .mat-error,
+  .mat-hint {
+    color: #ffb4b4 !important; /* visible red/pink for errors */
+  }
+
+  /* Buttons: make sure primary buttons have good contrast */
+  .mat-flat-button.mat-primary,
+  button.mat-flat-button[color="primary"] {
+    background: var(--primary-color) !important;
+    color: #0f172a !important; /* dark text on bright primary */
+  }
+
+  /* If a primary button uses the default dark background, ensure text is visible */
+  .mat-flat-button[color="primary"] .mat-button-wrapper,
+  .mat-button[color="primary"] .mat-button-wrapper,
+  button.mat-button[color="primary"] .mat-button-wrapper {
+    color: #0f172a !important;
+  }
+
+  /* Disabled/ghost buttons should still be visible on dark surfaces */
+  .mat-button[disabled],
+  .mat-flat-button[disabled],
+  button[disabled] {
+    opacity: 0.7 !important;
+    color: rgba(255,255,255,0.6) !important;
+  }
+}

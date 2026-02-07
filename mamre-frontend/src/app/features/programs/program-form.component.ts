@@ -8,11 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import ProgramService from './program.service';
 import { Subscription } from 'rxjs';
+import { NumberFormatDirective } from 'src/app/shared/directives/number-format.directive';
 
 @Component({
   selector: 'app-program-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, NumberFormatDirective],
   templateUrl: './program-form.component.html',
   styleUrls: ['./program-form.component.scss']
 })
