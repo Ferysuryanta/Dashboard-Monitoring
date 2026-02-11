@@ -340,6 +340,17 @@
       border-color: var(--card-border) !important;
     }
 
+    /* Make sure sector cell values remain readable on pastel sector-backgrounds in dark mode */
+    td.sector-0, td.sector-bg-0,
+    td.sector-1, td.sector-bg-1,
+    td.sector-2, td.sector-bg-2,
+    td.sector-3, td.sector-bg-3,
+    td.sector-4, td.sector-bg-4 {
+      /* Use a darker text color that contrasts well with the pastel cell background */
+      color: #0f172a !important; /* slate-900 */
+      font-weight: 700 !important;
+    }
+
     .member-name {
       color: #f8fafc !important;
     }
