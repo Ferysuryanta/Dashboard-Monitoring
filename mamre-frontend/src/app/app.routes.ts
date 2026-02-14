@@ -91,6 +91,9 @@ export const routes: Routes = [
             { path: 'programs/new', loadComponent: () => import('./features/programs/program-form.component').then(m => m.ProgramFormComponent) },
             { path: 'programs/:id', loadComponent: () => import('./features/programs/program-detail.component').then(m => m.ProgramDetailComponent) },
 
+            // 💰 Finance
+            { path: 'finance', loadComponent: () => import('./features/finance/finance-report.component').then(m => m.FinanceReportComponent) },
+
             // 👤 Profile & Settings
             { path: 'profile', component: ProfileComponent },
             { path: 'settings', component: ProfileComponent }, // Redirect to profile for now
