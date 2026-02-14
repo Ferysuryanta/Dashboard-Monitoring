@@ -23,6 +23,7 @@ public class CorsFilter implements Filter {
     // Whitelist of allowed origins - only specific trusted origins
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
             "http://localhost:4200",
+            "http://localhost:4201",
             "http://127.0.0.1:4200",
             "http://localhost:3000"
     );

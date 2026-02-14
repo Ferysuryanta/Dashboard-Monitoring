@@ -26,6 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         allowedOrigins,
                         "http://localhost:4200",
+                        "http://localhost:4201",
                         "http://127.0.0.1:4200"
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")

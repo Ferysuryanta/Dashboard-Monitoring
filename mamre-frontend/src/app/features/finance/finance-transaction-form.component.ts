@@ -12,6 +12,24 @@ import { SectorService, SectorOption } from '../../core/services/sector.service'
 import { FinanceService } from '../../core/services/finance.service';
 import { TransactionPayload } from './models/transaction.model';
 
+export interface PerSectorFinance {
+    sectorId: number | null;
+    sectorName?: string;
+    income: number;
+    expense: number;
+    net: number;
+    note?: string;
+}
+
+export interface MonthlyFinanceReport {
+    month: number;
+    year: number;
+    totalIncome: number;
+    totalExpense: number;
+    net: number;
+    perSector: PerSectorFinance[];
+}
+
 @Component({
     selector: 'app-finance-transaction-form',
     standalone: true,

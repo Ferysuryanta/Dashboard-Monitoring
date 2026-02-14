@@ -1,3 +1,83 @@
-.dialog-content { padding: 16px; width: 440px; }
+.dialog-content { padding: 20px; width: 480px; }
 .full-width { width: 100%; }
-.dialog-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.dialog-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:12px; }
+
+.txn-modal {
+  padding: 20px;
+  width: 480px;
+  background: linear-gradient(180deg, #0f1724 0%, #0b131b 100%);
+  color: #e6eef6;
+  border-radius: 8px;
+}
+
+.txn-modal h2 {
+  margin: 0 0 16px 0;
+  color: #f4f9ff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.mat-form-field.full {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* form field dark styling (scoped) */
+.txn-modal .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.06);
+}
+
+.txn-modal .mat-form-field-label {
+  color: rgba(230,238,246,0.85) !important;
+}
+
+.txn-modal .mat-input-element,
+.txn-modal textarea {
+  color: #e6eef6 !important;
+}
+
+/* make inputs look like cards in dark */
+.txn-modal .mat-form-field-appearance-outline .mat-form-field-outline,
+.txn-modal .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  border-color: rgba(255,255,255,0.06);
+}
+
+/* placeholder / hint */
+.txn-modal .mat-hint, .txn-modal .mat-form-field-subscript-wrapper {
+  color: rgba(230,238,246,0.6) !important;
+}
+
+/* select panel: limited scope; mat-select overlay is global -> use ::ng-deep so it's applied */
+:host ::ng-deep .mat-select-panel {
+  background: #0b131b !important;
+  color: #e6eef6 !important;
+}
+
+/* actions */
+.txn-modal .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.txn-modal button[mat-stroked-button] {
+  color: #c9d6e6;
+  border-color: rgba(255,255,255,0.08);
+}
+
+.txn-modal button[mat-flat-button].mat-primary {
+  background: linear-gradient(180deg,#4f6ef6,#3b57d6);
+  color: #fff;
+}
+
+/* focus states */
+.txn-modal .mat-form-field.mat-focused .mat-form-field-label {
+  color: #dff1ff !important;
+}
+
+/* small responsive */
+@media (max-width: 600px) {
+  .txn-modal { width: calc(100vw - 32px); }
+}
