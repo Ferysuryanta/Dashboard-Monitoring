@@ -398,141 +398,76 @@ mat-paginator {
 // ========================================
 // DARK MODE OVERRIDES
 // ========================================
-:host-context([data-theme="dark"]) {
+:host-context([data-theme='dark']) {
   .page {
-    background: var(--bg-secondary);
+    background: var(--bg-primary);
   }
 
   .page-header {
     .title {
-      h2 {
-        color: #f8fafc;
-      }
-      .desc {
-        color: #94a3b8;
-      }
+      h2 { color: var(--label-color); }
+      .desc { color: var(--muted-text); }
+    }
+
+    .controls {
+      .batch-btn { border-color: color-mix(in srgb, var(--header-accent) 60%, transparent); color: var(--header-accent); }
     }
   }
 
-  // Stat cards - PRESERVE colorful gradients in dark mode
-  .stat-card {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-
-    &.today {
-      background: linear-gradient(135deg, #6a5af9 0%, #8b7cf9 100%) !important;
-      color: white !important;
-    }
-    &.week {
-      background: linear-gradient(135deg, #20c997 0%, #38d9a9 100%) !important;
-      color: white !important;
-    }
-    &.month {
-      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%) !important;
-      color: white !important;
-    }
-
-    mat-icon {
-      color: white !important;
-    }
-
-    .stat-info {
-      .stat-value {
-        color: white !important;
-      }
-      .stat-label {
-        color: rgba(255, 255, 255, 0.9) !important;
-      }
-    }
-  }
-
-  // Regular mat-cards (NOT stat-cards)
-  mat-card:not(.stat-card) {
+  // Form card surfaces
+  .form-card, .table-card, .filter-card, .table-content-wrapper {
     background: var(--card-bg) !important;
-    border-color: var(--card-border) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-primary) !important;
   }
 
-  .filter-card {
-    background: var(--card-bg);
-    border-color: var(--card-border);
-  }
+  .stat-card { color: var(--btn-text-on-primary); }
 
-  .table-card {
-    background: var(--card-bg);
-    border-color: var(--card-border);
-  }
+  // ATTENDANCE TABLE
+  .attendance-table th { color: var(--header-accent) !important; background: linear-gradient(180deg,#0f172a,#0b1424) !important; }
+  .attendance-table td { color: var(--text-primary) !important; border-color: var(--card-border) !important; }
+  .member-name { color: var(--text-primary) !important; }
+  .note-text { color: var(--muted-text) !important; }
 
-  .mat-mdc-header-row {
-    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
-    border-bottom: 2px solid #6366f1 !important;
-  }
+  // Batch form member selection adjustments
+  .member-selection {
+    background: rgba(255,255,255,0.03) !important; /* contrast panel */
+    border: 1px solid rgba(255,255,255,0.04) !important;
 
-  .mat-mdc-header-cell {
-    color: #38bdf8 !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.6px !important;
-  }
-
-  .attendance-table {
-    th {
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
-      color: #38bdf8 !important;
-      border-bottom: 2px solid #6366f1 !important;
+    .selection-header {
+      .selection-title { color: var(--label-color) !important; }
+      .selection-actions button { color: var(--muted-text) !important; }
     }
 
-    td {
-      color: #e2e8f0 !important;
+    .member-grid {
+      background: transparent !important;
     }
 
-    .member-name {
-      color: #f8fafc !important;
-    }
-  }
+    .member-chip {
+      background: rgba(255,255,255,0.02) !important;
+      border: 1px solid rgba(255,255,255,0.04) !important;
+      color: var(--text-primary) !important;
 
-  .mat-mdc-row {
-    border-color: var(--card-border) !important;
+      mat-icon { color: var(--muted-text) !important; }
 
-    &:hover {
-      background: rgba(51, 65, 85, 0.3) !important;
-    }
-  }
-
-  .mat-mdc-cell {
-    color: #e2e8f0 !important;
-  }
-
-  .member-name {
-    color: #f8fafc !important;
-  }
-
-  .member-sector {
-    color: #94a3b8 !important;
-  }
-
-  .empty-state {
-    color: #94a3b8;
-  }
-
-  mat-paginator {
-    color: #e2e8f0 !important;
-  }
-
-  // Form fields
-  ::ng-deep {
-    .mat-mdc-form-field {
-      .mat-mdc-text-field-wrapper {
-        background: rgba(51, 65, 85, 0.5);
+      &:hover {
+        border-color: var(--header-accent) !important;
+        background: color-mix(in srgb, var(--header-accent) 8%, transparent) !important;
       }
-      .mdc-floating-label {
-        color: #94a3b8 !important;
-      }
-      .mat-mdc-input-element {
-        color: #f8fafc !important;
+
+      &.selected {
+        border-color: var(--header-accent) !important;
+        background: color-mix(in srgb, var(--header-accent) 12%, transparent) !important;
+
+        mat-icon { color: var(--header-accent) !important; }
       }
     }
-    .mat-mdc-select-value {
-      color: #f8fafc !important;
-    }
   }
+
+  // Buttons within forms
+  .form-actions button.mat-button, .form-actions button.mat-flat-button {
+    color: var(--text-primary) !important;
+  }
+
+  .empty-state { color: var(--muted-text) !important; }
 }

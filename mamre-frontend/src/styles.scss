@@ -86,6 +86,18 @@ h1, h2, h3, h4, h5, h6 {
   // Primary color
   --primary-color: #6366f1;
   --primary-light: #eef2ff;
+
+  /* Component-level aliases (used by components like attendance-report)
+     These map to the design system variables above so components can
+     use shorter names (and we can update them here for app-wide theme). */
+  --label-color: var(--text-primary);
+  --muted-text: var(--text-muted);
+  --header-accent: var(--primary-color);
+  --btn-bg-primary: var(--primary-color);
+  --btn-text-on-primary: #ffffff;
+  --td-week-bg: #fff8e1;
+  --td-week-text: #0d47a1;
+  --sector-text-dark: #0f172a;
 }
 
 [data-theme="dark"] {
@@ -130,6 +142,16 @@ h1, h2, h3, h4, h5, h6 {
   // Primary color
   --primary-color: #818cf8;
   --primary-light: rgba(99, 102, 241, 0.2);
+
+  /* Component-level aliases for dark mode */
+  --label-color: var(--text-primary);
+  --muted-text: var(--text-muted);
+  --header-accent: var(--primary-color);
+  --btn-bg-primary: var(--primary-color);
+  --btn-text-on-primary: #ffffff;
+  --td-week-bg: rgba(8,16,28,0.7);
+  --td-week-text: #f8fafc;
+  --sector-text-dark: #0f172a;
 }
 
 body {
@@ -967,4 +989,64 @@ body[data-theme="dark"] input.mat-input-element {
     opacity: 0.7 !important;
     color: rgba(255,255,255,0.6) !important;
   }
+}
+
+/* Global button styles using theme variables */
+.button-tokens {
+  /* intentionally empty block for token grouping */
+}
+
+.mat-flat-button.mat-primary,
+button.mat-flat-button[color="primary"],
+button.btn-primary,
+.bulk-input-btn {
+  background: var(--btn-bg-primary) !important;
+  color: var(--btn-text-on-primary) !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  min-height: 40px !important;
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.mat-flat-button.mat-primary:hover,
+button.mat-flat-button[color="primary"]:hover,
+.bulk-input-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(2,6,23,0.12);
+  filter: brightness(1.04);
+}
+
+.mat-flat-button.mat-primary:focus-visible,
+.bulk-input-btn:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--btn-bg-primary) 20%, transparent) !important;
+}
+
+.mat-flat-button.mat-primary[disabled],
+.bulk-input-btn[disabled],
+button[disabled] {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* Ghost/secondary variant for actions next to primary */
+.btn-ghost,
+.bulk-input-btn.ghost {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--btn-bg-primary) 14%, var(--card-border) 86%) !important;
+  color: var(--label-color) !important;
+}
+
+/* Mobile: stack bulk actions */
+@media (max-width: 768px) {
+  .bulk-input-actions {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+  }
+  .bulk-input-actions .bulk-input-btn { width: 100%; justify-content: center; }
 }
