@@ -332,12 +332,102 @@
 
     .header-row-sub .th-sub {
       background: rgba(30, 41, 59, 0.8) !important;
-      color: #7dd3fc !important;
+      color: #a5f3fc !important; /* cyan-200 */
+      font-weight: 700 !important;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.45) !important;
     }
 
     td {
       color: #e2e8f0 !important;
       border-color: var(--card-border) !important;
+    }
+
+    /* High-specificity overrides to force left-week labels (MINGGU 1..4, Total, Average)
+       to be bright and readable even when other global rules attempt to force white/gray */
+    .report-card .report-table td.td-week,
+    .report-card .report-table tr .td-week,
+    :host-context([data-theme="dark"]) .report-table tbody tr td.td-week,
+    :host-context([data-theme="dark"]) .report-table tbody tr.data-row td.td-week {
+      background: rgba(8, 16, 28, 0.7) !important; /* dark band */
+      color: #f8fafc !important; /* bright near-white */
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.6px !important;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.55) !important;
+      opacity: 1 !important;
+    }
+
+    /* Ensure any inline elements inside td.td-week inherit the visible color */
+    :host-context([data-theme="dark"]) .report-table td.td-week *,
+    :host-context([data-theme="dark"]) .report-table td.td-week a,
+    :host-context([data-theme="dark"]) .report-table td.td-week span,
+    :host-context([data-theme="dark"]) .report-table td.td-week div {
+      color: inherit !important;
+      -webkit-text-fill-color: inherit !important;
+      opacity: 1 !important;
+    }
+
+    /* Slightly distinguish Total/Average left labels with stronger background */
+    :host-context([data-theme="dark"]) .report-table tr.total-row td.td-week,
+    :host-context([data-theme="dark"]) .report-table tr.average-row td.td-week {
+      background: rgba(2,6,23,0.95) !important;
+      color: #ffffff !important;
+      box-shadow: inset -2px 0 0 rgba(255,255,255,0.02);
+    }
+
+    /* Ensure individual data rows' week labels are clearly visible */
+    .data-row .td-week {
+      background: rgba(15,23,42,0.45) !important;
+      color: #e6eefc !important;
+      font-weight: 700 !important;
+    }
+
+    /* Improve contrast for total/average row labels (left-most 'HARI/TGL' cells)
+       and ensure they stay bright in dark mode */
+    .total-row .td-week,
+    .average-row .td-week {
+      background: rgba(15,23,42,0.9) !important;
+      color: #f8fafc !important;
+      font-weight: 800 !important;
+    }
+
+    /* Ensure sector headers (th-sector) remain prominent */
+    .th-sector {
+      color: #e6f6ff !important;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.45) !important;
+    }
+
+    /* Footer / summary brightness improvements */
+    .summary-section {
+      background: rgba(15,23,42,0.18) !important;
+      border-radius: 8px;
+
+      h4 {
+        color: #f8fafc !important;
+      }
+
+      .summary-item {
+        background: rgba(255,255,255,0.03) !important;
+
+        .summary-label {
+          color: #cbd5e1 !important; /* slightly bright */
+          font-weight: 600 !important;
+        }
+
+        .summary-value {
+          color: #e6eefc !important; /* bright value */
+          font-weight: 800 !important;
+        }
+      }
+    }
+
+    /* Legend / footer text */
+    .legend h4 {
+      color: #f8fafc !important;
+    }
+
+    .formula {
+      color: #fde68a !important;
     }
 
     /* Make sure sector cell values remain readable on pastel sector-backgrounds in dark mode */
@@ -348,6 +438,21 @@
     td.sector-4, td.sector-bg-4 {
       /* Use a darker text color that contrasts well with the pastel cell background */
       color: #0f172a !important; /* slate-900 */
+      font-weight: 700 !important;
+    }
+
+    /* Ensure percentage and monetary/amount spans inherit the readable color
+       instead of forcing white (this covers elements that use .percentage-* etc.) */
+    .percentage-excellent,
+    .percentage-good,
+    .percentage-fair,
+    .percentage-poor,
+    .percentage-very-poor,
+    .currency,
+    .amount,
+    .kolpi,
+    .jlh-kolkte {
+      color: inherit !important;
       font-weight: 700 !important;
     }
 
