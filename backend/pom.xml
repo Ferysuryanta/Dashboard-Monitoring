@@ -120,6 +120,30 @@
       <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
 
+    <!-- ===== EXPORT: Apache POI untuk generate file Excel (.xlsx) ===== -->
+    <!--
+      Apache POI adalah library Java resmi untuk membaca/menulis file Microsoft Office.
+      poi-ooxml = format modern .xlsx (XML-based Office Open XML).
+      Dependency ini dibutuhkan agar ExportService bisa membuat Workbook, Sheet, Row, Cell.
+    -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>5.5.1</version>
+    </dependency>
+
+    <!-- ===== EXPORT: OpenPDF untuk generate file PDF ===== -->
+    <!--
+      OpenPDF adalah fork open-source dari iText (LGPL license, gratis untuk semua proyek).
+      Digunakan untuk membuat PdfWriter, Document, PdfPTable, PdfPCell.
+      Lebih ringan dari iText 7 dan tidak memerlukan lisensi komersial.
+    -->
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>1.3.43</version>
+    </dependency>
+
     <!-- JWT (JSON Web Token) -->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>

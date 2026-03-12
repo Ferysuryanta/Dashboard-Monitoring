@@ -1,10 +1,11 @@
 <section class="page">
+    <!-- Top bar: title + filters -->
     <div class="page-header">
         <div class="title">
             <h2>📊 Laporan Bulanan MAMRE (MAMRE Baca Alkitab)</h2>
             <p class="desc">Laporan pembacaan Alkitab per sektor untuk bulan {{ getMonthLabel() }} {{ selectedYear }}</p>
         </div>
-        <div class="controls">
+        <div class="filters">
             <mat-form-field appearance="outline" class="filter-field">
                 <mat-label>Bulan</mat-label>
                 <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onFilterChange()">
@@ -18,12 +19,24 @@
                     <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
                 </mat-select>
             </mat-form-field>
+        </div>
+    </div>
 
-            <button mat-stroked-button color="primary" (click)="exportToExcel()">
-                <mat-icon>download</mat-icon> Export
+    <!-- Export action bar -->
+    <div class="export-bar">
+        <span class="export-label">Ekspor laporan:</span>
+        <div class="export-actions">
+            <button class="export-btn btn-excel" (click)="exportExcel()" [disabled]="exporting" [class.btn-loading]="exporting">
+                <span class="btn-icon">📊</span>
+                <span class="btn-text">Excel</span>
             </button>
-            <button mat-stroked-button (click)="printReport()">
-                <mat-icon>print</mat-icon> Print
+            <button class="export-btn btn-pdf" (click)="exportPdf()" [disabled]="exporting" [class.btn-loading]="exporting">
+                <span class="btn-icon">📄</span>
+                <span class="btn-text">PDF</span>
+            </button>
+            <button class="export-btn btn-print" (click)="printReport()" [disabled]="exporting">
+                <span class="btn-icon">🖨️</span>
+                <span class="btn-text">Print</span>
             </button>
         </div>
     </div>

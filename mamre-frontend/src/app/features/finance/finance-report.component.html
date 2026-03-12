@@ -21,6 +21,12 @@
         </mat-select>
       </mat-form-field>
 
+      <button mat-stroked-button color="primary" (click)="exportExcel()" [disabled]="exporting">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+      <button mat-stroked-button color="accent" (click)="exportPdf()" [disabled]="exporting">
+        <mat-icon>picture_as_pdf</mat-icon> PDF
+      </button>
       <button mat-stroked-button color="primary" (click)="loadReport()"><mat-icon>refresh</mat-icon> Refresh</button>
     </div>
   </div>

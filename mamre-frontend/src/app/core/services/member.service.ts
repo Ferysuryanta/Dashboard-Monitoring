@@ -79,11 +79,16 @@ export class MemberService {
     delete(id: string) { return this.http.delete<void>(`${this.base}/${id}`); }
     getById(id: string) { return this.http.get<MemberDto>(`${this.base}/${id}`); }
 
-    // new: download export (CSV/XLSX)
-    downloadExport(sectorId?: number, status?: string) {
+    // legacy member CSV export endpoint
+    downloadCsvExport(sectorId?: number, status?: string) {
         let params = new HttpParams();
         if (sectorId != null) params = params.append('sectorId', String(sectorId));
         if (status) params = params.append('status', status);
         return this.http.get(`${this.base}/export`, { params, responseType: 'blob' as 'json' });
+    }
+
+    // backward-compatible alias while callers migrate to the explicit CSV method name
+    downloadExport(sectorId?: number, status?: string) {
+        return this.downloadCsvExport(sectorId, status);
     }
 }

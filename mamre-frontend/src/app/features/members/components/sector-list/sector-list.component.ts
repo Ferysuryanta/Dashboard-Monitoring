@@ -66,12 +66,12 @@ export class SectorListComponent implements OnInit {
     }
 
     openAdd() {
-        const ref = this.dialog.open(SectorFormComponent, { width: '560px', data: null });
+        const ref = this.dialog.open(SectorFormComponent, { width: '560px', data: null, panelClass: 'sector-dialog-panel' });
         ref.afterClosed().subscribe(res => { if (res) this.loadPage(this.pageIndex, this.pageSize); });
     }
 
     openEdit(row: SectorOption) {
-        const ref = this.dialog.open(SectorFormComponent, { width: '560px', data: row });
+        const ref = this.dialog.open(SectorFormComponent, { width: '560px', data: row, panelClass: 'sector-dialog-panel' });
         ref.afterClosed().subscribe(res => { if (res) this.loadPage(this.pageIndex, this.pageSize); });
     }
 

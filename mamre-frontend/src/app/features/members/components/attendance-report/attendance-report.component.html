@@ -19,12 +19,38 @@
                 </mat-select>
             </mat-form-field>
 
-            <button mat-stroked-button color="primary" (click)="exportToExcel()">
-                <mat-icon>download</mat-icon> Export
-            </button>
-            <button mat-stroked-button (click)="printReport()">
-                <mat-icon>print</mat-icon> Print
-            </button>
+            <div class="export-actions">
+                <button class="export-btn btn-excel" (click)="exportExcel()" [disabled]="exporting" [class.btn-loading]="exporting">
+                    <span class="btn-glow"></span>
+                    <span class="btn-icon-wrap">
+                        <mat-icon>table_view</mat-icon>
+                    </span>
+                    <span class="btn-copy">
+                        <span class="btn-title">Excel</span>
+                        <span class="btn-subtitle">Spreadsheet</span>
+                    </span>
+                </button>
+                <button class="export-btn btn-pdf" (click)="exportPdf()" [disabled]="exporting" [class.btn-loading]="exporting">
+                    <span class="btn-glow"></span>
+                    <span class="btn-icon-wrap">
+                        <mat-icon>picture_as_pdf</mat-icon>
+                    </span>
+                    <span class="btn-copy">
+                        <span class="btn-title">PDF</span>
+                        <span class="btn-subtitle">Dokumen</span>
+                    </span>
+                </button>
+                <button class="export-btn btn-print" (click)="printReport()" [disabled]="exporting">
+                    <span class="btn-glow"></span>
+                    <span class="btn-icon-wrap">
+                        <mat-icon>print</mat-icon>
+                    </span>
+                    <span class="btn-copy">
+                        <span class="btn-title">Print</span>
+                        <span class="btn-subtitle">Cetak cepat</span>
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
 

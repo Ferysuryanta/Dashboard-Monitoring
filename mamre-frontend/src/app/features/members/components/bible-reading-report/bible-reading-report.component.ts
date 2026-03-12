@@ -9,7 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs/operators';
 import { DashboardService, SectorBibleReadingReport } from '../../../../core/services/dashboard.service';
+import { ExportService } from '../../../../core/services/export.service';
 
 interface MonthOption {
     value: number;
@@ -29,7 +32,8 @@ interface MonthOption {
         MatSelectModule,
         MatTableModule,
         MatProgressSpinnerModule,
-        MatDividerModule
+        MatDividerModule,
+        MatSnackBarModule
     ],
     templateUrl: './bible-reading-report.component.html',
     styleUrls: ['./bible-reading-report.component.scss']
@@ -38,6 +42,7 @@ export class BibleReadingReportComponent implements OnInit {
 
     reportData: SectorBibleReadingReport[] = [];
     loading = false;
+    exporting = false;
 
     // Filter
     selectedYear: number;
@@ -61,7 +66,11 @@ export class BibleReadingReportComponent implements OnInit {
 
     displayedColumns: string[] = ['sectorName', 'totalMembers', 'membersWhoRead', 'averagePercentage', 'category', 'description'];
 
-    constructor(private dashboardService: DashboardService) {
+    constructor(
+        private dashboardService: DashboardService,
+        private exportService: ExportService,
+        private snackBar: MatSnackBar
+    ) {
         const now = new Date();
         this.selectedYear = now.getFullYear();
         this.selectedMonth = now.getMonth() + 1;
@@ -115,23 +124,36 @@ export class BibleReadingReportComponent implements OnInit {
         return row.sectorId === null || row.sectorName === 'Total';
     }
 
-    exportToExcel(): void {
-        // Simple CSV export
-        const headers = ['Nama Sektor', 'Jumlah Anggota', 'Rata-rata % Baca', 'Kategori', 'Keterangan'];
-        const rows = this.reportData.map(r => [
-            r.sectorName,
-            r.totalMembers,
-            r.averagePercentage.toFixed(0) + '%',
-            r.category,
-            r.description
-        ]);
+    exportExcel(): void {
+        this.exporting = true;
+        this.exportService.exportBibleReadingExcel(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Laporan_Baca_Alkitab_${this.getMonthLabel()}_${this.selectedYear}.xlsx`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('exportExcel bible-reading', err);
+                    this.snackBar.open('Gagal mengunduh Excel. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
+    }
 
-        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Laporan_Baca_Alkitab_${this.getMonthLabel()}_${this.selectedYear}.csv`;
-        link.click();
+    exportPdf(): void {
+        this.exporting = true;
+        this.exportService.exportBibleReadingPdf(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Laporan_Baca_Alkitab_${this.getMonthLabel()}_${this.selectedYear}.pdf`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('exportPdf bible-reading', err);
+                    this.snackBar.open('Gagal mengunduh PDF. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
     }
 
     printReport(): void {

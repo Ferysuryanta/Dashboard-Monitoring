@@ -806,6 +806,90 @@ body[data-theme="dark"] .cdk-overlay-container .mat-mdc-autocomplete-panel {
   color: var(--text-primary) !important;
 }
 
+/* txn-dialog-panel: make container transparent so only txn-modal's own dark gradient
+   background shows — prevents the card-bg (#1e293b) bleeding around the modal edges */
+.cdk-overlay-container[data-theme="dark"] .txn-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .txn-dialog-panel .mdc-dialog__surface,
+.cdk-overlay-container[data-theme="dark"] .txn-dialog-panel .mat-mdc-dialog-surface {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.cdk-overlay-container[data-theme="light"] .txn-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="light"] .txn-dialog-panel .mdc-dialog__surface,
+.cdk-overlay-container[data-theme="light"] .txn-dialog-panel .mat-mdc-dialog-surface {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* sector-dialog-panel: transparent container so :host background shows for both themes */
+.cdk-overlay-container[data-theme="dark"] .sector-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="dark"] .sector-dialog-panel .mdc-dialog__surface,
+.cdk-overlay-container[data-theme="dark"] .sector-dialog-panel .mat-mdc-dialog-surface {
+  background: transparent !important;
+}
+
+.cdk-overlay-container[data-theme="light"] .sector-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="light"] .sector-dialog-panel .mdc-dialog__surface,
+.cdk-overlay-container[data-theme="light"] .sector-dialog-panel .mat-mdc-dialog-surface {
+  background: transparent !important;
+}
+
+/* ========================================
+   DATEPICKER CALENDAR DARK MODE
+   ======================================== */
+[data-theme="dark"] .mat-datepicker-content,
+.cdk-overlay-container[data-theme="dark"] .mat-datepicker-content,
+.cdk-overlay-container[data-theme="dark"] .mat-calendar {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-cell-content,
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-label,
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-period-button,
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-arrow {
+  color: #f8fafc !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-table-header th,
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-label {
+  color: #94a3b8 !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-selected {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #6366f1 !important;
+  color: #818cf8 !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-calendar-body-cell:hover .mat-calendar-body-cell-content {
+  background-color: rgba(99, 102, 241, 0.18) !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-icon-button,
+.cdk-overlay-container[data-theme="dark"] .mat-datepicker-toggle button {
+  color: #94a3b8 !important;
+}
+
+.cdk-overlay-container[data-theme="dark"] .mat-datepicker-toggle-default-icon {
+  fill: #94a3b8 !important;
+}
+
+/* Datepicker icon inside txn-modal (light mode) */
+.txn-modal .mat-datepicker-toggle button {
+  color: #64748b;
+}
+
+:host-context([data-theme="dark"]) .txn-modal .mat-datepicker-toggle button,
+body[data-theme="dark"] .txn-modal .mat-datepicker-toggle button {
+  color: rgba(230, 238, 246, 0.7) !important;
+}
+
 /* As a fallback, ensure any descendant inside a dialog uses overlay text color/background where appropriate */
 .cdk-overlay-container[data-theme="dark"] .mat-mdc-dialog-container *,
 .cdk-overlay-container[data-theme="dark"] .mat-dialog-container * {

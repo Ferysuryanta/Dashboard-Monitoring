@@ -6,6 +6,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 import { SectorService, SectorOption } from '../../core/services/sector.service';
@@ -33,7 +35,8 @@ export interface MonthlyFinanceReport {
 @Component({
     selector: 'app-finance-transaction-form',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatIconModule],
+    providers: [provideNativeDateAdapter()],
+    imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatIconModule, MatDatepickerModule, MatNativeDateModule],
     templateUrl: './finance-transaction-form.component.html',
     styleUrls: ['./finance-transaction-form.component.scss']
 })
@@ -44,6 +47,9 @@ export class FinanceTransactionFormComponent implements OnInit {
 
     sectors: SectorOption[] = [];
     loadingSectors = false;
+
+    // Date picker value (Date object); converted to ISO string on save
+    txnDateValue: Date = new Date();
 
     model: TransactionPayload = {
         txnType: 'Pemasukan',
@@ -70,6 +76,10 @@ export class FinanceTransactionFormComponent implements OnInit {
     save(): void {
         if (!this.model.amount || this.model.amount <= 0) return;
         this.saving = true;
+        // Convert Date object back to YYYY-MM-DD string
+        const d = this.txnDateValue;
+        const pad = (n: number) => String(n).padStart(2, '0');
+        this.model.txnDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         const sectorIdNum = this.model.sectorId == null ? undefined : (typeof this.model.sectorId === 'string' ? Number(this.model.sectorId) : this.model.sectorId);
         const payload: any = {
             txnType: this.model.txnType === 'Pemasukan' ? 'INCOME' : 'EXPENSE',

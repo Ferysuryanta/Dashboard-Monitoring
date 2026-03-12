@@ -10,7 +10,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs/operators';
 import { DashboardService, SectorAttendanceReport, WeeklyAttendance } from '../../../../core/services/dashboard.service';
+import { ExportService } from '../../../../core/services/export.service';
 
 interface MonthOption {
     value: number;
@@ -31,7 +34,8 @@ interface MonthOption {
         MatTableModule,
         MatProgressSpinnerModule,
         MatDividerModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatSnackBarModule
     ],
     templateUrl: './attendance-report.component.html',
     styleUrls: ['./attendance-report.component.scss']
@@ -40,7 +44,8 @@ export class AttendanceReportComponent implements OnInit {
     
     reportData: SectorAttendanceReport[] = [];
     loading = false;
-    
+    exporting = false;
+
     // Filter
     selectedYear: number;
     selectedMonth: number;
@@ -61,7 +66,11 @@ export class AttendanceReportComponent implements OnInit {
         { value: 12, label: 'Desember' }
     ];
     
-    constructor(private dashboardService: DashboardService) {
+    constructor(
+        private dashboardService: DashboardService,
+        private exportService: ExportService,
+        private snackBar: MatSnackBar
+    ) {
         const now = new Date();
         this.selectedYear = now.getFullYear();
         this.selectedMonth = now.getMonth() + 1;
@@ -141,43 +150,38 @@ export class AttendanceReportComponent implements OnInit {
         return sum / validSectors.length;
     }
 
-    exportToExcel(): void {
-        // Build CSV content with proper structure
-        const headers = [
-            'Sektor',
-            'Jml Anggota',
-            'M1 Hadir', 'M1 Kolekte', 'M1 %',
-            'M2 Hadir', 'M2 Kolekte', 'M2 %',
-            'M3 Hadir', 'M3 Kolekte', 'M3 %',
-            'M4 Hadir', 'M4 Kolekte', 'M4 %',
-            'Total Hadir', 'Total Kolekte', 'Rata-rata %'
-        ];
-        
-        const rows = this.reportData.map(s => {
-            const w1 = this.getWeekData(s, 1);
-            const w2 = this.getWeekData(s, 2);
-            const w3 = this.getWeekData(s, 3);
-            const w4 = this.getWeekData(s, 4);
-            
-            return [
-                s.sectorName,
-                s.totalMembers,
-                w1?.attendedCount || 0, w1?.kolpiAmount || 0, (w1?.attendancePercentage || 0).toFixed(0) + '%',
-                w2?.attendedCount || 0, w2?.kolpiAmount || 0, (w2?.attendancePercentage || 0).toFixed(0) + '%',
-                w3?.attendedCount || 0, w3?.kolpiAmount || 0, (w3?.attendancePercentage || 0).toFixed(0) + '%',
-                w4?.attendedCount || 0, w4?.kolpiAmount || 0, (w4?.attendancePercentage || 0).toFixed(0) + '%',
-                s.totalAttended, s.totalKolpiAmount || 0, s.averageAttendancePercentage.toFixed(0) + '%'
-            ];
-        });
-        
-        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Laporan_Kehadiran_${this.getMonthLabel()}_${this.selectedYear}.csv`;
-        link.click();
+    exportExcel(): void {
+        this.exporting = true;
+        this.exportService.exportAttendanceExcel(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Laporan_Kehadiran_${this.getMonthLabel()}_${this.selectedYear}.xlsx`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('exportExcel attendance', err);
+                    this.snackBar.open('Gagal mengunduh Excel. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
     }
-    
+
+    exportPdf(): void {
+        this.exporting = true;
+        this.exportService.exportAttendancePdf(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Laporan_Kehadiran_${this.getMonthLabel()}_${this.selectedYear}.pdf`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('exportPdf attendance', err);
+                    this.snackBar.open('Gagal mengunduh PDF. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
+    }
+
     printReport(): void {
         window.print();
     }

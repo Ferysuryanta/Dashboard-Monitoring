@@ -252,8 +252,7 @@ public class DashboardServiceImpl implements DashboardService {
                 if (year < currentYear || (year == currentYear && month <= today.getMonthValue())) {
                     try {
                         completedDays = (int) bibleReadingRepository.countDistinctReadingDaysBetween(start, end);
-                    } catch (Exception e) {
-                        completedDays = 0;
+                    } catch (Exception ignored) {
                     }
                 }
 

@@ -10,7 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { MemberService } from '../../../../core/services/member.service';
@@ -22,6 +22,7 @@ import { formatToLocalDateString, parseIsoLocalDate } from '../../../../core/uti
 @Component({
     selector: 'app-member-form',
     standalone: true,
+    providers: [provideNativeDateAdapter()],
     imports: [
         CommonModule, RouterModule, ReactiveFormsModule,
         MatFormFieldModule, MatInputModule, MatSelectModule,

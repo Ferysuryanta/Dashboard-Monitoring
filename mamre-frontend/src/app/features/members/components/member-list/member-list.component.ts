@@ -13,11 +13,12 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {Observable, BehaviorSubject, combineLatest, of, filter} from 'rxjs';
-import { startWith, debounceTime, distinctUntilChanged, switchMap, catchError, shareReplay, tap } from 'rxjs/operators';
+import { startWith, debounceTime, distinctUntilChanged, switchMap, catchError, shareReplay, tap, finalize } from 'rxjs/operators';
 import { MemberService, PagedResult } from '../../../../core/services/member.service';
 import { MemberDto } from '../../models/member.model';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import {SectorOption, SectorService} from "../../../../core/services/sector.service";
+import { ExportService } from '../../../../core/services/export.service';
 
 @Component({
     selector: 'app-member-list',
@@ -70,6 +71,7 @@ export class MemberListComponent implements OnInit {
     private refreshTrigger$ = new BehaviorSubject<void>(undefined);
     // prevent outdated preview responses from overriding newer ones
     private latestPreviewRequestId = 0;
+    exportLoading = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -77,7 +79,8 @@ export class MemberListComponent implements OnInit {
         private service: MemberService,
         private sectorSvc: SectorService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private exportService: ExportService
     ) {}
 
     ngOnInit(): void {
@@ -292,5 +295,53 @@ export class MemberListComponent implements OnInit {
                 });
             }
         });
+    }
+
+    exportCsv() {
+        this.exportLoading = true;
+        this.service.downloadCsvExport(this.sectorId, this.statusFilter)
+            .pipe(finalize(() => this.exportLoading = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Daftar_Anggota_${this.sectorName || 'Semua_Sektor'}.csv`;
+                    this.exportService.downloadBlob(blob as Blob, filename);
+                },
+                error: (err) => {
+                    console.error('member export csv', err);
+                    this.snackBar.open('Gagal mengunduh CSV anggota.', 'OK', { duration: 3500 });
+                }
+            });
+    }
+
+    exportExcel() {
+        this.exportLoading = true;
+        this.exportService.exportMembersExcel(this.statusFilter, this.sectorId)
+            .pipe(finalize(() => this.exportLoading = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Daftar_Anggota_${this.sectorName || 'Semua_Sektor'}.xlsx`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('member export excel', err);
+                    this.snackBar.open('Gagal mengunduh Excel anggota.', 'OK', { duration: 3500 });
+                }
+            });
+    }
+
+    exportPdf() {
+        this.exportLoading = true;
+        this.exportService.exportMembersPdf(this.statusFilter, this.sectorId)
+            .pipe(finalize(() => this.exportLoading = false))
+            .subscribe({
+                next: (blob) => {
+                    const filename = `Daftar_Anggota_${this.sectorName || 'Semua_Sektor'}.pdf`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err) => {
+                    console.error('member export pdf', err);
+                    this.snackBar.open('Gagal mengunduh PDF anggota.', 'OK', { duration: 3500 });
+                }
+            });
     }
 }

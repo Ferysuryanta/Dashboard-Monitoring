@@ -10,29 +10,31 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
     gap: 16px;
 
     .title {
+        flex: 1 1 auto;
         h2 {
             margin: 0;
             font-size: 24px;
-            font-weight: 600;
-            color: #1a237e;
+            font-weight: 700;
+            color: var(--text-primary, #1a237e);
         }
         .desc {
             margin: 4px 0 0;
-            color: #666;
+            color: var(--text-secondary, #666);
             font-size: 14px;
         }
     }
 
-    .controls {
+    .filters {
         display: flex;
         gap: 12px;
         align-items: center;
         flex-wrap: wrap;
+        flex-shrink: 0;
 
         .filter-field {
             width: 140px;
@@ -42,6 +44,128 @@
             display: none;
         }
     }
+}
+
+/* Export action bar — sits between header and card */
+.export-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--card-border, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow, 0 2px 8px rgba(0,0,0,0.05));
+    flex-wrap: wrap;
+
+    .export-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted, #94a3b8);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        white-space: nowrap;
+    }
+
+    .export-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+}
+
+/* ── Export action buttons ── */
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+
+    .btn-icon { font-size: 16px; line-height: 1; }
+    .btn-text  { color: inherit; }
+
+    /* shimmer sweep on hover */
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%);
+        transform: translateX(-100%);
+        transition: transform 0.4s ease;
+    }
+    &:hover::after { transform: translateX(100%); }
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+    }
+    &:active:not(:disabled) {
+        transform: translateY(0);
+        filter: brightness(0.95);
+    }
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+    &.btn-loading .btn-text::after {
+        content: '…';
+        animation: pulse 1s infinite;
+    }
+}
+
+.btn-excel {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+    &:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(22, 163, 74, 0.50); }
+}
+
+.btn-pdf {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+    &:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.50); }
+}
+
+.btn-print {
+    background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(30, 41, 59, 0.30);
+    &:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(30, 41, 59, 0.45); }
+}
+
+/* Dark-mode button surface adjustments */
+:host-context([data-theme="dark"]) .btn-excel,
+body[data-theme="dark"] .btn-excel {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.30);
+}
+:host-context([data-theme="dark"]) .btn-pdf,
+body[data-theme="dark"] .btn-pdf {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    box-shadow: 0 4px 14px rgba(248, 113, 113, 0.30);
+}
+:host-context([data-theme="dark"]) .btn-print,
+body[data-theme="dark"] .btn-print {
+    background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+    box-shadow: 0 4px 14px rgba(100, 116, 139, 0.30);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
 }
 
 .report-card {

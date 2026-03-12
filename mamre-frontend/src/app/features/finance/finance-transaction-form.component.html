@@ -1,11 +1,4 @@
 <div class="txn-modal">
-  <div class="txn-illustration" aria-hidden="true">
-    <!-- Inline SVG uses currentColor so CSS can control its color per theme -->
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-      <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M22 30c2-4 6-4 10-4s8 0 10 4c0 6-6 8-14 8s-12-2-12-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </div>
   <h2>Tambah Transaksi</h2>
 
   <!-- Two-column responsive grid -->
@@ -25,7 +18,9 @@
 
     <mat-form-field appearance="outline" class="col">
       <mat-label>Tanggal*</mat-label>
-      <input matInput type="date" [(ngModel)]="model.txnDate" name="txnDate" />
+      <input matInput [matDatepicker]="tanggalPicker" [(ngModel)]="txnDateValue" name="txnDate" readonly />
+      <mat-datepicker-toggle matSuffix [for]="tanggalPicker"></mat-datepicker-toggle>
+      <mat-datepicker #tanggalPicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="col">

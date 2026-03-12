@@ -10,20 +10,37 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs/operators';
 import { FinanceService } from '../../core/services/finance.service';
+import { ExportService } from '../../core/services/export.service';
 import { MonthlyFinanceReport } from './models/finance.model';
 import { FinanceTransactionFormComponent } from './finance-transaction-form.component';
 
 @Component({
     selector: 'app-finance-report',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatCardModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatSelectModule, MatTableModule, MatProgressSpinnerModule, MatDividerModule, MatDialogModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatTableModule,
+        MatProgressSpinnerModule,
+        MatDividerModule,
+        MatDialogModule,
+        MatSnackBarModule
+    ],
     templateUrl: './finance-report.component.html',
     styleUrls: ['./finance-report.component.scss']
 })
 export class FinanceReportComponent implements OnInit {
     report: MonthlyFinanceReport | null = null;
     loading = false;
+    exporting = false;
 
     selectedMonth: number;
     selectedYear: number;
@@ -37,7 +54,12 @@ export class FinanceReportComponent implements OnInit {
 
     displayedColumns = ['sector', 'income', 'expense', 'net'];
 
-    constructor(private financeService: FinanceService, private dialog: MatDialog) {
+    constructor(
+        private financeService: FinanceService,
+        private dialog: MatDialog,
+        private exportService: ExportService,
+        private snackBar: MatSnackBar
+    ) {
         const now = new Date();
         this.selectedYear = now.getFullYear();
         this.selectedMonth = now.getMonth() + 1;
@@ -76,5 +98,37 @@ export class FinanceReportComponent implements OnInit {
         ref.afterClosed().subscribe(result => {
             if (result) this.loadReport();
         });
+    }
+
+    exportExcel(): void {
+        this.exporting = true;
+        this.exportService.exportFinanceExcel(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob: Blob) => {
+                    const filename = `Laporan_Keuangan_${this.getMonthLabel()}_${this.selectedYear}.xlsx`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err: unknown) => {
+                    console.error('exportExcel finance', err);
+                    this.snackBar.open('Gagal mengunduh Excel. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
+    }
+
+    exportPdf(): void {
+        this.exporting = true;
+        this.exportService.exportFinancePdf(this.selectedYear, this.selectedMonth)
+            .pipe(finalize(() => this.exporting = false))
+            .subscribe({
+                next: (blob: Blob) => {
+                    const filename = `Laporan_Keuangan_${this.getMonthLabel()}_${this.selectedYear}.pdf`;
+                    this.exportService.downloadBlob(blob, filename);
+                },
+                error: (err: unknown) => {
+                    console.error('exportPdf finance', err);
+                    this.snackBar.open('Gagal mengunduh PDF. Coba lagi.', 'Tutup', { duration: 3500 });
+                }
+            });
     }
 }

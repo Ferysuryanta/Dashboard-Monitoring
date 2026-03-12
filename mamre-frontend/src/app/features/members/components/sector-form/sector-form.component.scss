@@ -1,11 +1,25 @@
+/* =========================================
+   SECTOR FORM DIALOG
+   Light mode defaults — dark overrides below
+   ========================================= */
 :host {
   display: block;
   min-width: 320px;
   max-width: 720px;
+
+  /* MDC tokens — light mode */
+  --mdc-outlined-text-field-outline-color: #94a3b8;
+  --mdc-outlined-text-field-hover-outline-color: #6366f1;
+  --mdc-outlined-text-field-focus-outline-color: #6366f1;
+  --mdc-outlined-text-field-label-text-color: #475569;
+  --mdc-outlined-text-field-focus-label-text-color: #6366f1;
+  --mdc-outlined-text-field-input-text-color: #1e293b;
+  --mdc-outlined-text-field-caret-color: #6366f1;
+  --mat-select-trigger-text-color: #1e293b;
 }
 
 .content-wrapper {
-  padding: 6px 12px;
+  padding: 6px 16px 16px;
 }
 
 .loader {
@@ -29,6 +43,7 @@
     gap: 8px;
     justify-content: flex-end;
     align-items: center;
+    margin-top: 4px;
 
     .btn-label {
       margin-left: 8px;
@@ -40,42 +55,63 @@
   }
 }
 
-/* responsive tweak for small screens */
+/* Explicit label fallback for light mode */
+:host ::ng-deep .mdc-floating-label,
+:host ::ng-deep .mat-mdc-floating-label {
+  color: #475569 !important;
+}
+
+/* responsive */
 @media (max-width: 480px) {
-  :host {
-    min-width: 280px;
-  }
+  :host { min-width: 280px; }
 }
 
 .snack-success { background: #1b873f !important; color: white !important; }
 .snack-error   { background: #d32f2f !important; color: white !important; }
 
-// ========================================
-// DARK MODE OVERRIDES
-// ========================================
-:host-context([data-theme="dark"]) {
-  /* remove overlay container background override; centralized in styles.scss */
-  // ::ng-deep .mat-mdc-dialog-container { background: var(--card-bg) !important; }
+/* =========================================
+   DARK MODE OVERRIDES
+   Triggered by data-theme="dark" on body
+   (also mirrors via .cdk-overlay-container)
+   ========================================= */
+:host-context([data-theme="dark"]),
+body[data-theme="dark"] :host,
+.cdk-overlay-container[data-theme="dark"] :host {
+  /* MDC tokens — dark mode */
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.28);
+  --mdc-outlined-text-field-hover-outline-color: rgba(255, 255, 255, 0.50);
+  --mdc-outlined-text-field-focus-outline-color: #818cf8;
+  --mdc-outlined-text-field-label-text-color: #94a3b8;
+  --mdc-outlined-text-field-focus-label-text-color: #a5b4fc;
+  --mdc-outlined-text-field-input-text-color: #f8fafc;
+  --mdc-outlined-text-field-caret-color: #818cf8;
+  --mat-select-trigger-text-color: #f8fafc;
+  background: var(--card-bg, #1e293b);
+}
 
-  .content-wrapper {
-    background: var(--card-bg);
-  }
+:host-context([data-theme="dark"]) h2[mat-dialog-title],
+body[data-theme="dark"] :host h2[mat-dialog-title] {
+  color: #f8fafc !important;
+}
 
-  mat-dialog-title {
-    color: #f8fafc !important;
-  }
+:host-context([data-theme="dark"]) ::ng-deep .mdc-floating-label,
+:host-context([data-theme="dark"]) ::ng-deep .mat-mdc-floating-label,
+body[data-theme="dark"] :host ::ng-deep .mdc-floating-label {
+  color: #94a3b8 !important;
+}
 
-  ::ng-deep {
-    .mat-mdc-form-field {
-      .mat-mdc-text-field-wrapper {
-        background: rgba(51, 65, 85, 0.5);
-      }
-      .mdc-floating-label {
-        color: #94a3b8 !important;
-      }
-      .mat-mdc-input-element {
-        color: #f8fafc !important;
-      }
-    }
-  }
+:host-context([data-theme="dark"]) ::ng-deep .mat-mdc-input-element,
+body[data-theme="dark"] :host ::ng-deep .mat-mdc-input-element {
+  color: #f8fafc !important;
+}
+
+:host-context([data-theme="dark"]) ::ng-deep .mat-mdc-text-field-wrapper,
+body[data-theme="dark"] :host ::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(51, 65, 85, 0.45) !important;
+}
+
+/* Buttons in dark mode */
+:host-context([data-theme="dark"]) button[mat-button],
+body[data-theme="dark"] :host button[mat-button] {
+  color: #cbd5e1 !important;
 }
