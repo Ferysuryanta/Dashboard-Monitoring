@@ -1,41 +1,51 @@
 <div class="txn-modal">
+  <div class="txn-illustration" aria-hidden="true">
+    <!-- Inline SVG uses currentColor so CSS can control its color per theme -->
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M22 30c2-4 6-4 10-4s8 0 10 4c0 6-6 8-14 8s-12-2-12-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
   <h2>Tambah Transaksi</h2>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Tipe*</mat-label>
-    <mat-select [(ngModel)]="model.txnType" name="txnType">
-      <mat-option value="Pemasukan">Pemasukan</mat-option>
-      <mat-option value="Pengeluaran">Pengeluaran</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <!-- Two-column responsive grid -->
+  <div class="txn-grid">
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Tipe*</mat-label>
+      <mat-select [(ngModel)]="model.txnType" name="txnType">
+        <mat-option value="Pemasukan">Pemasukan</mat-option>
+        <mat-option value="Pengeluaran">Pengeluaran</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Jumlah (total)*</mat-label>
-    <input matInput type="number" [(ngModel)]="model.amount" name="amount" />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Jumlah (total)*</mat-label>
+      <input matInput type="number" [(ngModel)]="model.amount" name="amount" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Tanggal*</mat-label>
-    <input matInput type="date" [(ngModel)]="model.txnDate" name="txnDate" />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Tanggal*</mat-label>
+      <input matInput type="date" [(ngModel)]="model.txnDate" name="txnDate" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Sektor</mat-label>
-    <mat-select [(ngModel)]="model.sectorId" name="sectorId">
-      <mat-option [value]="null">General</mat-option>
-      <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Sektor</mat-label>
+      <mat-select [(ngModel)]="model.sectorId" name="sectorId">
+        <mat-option [value]="null">General</mat-option>
+        <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Kategori</mat-label>
-    <input matInput [(ngModel)]="model.category" name="category" />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Kategori</mat-label>
+      <input matInput [(ngModel)]="model.category" name="category" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="full">
-    <mat-label>Deskripsi</mat-label>
-    <textarea matInput rows="3" [(ngModel)]="model.description" name="description"></textarea>
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="col">
+      <mat-label>Deskripsi</mat-label>
+      <textarea matInput rows="4" [(ngModel)]="model.description" name="description"></textarea>
+    </mat-form-field>
+  </div>
 
   <div class="actions">
     <button mat-stroked-button (click)="cancel()">Batal</button>

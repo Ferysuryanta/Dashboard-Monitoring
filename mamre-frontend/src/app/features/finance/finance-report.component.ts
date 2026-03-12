@@ -64,7 +64,15 @@ export class FinanceReportComponent implements OnInit {
     }
 
     openAddTransaction(): void {
-        const ref = this.dialog.open(FinanceTransactionFormComponent, { width: '520px' });
+        // Open dialog with a custom panelClass so component-scoped styles can target
+        // the dialog overlay. Avoid forcing a small width here — the component
+        // itself will define its preferred width and responsive max-width.
+        const ref = this.dialog.open(FinanceTransactionFormComponent, {
+            // let the component decide width via its .txn-modal rule
+            width: 'auto',
+            maxHeight: '90vh',
+            panelClass: 'txn-dialog-panel'
+        });
         ref.afterClosed().subscribe(result => {
             if (result) this.loadReport();
         });

@@ -1050,3 +1050,49 @@ button[disabled] {
   }
   .bulk-input-actions .bulk-input-btn { width: 100%; justify-content: center; }
 }
+
+/* Ensure dialog containers don't force their own background when app is in light mode.
+   This makes component-level dialog backgrounds (like .txn-modal) take effect and match the list.
+   Covers cases where overlay container lacks data-theme attribute or dialog opened without panelClass. */
+
+/* When the app is in light theme via body attribute or overlay container attribute, make overlay panes transparent
+   so component-level backgrounds control the visual surface. */
+body[data-theme="light"] .cdk-overlay-container .mat-dialog-container,
+body[data-theme="light"] .cdk-overlay-container .mat-mdc-dialog-container,
+.cdk-overlay-container[data-theme="light"] .mat-dialog-container,
+.cdk-overlay-container[data-theme="light"] .mat-mdc_dialog-container,
+.cdk-overlay-container .mat-dialog-container[data-theme="light"],
+.cdk-overlay-container .mat-mdc_dialog-container[data-theme="light"] {
+  background: transparent !important;
+  box-shadow: none !important; /* let inner component handle elevation */
+}
+
+/* Make dialog content area transparent so inner .txn-modal is visible and controls look */
+body[data-theme="light"] .cdk-overlay-container .mat-dialog-container .mat-dialog-content,
+body[data-theme="light"] .cdk-overlay-container .mat-mdc-dialog-container .mat-mdc-dialog-content,
+.cdk-overlay-container[data-theme="light"] .mat-dialog-container .mat-dialog-content,
+.cdk-overlay-container[data-theme="light"] .mat-mdc_dialog-container .mat-mdc-dialog-content {
+  background: transparent !important;
+}
+
+/* Extra fallbacks: support class-based theme toggles (e.g. .light-theme on a root element)
+   and guarantee overlay/dialog containers allow component background to show. */
+.light-theme .cdk-overlay-container .mat-dialog-container,
+.light-theme .cdk-overlay-container .mat-mdc_dialog-container,
+.light-theme body .cdk-overlay-container .mat-dialog-container,
+.light-theme body .cdk-overlay-container .mat-mdc_dialog-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Ensure the transactional modal inside overlays also picks a light surface when the app
+   is using a .light-theme class anywhere in the DOM (covers root-level and nested cases). */
+.light-theme .cdk-overlay-container .txn-modal,
+.light-theme body .cdk-overlay-container .txn-modal,
+body.light-theme .cdk-overlay-container .txn-modal {
+  background: #ffffff !important;
+  color: #1f2d3d !important;
+  border: 1px solid rgba(16,24,40,0.06) !important;
+  box-shadow: 0 18px 50px rgba(16,24,40,0.08), 0 2px 6px rgba(16,24,40,0.04) !important;
+}
+

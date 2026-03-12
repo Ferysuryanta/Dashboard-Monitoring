@@ -1,13 +1,37 @@
-.dialog-content { padding: 20px; width: 480px; }
+.dialog-content {
+  /* larger default content width and responsive max */
+  padding: 28px;
+  width: 960px; /* increased for a wider modal */
+  max-width: calc(100vw - 40px);
+  box-sizing: border-box;
+  max-height: 90vh; /* prevent dialog from overflowing the viewport */
+  overflow-y: auto; /* enable internal scrolling */
+  overflow-x: hidden;
+}
 .full-width { width: 100%; }
 .dialog-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:12px; }
 
 .txn-modal {
   padding: 20px;
-  width: 480px;
+  width: 960px; /* increased from 820px */
+  max-width: calc(100vw - 40px);
   background: linear-gradient(180deg, #0f1724 0%, #0b131b 100%);
   color: #e6eef6;
   border-radius: 8px;
+  box-sizing: border-box;
+  max-height: 86vh; /* keep small margin from viewport top/bottom */
+  overflow-y: auto; /* scroll inside dialog when content is tall */
+  position: relative; /* needed for absolute-positioned illustration */
+}
+
+/* Ensure the dialog panel opened with panelClass 'txn-dialog-panel' gets a wide container */
+:host ::ng-deep .txn-dialog-panel .mat-dialog-container {
+  padding: 0 !important; /* our component handles padding */
+  /* allow the inner component width to take effect and avoid Angular Material forcing a small width */
+  width: auto !important;
+  max-width: calc(100vw - 40px) !important;
+  box-sizing: border-box !important;
+  background: transparent !important; /* keep component background */
 }
 
 .txn-modal h2 {
@@ -77,7 +101,377 @@
   color: #dff1ff !important;
 }
 
-/* small responsive */
-@media (max-width: 600px) {
-  .txn-modal { width: calc(100vw - 32px); }
+/* UX / Accessibility improvements for finance transaction modal
+   - slightly larger dialog for better usability on desktop
+   - larger fonts and input heights for easier reading and touch
+   - stronger contrast on labels, hints, and action buttons in dark mode
+   - improved focus outlines for keyboard users
+*/
+.txn-modal {
+  /* increase default width for desktop for better readability */
+  width: 960px; /* increased from 820px */
+  max-width: calc(100vw - 40px);
+  padding: 28px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  max-height: 86vh; /* keep small margin from viewport top/bottom */
+  overflow-y: auto; /* scroll inside dialog when content is tall */
+}
+
+.txn-modal h2 {
+  font-size: 24px; /* larger title */
+  line-height: 1.2;
+}
+
+/* make form fields taller and with clearer padding */
+.txn-modal .mat-form-field.full {
+  margin-bottom: 18px;
+}
+
+/* increase input height and padding for touch targets */
+:host ::ng-deep .txn-modal .mat-form-field-appearance-outline .mat-form-field-flex,
+:host ::ng-deep .txn-modal .mat-form-field-appearance-outline .mat-input-element {
+  min-height: 54px; /* increased */
+  padding: 12px 14px;
+}
+
+/* larger label text and stronger contrast */
+.txn-modal .mat-form-field-label,
+:host ::ng-deep .txn-modal .mat-mdc-floating-label {
+  color: rgba(255,255,255,0.94) !important;
+  font-size: 16px; /* increased */
+  font-weight: 700;
+}
+
+/* inputs text color and padding */
+.txn-modal .mat-input-element,
+.txn-modal textarea {
+  color: #f8fbff !important;
+  font-size: 16px; /* larger text */
+}
+
+/* select overlay ensured dark bg & readable items */
+:host ::ng-deep .mat-select-panel {
+  background: #0b131b !important;
+  color: #e6eef6 !important;
+  min-width: 320px; /* wider options panel */
+}
+
+/* actions: make buttons larger and more visible */
+.txn-modal .actions, .txn-modal .dialog-actions {
+  margin-top: 20px;
+}
+
+.txn-modal button[mat-stroked-button] {
+  color: #e6eef6;
+  border-color: rgba(255,255,255,0.12);
+  padding: 10px 20px;
+  min-height: 44px; /* increased */
+  background: rgba(255,255,255,0.02);
+}
+
+/* make primary action more prominent and larger */
+.txn-modal button[mat-flat-button].mat-primary {
+  padding: 10px 22px;
+  min-height: 44px;
+  font-weight: 700;
+  box-shadow: 0 8px 22px rgba(59,87,214,0.18);
+}
+
+/* stronger focus ring for keyboard accessibility */
+:host ::ng-deep .txn-modal .mat-form-field.mat-focused .mat-form-field-outline {
+  box-shadow: 0 0 0 3px rgba(79,110,246,0.18);
+  border-color: rgba(79,110,246,0.9) !important;
+}
+
+/* ensure cancel button has visible text in dark mode */
+.txn-modal .mat-dialog-actions .mat-button {
+  color: #d7e6f6 !important;
+}
+
+/* responsive: keep modal comfortable on smaller screens */
+@media (max-width: 800px) {
+  .txn-modal { width: calc(100vw - 40px); padding: 18px; }
+  :host ::ng-deep .txn-modal .mat-form-field-appearance-outline .mat-form-field-flex { min-height: 44px; }
+}
+
+/* NEW: two-column grid and column helper */
+.txn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* balanced columns */
+  gap: 20px 22px; /* more spacing */
+  align-items: start;
+}
+
+.txn-grid .col {
+  width: 100%;
+}
+
+/* make textarea span full height in the right column when paired with short field */
+.txn-grid .col textarea {
+  min-height: 120px; /* taller textarea for better UX */
+}
+
+/* Responsive adjustments: medium screens */
+@media (max-width: 1100px) {
+  .txn-modal { width: calc(100vw - 120px); padding: 22px; }
+}
+
+/* keep modal comfortable on smaller screens */
+@media (max-width: 800px) {
+  .txn-modal { width: calc(100vw - 40px); padding: 18px; }
+  :host ::ng-deep .txn-modal .mat-form-field-appearance-outline .mat-form-field-flex { min-height: 48px; }
+}
+
+/* large screen slight increase */
+@media (min-width: 1400px) {
+  .txn-modal { width: 900px; }
+}
+
+/* On small screens use single column */
+@media (max-width: 640px) {
+  .txn-grid { grid-template-columns: 1fr; }
+}
+
+/* New: Light theme overrides so dialog matches app's light mode
+   Assumption: the app toggles theme by applying a top-level class `light-theme` or `dark-theme` on
+   a parent element (for example <body class="light-theme">). We scope overrides to
+   `:host-context(.light-theme)` so the same component works for both themes.
+*/
+
+/* Use :host-context so the modal follows the app's theme class (works when body or app root
+   toggles between `light-theme` / `dark-theme`). Use ::ng-deep only where required for
+   global overlays (mat-select panel).
+*/
+
+:host-context(.light-theme) .txn-modal {
+  /* light background, subtle inner shadow, dark text for readability */
+  background: #ffffff; /* plain white like screenshot */
+  color: #1f2d3d; /* primary text color on light */
+  box-shadow: 0 18px 50px rgba(16,24,40,0.08), 0 2px 6px rgba(16,24,40,0.04);
+  border: 1px solid rgba(16,24,40,0.06);
+  border-radius: 10px;
+}
+
+/* form fields for light theme - clear white inputs with soft borders */
+:host-context(.light-theme) .txn-modal .mat-form-field-appearance-outline .mat-form-field-outline {
+  border-color: rgba(16,24,40,0.08);
+  background: transparent;
+}
+
+:host-context(.light-theme) .txn-modal .mat-form-field {
+  background: transparent;
+}
+
+:host-context(.light-theme) .txn-modal .mat-form-field-label,
+:host-context(.light-theme) .txn-modal .mat-mdc-floating-label {
+  color: rgba(16,24,40,0.9) !important;
+  font-weight: 700;
+}
+
+:host-context(.light-theme) .txn-modal .mat-input-element,
+:host-context(.light-theme) .txn-modal textarea {
+  color: #0b1722 !important;
+}
+
+/* hints and subscript in light theme */
+:host-context(.light-theme) .txn-modal .mat-hint,
+:host-context(.light-theme) .txn-modal .mat-form-field-subscript-wrapper {
+  color: rgba(16,24,40,0.54) !important;
+}
+
+/* select overlay for light theme (mat-select overlay is global) */
+:host-context(.light-theme) ::ng-deep .mat-select-panel {
+  background: #ffffff !important;
+  color: #0b1722 !important;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.08) !important;
+}
+
+/* action buttons in light theme */
+:host-context(.light-theme) .txn-modal button[mat-stroked-button] {
+  color: #1f2d3d;
+  border-color: rgba(16,24,40,0.08);
+  background: rgba(15,23,36,0.02);
+}
+
+/* primary action: choose a visually-strong but app-consistent gradient (adjust as needed) */
+:host-context(.light-theme) .txn-modal button[mat-flat-button].mat-primary {
+  background: linear-gradient(180deg,#6b5bd6,#4b3bb8);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(75,59,184,0.12);
+}
+
+/* ensure focus ring is visible on light background */
+:host-context(.light-theme) ::ng-deep .txn-modal .mat-form-field.mat-focused .mat-form-field-outline {
+  box-shadow: 0 0 0 4px rgba(75,59,184,0.12);
+  border-color: rgba(75,59,184,0.9) !important;
+}
+
+/* Explicit light-mode fallbacks: handle body[data-theme="light"] and overlay container without attribute
+   This ensures the modal/dialog follows the list background when the app uses data-theme attribute
+   instead of a .light-theme class, or when the overlay container doesn't inherit/receive the attribute. */
+body[data-theme="light"] .txn-modal,
+.cdk-overlay-container[data-theme="light"] .txn-modal,
+body[data-theme="light"] .cdk-overlay-container .txn-modal,
+.cdk-overlay-container .txn-modal[data-theme="light"] {
+  background: #ffffff !important;
+  color: #1f2d3d !important;
+  box-shadow: 0 18px 50px rgba(16,24,40,0.08), 0 2px 6px rgba(16,24,40,0.04) !important;
+  border: 1px solid rgba(16,24,40,0.06) !important;
+}
+
+/* Also make sure internal text/inputs follow light theme when body/data-theme=light */
+body[data-theme="light"] .txn-modal .mat-form-field-label,
+.cdk-overlay-container[data-theme="light"] .txn-modal .mat-form-field-label,
+body[data-theme="light"] .txn-modal .mat-mdc-floating-label {
+  color: rgba(16,24,40,0.9) !important;
+}
+
+body[data-theme="light"] .txn-modal .mat-input-element,
+.cdk-overlay-container[data-theme="light"] .txn-modal .mat-input-element,
+body[data-theme="light"] .txn-modal textarea {
+  color: #0b1722 !important;
+}
+
+/* small tweak: ensure dialog uses full width on very large screens while still being centered */
+:host ::ng-deep .txn-dialog-panel {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Decorative illustration (theme aware). We keep it aria-hidden and non-interactive. */
+.txn-illustration {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 72px;
+  height: 72px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+  opacity: 0.98;
+  transition: filter 180ms ease, opacity 180ms ease;
+  /* subtle drop shadow when shown */
+  filter: drop-shadow(0 6px 18px rgba(2,6,23,0.45));
+}
+
+/* Use inline SVG with currentColor so it reliably follows theme. */
+.txn-illustration svg {
+  width: 72px;
+  height: 72px;
+  display: block;
+  color: #ffffff; /* default for dark */
+}
+
+/* Light theme: make illustration dark so it reads on white */
+:host-context(.light-theme) .txn-illustration svg,
+body[data-theme="light"] .txn-illustration svg,
+.cdk-overlay-container[data-theme="light"] .txn-illustration svg {
+  color: #0b1722; /* dark stroke on white */
+}
+
+/* Dark theme / overlay: ensure illustration is white */
+:host-context([data-theme="dark"]) .txn-illustration svg,
+body[data-theme="dark"] .txn-illustration svg,
+.cdk-overlay-container[data-theme="dark"] .txn-illustration svg {
+  color: #ffffff;
+}
+
+/* remove old background-image rules (if any) by overriding with none*/
+.txn-illustration { background-image: none !important; }
+
+/* ======================================== */
+/* DARK MODE OVERRIDES (match sector-form approach) */
+/* ======================================== */
+:host-context([data-theme="dark"]) {
+  /* Make the txn modal follow the centralized dark card background */
+  .txn-modal {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: none;
+    border: 0;
+  }
+
+  /* Dialog title contrast */
+  .txn-modal h2, .mat-dialog-title {
+    color: #f8fafc !important;
+  }
+
+  /* Ensure icons & action buttons read on dark background */
+  mat-icon, .txn-modal .actions button mat-icon {
+    color: #f8fafc !important;
+  }
+
+  .txn-modal .actions button, .txn-modal .mat-button {
+    color: #f1f5f9 !important;
+  }
+
+  /* Scoped form-field overrides using MDC selectors (consistent with sector-form) */
+  ::ng-deep {
+    .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background: rgba(51, 65, 85, 0.5);
+      }
+      .mdc-floating-label {
+        color: #94a3b8 !important;
+      }
+      .mat-mdc-input-element {
+        color: #f8fafc !important;
+      }
+    }
+  }
+}
+
+/* Also mirror for overlay container in case the overlay container gets the theme attribute */
+.cdk-overlay-container[data-theme="dark"] {
+  .txn-modal { background: var(--card-bg); color: var(--text-primary); }
+  .mat-icon { color: #f8fafc !important; }
+  .mat-button, button.mat-button, button.mat-flat-button { color: #f1f5f9 !important; }
+  ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper { background: rgba(51,65,85,0.5) !important; }
+}
+
+/* Ensure images (bitmaps) inside the txn modal follow the theme: white in dark, normal in light */
+:host-context([data-theme="dark"]) {
+  .txn-modal img, .txn-modal .icon-img {
+    /* make bitmaps appear white/visible on dark backgrounds */
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.98;
+  }
+}
+
+:host-context(.light-theme) .txn-modal img, :host-context(.light-theme) .txn-modal .icon-img,
+body[data-theme="light"] .txn-modal img, body[data-theme="light"] .txn-modal .icon-img {
+  /* reset for light theme */
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* overlay container variants (bitmaps only) */
+.cdk-overlay-container[data-theme="dark"] .txn-modal img,
+.cdk-overlay-container[data-theme="dark"] .txn-modal .icon-img {
+  filter: brightness(0) invert(1) !important;
+}
+.cdk-overlay-container[data-theme="light"] .txn-modal img,
+.cdk-overlay-container[data-theme="light"] .txn-modal .icon-img {
+  filter: none !important;
+}
+
+/* Strong final fallbacks (placed at end):
+   - ensure any leftover background-image rules are removed
+   - force inline svg color based on body[data-theme] and overlay container attribute
+*/
+.txn-modal .txn-illustration,
+.cdk-overlay-container .txn-illustration {
+  background-image: none !important;
+}
+
+body[data-theme="light"] .txn-illustration svg,
+.cdk-overlay-container[data-theme="light"] .txn-illustration svg {
+  color: #0b1722 !important;
+}
+
+body[data-theme="dark"] .txn-illustration svg,
+.cdk-overlay-container[data-theme="dark"] .txn-illustration svg {
+  color: #ffffff !important;
 }
