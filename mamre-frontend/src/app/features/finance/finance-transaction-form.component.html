@@ -26,7 +26,7 @@
     <mat-form-field appearance="outline" class="col">
       <mat-label>Sektor</mat-label>
       <mat-select [(ngModel)]="model.sectorId" name="sectorId">
-        <mat-option [value]="null">General</mat-option>
+        <mat-option [value]="null">Umum</mat-option>
         <mat-option *ngFor="let s of sectors" [value]="s.id">{{ s.name }}</mat-option>
       </mat-select>
     </mat-form-field>

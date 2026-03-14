@@ -25,9 +25,10 @@ export class FinanceService {
             return null;
         }
 
-        const perSector = Array.isArray(report.perSector)
+        const perSector = (Array.isArray(report.perSector)
             ? report.perSector.map((item: any) => this.normalizePerSectorItem(item))
-            : this.normalizeLegacyPerSectorMap(report.perSector);
+            : this.normalizeLegacyPerSectorMap(report.perSector))
+            .sort((a, b) => (a.sectorName || '').localeCompare(b.sectorName || '', 'id', { sensitivity: 'base' }));
 
         return {
             month: Number(report.month ?? 0),
@@ -46,7 +47,7 @@ export class FinanceService {
         const net = item?.net != null ? Number(item.net) : income - expense;
         return {
             sectorId,
-            sectorName: item?.sectorName || (sectorId == null ? 'General' : `Sektor ${sectorId}`),
+            sectorName: item?.sectorName || (sectorId == null ? 'Umum' : `Sektor ${sectorId}`),
             income,
             expense,
             net,
@@ -65,7 +66,7 @@ export class FinanceService {
             const expense = Number(value?.expense ?? 0);
             return {
                 sectorId,
-                sectorName: sectorId == null ? 'General' : `Sektor ${rawSectorId}`,
+                sectorName: sectorId == null ? 'Umum' : `Sektor ${rawSectorId}`,
                 income,
                 expense,
                 net: Number(value?.net ?? income - expense),

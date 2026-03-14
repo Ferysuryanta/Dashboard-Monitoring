@@ -73,7 +73,10 @@ export class FinanceReportComponent implements OnInit {
     loadReport(): void {
         this.loading = true;
         this.financeService.getMonthlyReport(this.selectedMonth, this.selectedYear).subscribe(r => {
-            this.report = r;
+            this.report = r ? {
+                ...r,
+                perSector: [...(r.perSector || [])].sort((a, b) => (a.sectorName || '').localeCompare(b.sectorName || '', 'id', { sensitivity: 'base' }))
+            } : null;
             this.loading = false;
         });
     }

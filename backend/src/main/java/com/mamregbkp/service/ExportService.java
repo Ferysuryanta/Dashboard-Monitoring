@@ -813,7 +813,7 @@ public class ExportService {
             return "Tanpa Sektor";
         }
         if (sectorId == 0L) {
-            return "General";
+            return "Umum";
         }
         return sectorRepository.findById(sectorId)
                 .map(sector -> nullSafe(sector.getName()))

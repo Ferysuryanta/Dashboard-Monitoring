@@ -106,7 +106,7 @@ public class FinanceService {
 
     private String resolveSectorName(Long sectorId) {
         if (sectorId == null || sectorId == 0L) {
-            return "General";
+            return "Umum";
         }
         return sectorRepository.findById(sectorId)
                 .map(com.mamregbkp.model.Sector::getName)
