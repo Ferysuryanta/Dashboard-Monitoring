@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {Observable, BehaviorSubject, combineLatest, of, filter} from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, catchError, shareReplay, tap, finalize } from 'rxjs/operators';
 import { MemberService, PagedResult } from '../../../../core/services/member.service';
@@ -36,7 +37,8 @@ import { ExportService } from '../../../../core/services/export.service';
         MatSelectModule,
         MatPaginatorModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatTooltipModule
     ],
     templateUrl: './member-list.component.html',
     styleUrls: ['./member-list.component.scss']
@@ -270,6 +272,14 @@ export class MemberListComponent implements OnInit {
     sortField?: string;
     sortDir: 'asc' | 'desc' = 'asc';
 
+    getExportTargetLabel(): string {
+        return this.sectorName || 'Semua Sektor';
+    }
+
+    getExportButtonLabel(format: 'CSV' | 'Excel' | 'PDF'): string {
+        return this.exportLoading ? `Menyiapkan ${format}...` : format;
+    }
+
     // Delete member with confirmation
     deleteMember(member: MemberDto) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -299,12 +309,12 @@ export class MemberListComponent implements OnInit {
 
     exportCsv() {
         this.exportLoading = true;
-        this.service.downloadCsvExport(this.sectorId, this.statusFilter)
+        this.exportService.exportMembersCsv(this.statusFilter, this.sectorId)
             .pipe(finalize(() => this.exportLoading = false))
             .subscribe({
                 next: (blob) => {
                     const filename = `Daftar_Anggota_${this.sectorName || 'Semua_Sektor'}.csv`;
-                    this.exportService.downloadBlob(blob as Blob, filename);
+                    this.exportService.downloadBlob(blob, filename);
                 },
                 error: (err) => {
                     console.error('member export csv', err);

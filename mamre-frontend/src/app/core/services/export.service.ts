@@ -6,8 +6,16 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ExportService {
   private base = `${environment.apiUrl}/export`;
+  private memberBase = `${environment.apiUrl}/members`;
 
   constructor(private http: HttpClient) {}
+
+  private buildMemberExportParams(status?: string, sectorId?: number): HttpParams {
+    let params = new HttpParams();
+    if (status) params = params.set('status', status);
+    if (sectorId != null) params = params.set('sectorId', String(sectorId));
+    return params;
+  }
 
   exportBibleReadingExcel(year?: number, month?: number): Observable<Blob> {
     let params = new HttpParams();
@@ -75,26 +83,29 @@ export class ExportService {
     });
   }
 
-  exportMembersExcel(status?: string, sectorId?: number): Observable<Blob> {
-    let params = new HttpParams();
-    if (status) params = params.set('status', status);
-    if (sectorId != null) params = params.set('sectorId', String(sectorId));
+  exportMembersCsv(status?: string, sectorId?: number): Observable<Blob> {
+    return this.http.get(`${this.memberBase}/export`, {
+      params: this.buildMemberExportParams(status, sectorId),
+      responseType: 'blob',
+    });
+  }
 
+  exportMembersExcel(status?: string, sectorId?: number): Observable<Blob> {
     return this.http.get(`${this.base}/members/excel`, {
-      params,
+      params: this.buildMemberExportParams(status, sectorId),
       responseType: 'blob',
     });
   }
 
   exportMembersPdf(status?: string, sectorId?: number): Observable<Blob> {
-    let params = new HttpParams();
-    if (status) params = params.set('status', status);
-    if (sectorId != null) params = params.set('sectorId', String(sectorId));
-
     return this.http.get(`${this.base}/members/pdf`, {
-      params,
+      params: this.buildMemberExportParams(status, sectorId),
       responseType: 'blob',
     });
+  }
+
+  downloadExport(status?: string, sectorId?: number): Observable<Blob> {
+    return this.exportMembersCsv(status, sectorId);
   }
 
   downloadBlob(blob: Blob, filename: string): void {

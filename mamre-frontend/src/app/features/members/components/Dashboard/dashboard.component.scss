@@ -1246,30 +1246,94 @@ mat-divider {
   overflow-x: auto;
   margin-top: 12px;
   padding-bottom: 6px;
+  scrollbar-width: thin;
 }
 .legend-mobile button {
   background: rgba(0,0,0,0.04);
-  border: none;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: $text-dark;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 .legend-mobile button.hidden {
   opacity: 0.45;
   text-decoration: line-through;
 }
 
-// Skeleton placeholder (if needed later)
 .chart-skeleton {
   height: 240px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
-  border-radius: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
 }
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+
+.chart-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.24);
+}
+
+.chart-skeleton-bar::before,
+.chart-skeleton-donut::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+}
+
+.chart-skeleton-bar::before {
+  left: 24px;
+  right: 24px;
+  bottom: 26px;
+  top: 26px;
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(148, 163, 184, 0.16), rgba(148, 163, 184, 0.16)) left 18px top 18px / 28% 10px no-repeat,
+    linear-gradient(rgba(99, 102, 241, 0.20), rgba(99, 102, 241, 0.20)) left 18px top 48px / 72% 14px no-repeat,
+    linear-gradient(rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.18)) left 18px top 80px / 56% 14px no-repeat,
+    linear-gradient(rgba(249, 115, 22, 0.18), rgba(249, 115, 22, 0.18)) left 18px top 112px / 84% 14px no-repeat,
+    linear-gradient(rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.18)) left 18px top 144px / 40% 14px no-repeat;
+}
+
+.chart-skeleton-donut::before {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    rgba(99, 102, 241, 0.28) 0deg 110deg,
+    rgba(34, 197, 94, 0.24) 110deg 210deg,
+    rgba(249, 115, 22, 0.24) 210deg 300deg,
+    rgba(148, 163, 184, 0.22) 300deg 360deg
+  );
+  box-shadow: inset 0 0 0 28px rgba(255,255,255,0.88);
+}
+
+.chart-skeleton-compact {
+  height: 200px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 // ========================================

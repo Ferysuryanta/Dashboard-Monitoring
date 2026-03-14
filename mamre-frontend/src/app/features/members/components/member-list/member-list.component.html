@@ -1,27 +1,31 @@
 <section class="page">
     <div class="page-header">
         <div class="title">
-            <h2>👥 Users</h2>
-            <p class="desc">Manage all members in one place. Search, filter by status, sort columns, and navigate with pagination.</p>
+            <h2>👥 Anggota</h2>
+            <p class="desc">Kelola data anggota dalam satu halaman. Cari, filter, urutkan, lalu ekspor data sesuai sektor yang sedang dipilih.</p>
         </div>
 
         <div class="controls">
             <button mat-flat-button color="primary" routerLink="/app/members/new">
-                <mat-icon>person_add</mat-icon> Add New User
+                <mat-icon>person_add</mat-icon> Tambah Anggota
             </button>
-            <!-- new: open roster (generic) -->
             <button mat-flat-button color="accent" [routerLink]="['/app/members/roster']">
-                <mat-icon>table_view</mat-icon> Sectors
+                <mat-icon>table_view</mat-icon> Roster Sektor
             </button>
-            <button mat-stroked-button (click)="exportCsv()" [disabled]="exportLoading">
-                <mat-icon>download</mat-icon> CSV
-            </button>
-            <button mat-stroked-button color="primary" (click)="exportExcel()" [disabled]="exportLoading">
-                <mat-icon>table_view</mat-icon> Excel
-            </button>
-            <button mat-stroked-button color="accent" (click)="exportPdf()" [disabled]="exportLoading">
-                <mat-icon>picture_as_pdf</mat-icon> PDF
-            </button>
+            <div class="export-actions">
+                <div class="export-label">Export: {{ getExportTargetLabel() }}</div>
+                <div class="export-buttons">
+                    <button mat-stroked-button (click)="exportCsv()" [disabled]="exportLoading" matTooltip="Unduh daftar anggota dalam format CSV">
+                        <mat-icon>download</mat-icon> {{ getExportButtonLabel('CSV') }}
+                    </button>
+                    <button mat-stroked-button color="primary" (click)="exportExcel()" [disabled]="exportLoading" matTooltip="Unduh daftar anggota dalam format Excel">
+                        <mat-icon>table_view</mat-icon> {{ getExportButtonLabel('Excel') }}
+                    </button>
+                    <button mat-stroked-button color="accent" (click)="exportPdf()" [disabled]="exportLoading" matTooltip="Unduh daftar anggota dalam format PDF">
+                        <mat-icon>picture_as_pdf</mat-icon> {{ getExportButtonLabel('PDF') }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

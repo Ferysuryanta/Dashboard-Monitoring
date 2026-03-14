@@ -64,21 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     protected router = inject(Router);
     private themeSubscription?: Subscription;
     isDarkMode = false;
-
-    // ViewChild references for charts (ng2-charts BaseChartDirective)
-    @ViewChild('lineChart') public lineChart?: BaseChartDirective;
-    @ViewChild('pieChart') public pieChart?: BaseChartDirective;
-    @ViewChild('attendanceChart') public attendanceChart?: BaseChartDirective;
-    @ViewChild('genderChart') public genderChart?: BaseChartDirective;
-    @ViewChild('statusChart') public statusChart?: BaseChartDirective;
-
-    // Mobile detection
-    isMobile = window.innerWidth <= 600;
-
-    @HostListener('window:resize') onResize() {
-        this.isMobile = window.innerWidth <= 600;
-    }
-
     loading = true;
     today = new Date();
     summary = { totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 };
@@ -89,24 +74,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     sectorData: number[] = [];
     currentYear = new Date().getFullYear();
 
-    // Properti Baru untuk Kehadiran
-    attendanceSummary: AttendanceSummaryDto | null = null;
+    // ViewChild references for charts (ng2-charts BaseChartDirective)
+    @ViewChild('lineChart') public lineChart?: BaseChartDirective;
+    @ViewChild('pieChart') public pieChart?: BaseChartDirective;
+    @ViewChild('attendanceChart') public attendanceChart?: BaseChartDirective;
+    @ViewChild('genderChart') public genderChart?: BaseChartDirective;
+    @ViewChild('statusChart') public statusChart?: BaseChartDirective;
 
-    // Properti Baru untuk fitur tambahan
-    upcomingBirthdays: UpcomingBirthday[] = [];
-    genderData: GenderDistribution[] = [];
-    statusData: StatusDistribution[] = [];
-    bibleReadingData: BibleReadingProgress[] = [];
-    sectorBibleReadingData: SectorBibleReadingReport[] = [];
-
-    // Method untuk greeting berdasarkan waktu
-    getGreeting(): string {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 11) return 'Selamat Pagi';
-        if (hour >= 11 && hour < 15) return 'Selamat Siang';
-        if (hour >= 15 && hour < 18) return 'Selamat Sore';
-        return 'Selamat Malam';
-    }
+    // Mobile detection
+    isMobile = window.innerWidth <= 600;
 
     // --- CHART CONFIGS ---
 
@@ -244,7 +220,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 padding: 12,
                 cornerRadius: 8,
                 displayColors: true,
-                boxPadding: 4
+                boxPadding: 4,
+                callbacks: {
+                    label: (context: any) => this.getDoughnutTooltipLabel(context)
+                }
             }
         },
     };
@@ -340,7 +319,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
                 bodyFont: { size: 13, family: 'Poppins' },
                 padding: 12,
-                cornerRadius: 8
+                cornerRadius: 8,
+                callbacks: {
+                    label: (context: any) => this.getDoughnutTooltipLabel(context)
+                }
             }
         }
     };
@@ -368,7 +350,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 titleFont: { size: 14, weight: 'bold', family: 'Montserrat' },
                 bodyFont: { size: 13, family: 'Poppins' },
                 padding: 12,
-                cornerRadius: 8
+                cornerRadius: 8,
+                callbacks: {
+                    label: (context: any) => this.getHorizontalBarTooltipLabel(context)
+                }
             }
         },
         scales: {
@@ -394,6 +379,62 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }]
     };
 
+    // Properti Baru untuk Kehadiran
+    attendanceSummary: AttendanceSummaryDto | null = null;
+
+    // Properti Baru untuk fitur tambahan
+    upcomingBirthdays: UpcomingBirthday[] = [];
+    genderData: GenderDistribution[] = [];
+    statusData: StatusDistribution[] = [];
+    bibleReadingData: BibleReadingProgress[] = [];
+    sectorBibleReadingData: SectorBibleReadingReport[] = [];
+
+    // Method untuk greeting berdasarkan waktu
+    getGreeting(): string {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 11) return 'Selamat Pagi';
+        if (hour >= 11 && hour < 15) return 'Selamat Siang';
+        if (hour >= 15 && hour < 18) return 'Selamat Sore';
+        return 'Selamat Malam';
+    }
+
+    private getDoughnutTooltipLabel(context: any): string[] {
+        const label = context.label || 'Data';
+        const value = Number(context.raw ?? 0);
+        const dataset = context.dataset?.data ?? [];
+        const total = dataset.reduce((sum: number, item: number) => sum + Number(item || 0), 0);
+        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+        return [label, `${value.toLocaleString()} anggota (${percentage}%)`];
+    }
+
+    private getHorizontalBarTooltipLabel(context: any): string[] {
+        const label = context.label || 'Data';
+        const value = Number(context.raw ?? 0);
+        return [label, `${value.toLocaleString()} anggota`];
+    }
+
+    @HostListener('window:resize') onResize() {
+        this.isMobile = window.innerWidth <= 600;
+        this.refreshCharts();
+    }
+
+    constructor() {
+        // PENTING: Inisialisasi nilai default untuk chart data dan labels
+        this.lineChartData.labels = [];
+        this.lineChartData.datasets[0].data = [];
+
+        this.pieChartData.labels = [];
+        this.pieChartData.datasets[0].data = [];
+
+        this.attendanceChartData.labels = [];
+        this.attendanceChartData.datasets[0].data = [];
+
+        this.genderChartData.labels = [];
+        this.genderChartData.datasets[0].data = [];
+
+        this.statusChartData.labels = [];
+        this.statusChartData.datasets[0].data = [];
+    }
 
     ngOnInit(): void {
         // Subscribe to theme changes
@@ -474,6 +515,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.genderChartOptions = { ...this.genderChartOptions };
         this.statusChartOptions = { ...this.statusChartOptions };
         this.attendanceChartOptions = { ...this.attendanceChartOptions };
+        this.refreshCharts();
+    }
+
+    private refreshCharts(): void {
+        this.lineChart?.update();
+        this.pieChart?.update();
+        this.attendanceChart?.update();
+        this.genderChart?.update();
+        this.statusChart?.update();
     }
 
     // Fungsi Helper untuk memperbarui data Attendance Chart
@@ -481,22 +531,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.attendanceSummary && this.summary.totalMembers > 0) {
             const totalMembers = this.summary.totalMembers;
             const uniqueMembers = this.attendanceSummary.uniqueMembers;
-            // Anggota yang belum pernah tercatat hadir bulan ini
             const membersAbsent = totalMembers > uniqueMembers ? totalMembers - uniqueMembers : 0;
 
             this.attendanceChartData.labels = ['Hadir (Unik)', 'Anggota Belum Hadir'];
             this.attendanceChartData.datasets = [{
                 data: [uniqueMembers, membersAbsent],
-                backgroundColor: ['#20c997', '#e63946'], // Hijau (Hadir), Merah (Absen)
+                backgroundColor: ['#20c997', '#e63946'],
                 borderColor: '#ffffff',
                 borderWidth: 2,
                 hoverOffset: 8
             }];
 
-            // PENTING: Trigger update chart agar plugin menggambar teks
-            // Biasanya, hanya mengubah data dan labels sudah cukup, tetapi untuk memastikan
-            // ng2-charts merefresh, kita bisa membuat objek data baru.
+            if (this.attendanceChartOptions.plugins?.tooltip) {
+                (this.attendanceChartOptions.plugins.tooltip as any).callbacks = {
+                    label: (context: any) => this.getDoughnutTooltipLabel(context),
+                    afterLabel: (context: any) => {
+                        if (context.dataIndex === 0) {
+                            return `Total kehadiran tercatat: ${this.attendanceSummary?.totalAttendances?.toLocaleString() ?? 0}`;
+                        }
+                        return `Belum tercatat hadir bulan ${this.attendanceSummary?.month ?? ''}`.trim();
+                    }
+                };
+            }
+
             this.attendanceChartData = { ...this.attendanceChartData };
+            this.attendanceChartOptions = { ...this.attendanceChartOptions };
+            this.refreshCharts();
         }
     }
 
@@ -675,6 +735,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (daysUntil <= 3) return 'birthday-soon';
         if (daysUntil <= 7) return 'birthday-week';
         return 'birthday-later';
+    }
+
+    getLineChartLegendLabel(): string {
+        const seriesLabel = this.lineChartData?.datasets?.[0]?.label || 'Series';
+        const itemCount = this.lineChartData?.labels?.length || 0;
+        return `${seriesLabel} (${itemCount} sektor)`;
     }
 
     // ------------------ CHART UTIL HELPERS ------------------

@@ -625,12 +625,27 @@ public class ExportService {
         return rowIndex;
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<Long, Map<String, BigDecimal>> extractPerSector(Object raw) {
+        if (raw instanceof List<?> rawList) {
+            Map<Long, Map<String, BigDecimal>> result = new LinkedHashMap<>();
+            for (Object item : rawList) {
+                if (!(item instanceof Map<?, ?> row)) {
+                    continue;
+                }
+                Long key = parseSectorKey(row.get("sectorId"));
+                Map<String, BigDecimal> agg = new LinkedHashMap<>();
+                agg.put("income", asBigDecimal(row.get("income")));
+                agg.put("expense", asBigDecimal(row.get("expense")));
+                agg.put("net", asBigDecimal(row.get("net")));
+                result.put(key, agg);
+            }
+            return result;
+        }
+
         if (raw instanceof Map<?, ?> rawMap) {
             Map<Long, Map<String, BigDecimal>> result = new LinkedHashMap<>();
             for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
-                Long key = entry.getKey() == null ? null : Long.valueOf(String.valueOf(entry.getKey()));
+                Long key = parseSectorKey(entry.getKey());
                 Map<String, BigDecimal> agg = new LinkedHashMap<>();
                 if (entry.getValue() instanceof Map<?, ?> innerMap) {
                     for (Map.Entry<?, ?> inner : innerMap.entrySet()) {
@@ -642,6 +657,34 @@ public class ExportService {
             return result;
         }
         return new LinkedHashMap<>();
+    }
+
+    private static Long parseSectorKey(Object rawKey) {
+        if (rawKey == null) {
+            return null;
+        }
+        if (rawKey instanceof Number number) {
+            return number.longValue();
+        }
+
+        String text = String.valueOf(rawKey).trim();
+        if (text.isBlank() || "null".equalsIgnoreCase(text)) {
+            return null;
+        }
+        if ("general".equalsIgnoreCase(text) || "umum".equalsIgnoreCase(text)) {
+            return 0L;
+        }
+
+        String digitsOnly = text.replaceAll("[^0-9-]", "");
+        if (digitsOnly.isBlank() || "-".equals(digitsOnly)) {
+            return null;
+        }
+
+        try {
+            return Long.valueOf(digitsOnly);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     private static BigDecimal asBigDecimal(Object value) {
@@ -766,12 +809,15 @@ public class ExportService {
     }
 
     private String resolveSectorLabel(Long sectorId) {
-        if (sectorId == null || sectorId == 0L) {
+        if (sectorId == null) {
+            return "Tanpa Sektor";
+        }
+        if (sectorId == 0L) {
             return "General";
         }
         return sectorRepository.findById(sectorId)
                 .map(sector -> nullSafe(sector.getName()))
                 .filter(name -> !name.isBlank())
-                .orElse("Sektor " + sectorId);
+                .orElse("Sektor Tidak Ditemukan (#" + sectorId + ")");
     }
 }

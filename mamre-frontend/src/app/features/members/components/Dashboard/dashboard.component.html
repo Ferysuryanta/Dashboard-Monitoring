@@ -129,11 +129,13 @@
                     <ng-container *ngIf="!loading && hasChartData(lineChartData); else skeletonLine">
                         <canvas baseChart #lineChart="base-chart" [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
                         <div class="legend-mobile" *ngIf="isMobile && lineChartData?.labels?.length">
-                            <button (click)="toggleDataset(0, lineChart)" [class.hidden]="isDatasetHidden(0, lineChart)">Toggle Series</button>
+                            <button (click)="toggleDataset(0, lineChart)" [class.hidden]="isDatasetHidden(0, lineChart)">{{ getLineChartLegendLabel() }}</button>
                         </div>
                     </ng-container>
                     <ng-template #skeletonLine>
-                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                        <div class="chart-skeleton chart-skeleton-bar" role="status" aria-label="Memuat grafik">
+                            <span class="sr-only">Memuat grafik persentase baca Alkitab</span>
+                        </div>
                     </ng-template>
                 </div>
             </mat-card>
@@ -148,7 +150,9 @@
                         </div>
                     </ng-container>
                     <ng-template #skeletonPie>
-                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                        <div class="chart-skeleton chart-skeleton-donut" role="status" aria-label="Memuat grafik">
+                            <span class="sr-only">Memuat grafik distribusi sektor</span>
+                        </div>
                     </ng-template>
                 </div>
             </mat-card>
@@ -171,7 +175,9 @@
                         </canvas>
                     </ng-container>
                     <ng-template #skeletonAttendance>
-                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                        <div class="chart-skeleton chart-skeleton-donut" role="status" aria-label="Memuat grafik">
+                            <span class="sr-only">Memuat grafik kehadiran</span>
+                        </div>
                     </ng-template>
                 </div>
             </mat-card>
@@ -189,7 +195,9 @@
                         </div>
                     </ng-container>
                     <ng-template #skeletonGender>
-                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                        <div class="chart-skeleton chart-skeleton-donut chart-skeleton-compact" role="status" aria-label="Memuat grafik">
+                            <span class="sr-only">Memuat grafik distribusi gender</span>
+                        </div>
                     </ng-template>
                 </div>
             </mat-card>
@@ -204,7 +212,9 @@
                         </div>
                     </ng-container>
                     <ng-template #skeletonStatus>
-                        <div class="chart-skeleton" role="status" aria-label="Memuat grafik"></div>
+                        <div class="chart-skeleton chart-skeleton-bar chart-skeleton-compact" role="status" aria-label="Memuat grafik">
+                            <span class="sr-only">Memuat grafik distribusi status</span>
+                        </div>
                     </ng-template>
                 </div>
             </mat-card>
