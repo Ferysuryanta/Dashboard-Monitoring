@@ -1,5 +1,6 @@
 # 📋 TODO List - Dashboard Enhancement
 ## Tanggal: 2 Februari 2026
+## Status Review: 14 Maret 2026
 
 ---
 
@@ -11,10 +12,10 @@
 - [x] Simpan preferensi user di localStorage (`theme.service.ts`)
 - [x] Update semua komponen untuk mendukung dark mode (`dashboard.component.scss`, `app-layout.component.scss`)
 
-### 2. **Chart Improvements**
-- [ ] Tambahkan animasi loading skeleton untuk charts
-- [ ] Implementasi chart tooltip yang lebih informatif
-- [ ] Responsive legend untuk mobile view
+### 2. **Chart Improvements** ✅ COMPLETED
+- [x] Tambahkan animasi loading skeleton untuk charts
+- [x] Implementasi chart tooltip yang lebih informatif
+- [x] Responsive legend untuk mobile view
 
 ### 3. **Dashboard Widgets**
 - [ ] Buat widget yang bisa di-drag & drop (reorder)
@@ -38,9 +39,9 @@
 - [ ] Tambahkan endpoint `/api/dashboard/widgets` untuk konfigurasi widget
 - [ ] Implementasi WebSocket untuk real-time updates
 
-### 6. **Security Improvements**
-- [ ] Rate limiting untuk API endpoints
-- [ ] Implementasi audit log untuk aktivitas user
+### 6. **Security Improvements** ⚠️ PARTIALLY COMPLETED
+- [x] Rate limiting untuk API endpoints
+- [x] Implementasi audit log untuk aktivitas user
 - [ ] Tambahkan CAPTCHA untuk login setelah 3x gagal
 - [ ] Enkripsi data sensitif di database
 
@@ -64,10 +65,10 @@
 
 ## 📊 **New Features**
 
-### 9. **Advanced Analytics**
+### 9. **Advanced Analytics** ⚠️ PARTIALLY COMPLETED
 - [ ] Tambahkan filter periode (weekly/monthly/yearly)
 - [ ] Comparison chart (bulan ini vs bulan lalu)
-- [ ] Export laporan ke Excel/PDF
+- [x] Export laporan ke Excel/PDF
 - [ ] Scheduled email report
 
 ### 10. **Notification System**
@@ -86,16 +87,16 @@
 
 ## 🐛 **Bug Fixes & Polish**
 
-### 12. **Known Issues**
-- [ ] Fix chart resize issue saat window resize
+### 12. **Known Issues** ⚠️ PARTIALLY COMPLETED
+- [x] Fix chart resize issue saat window resize
 - [ ] Perbaiki animation glitch pada stat cards di Safari
 - [ ] Handle empty state dengan lebih baik
 - [ ] Improve error handling dan retry mechanism
 
-### 13. **Accessibility (a11y)**
+### 13. **Accessibility (a11y)** ⚠️ PARTIALLY COMPLETED
 - [ ] Tambahkan ARIA labels untuk semua interactive elements
 - [ ] Keyboard navigation support
-- [ ] Screen reader compatibility
+- [x] Screen reader compatibility
 - [ ] Color contrast compliance (WCAG 2.1)
 
 ---
@@ -133,4 +134,14 @@
 
 ---
 
+## Review Notes (14 Maret 2026)
+- Dark mode sudah aktif dengan penyimpanan preferensi user dan sinkronisasi overlay.
+- Chart dashboard sudah memiliki skeleton, tooltip informatif, responsive legend mobile, dan refresh saat resize.
+- Export Excel/PDF sudah tersedia untuk Bible Reading, Attendance, Finance, dan Members; CSV juga tersedia untuk Members.
+- Security yang sudah ada: rate limiting filter dan audit logging aspect.
+- Beberapa item masih ditandai parsial karena implementasi dasar sudah ada, tetapi belum lengkap sesuai wording TODO.
+
+---
+
 *Generated: 2 Februari 2026*
+*Reviewed: 14 Maret 2026*
