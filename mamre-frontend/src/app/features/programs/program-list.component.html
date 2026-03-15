@@ -94,6 +94,10 @@
           <div class="table-subtitle">Menampilkan seluruh data program dan kegiatan</div>
         </ng-template>
       </div>
+      <div class="sticky-hint" *ngIf="hasData">
+        <mat-icon>swap_horiz</mat-icon>
+        Header tabel akan tetap terlihat saat scroll
+      </div>
     </div>
 
     <div *ngIf="loading" class="loading-state">
@@ -104,7 +108,7 @@
       </div>
     </div>
 
-    <div class="table-wrap" *ngIf="!loading && hasData">
+    <div class="table-wrap desktop-table" *ngIf="!loading && hasData">
       <div class="summary-bar">
         <span><strong>{{ total }}</strong> item</span>
         <span><strong>{{ pageBudgetTotal | number:'1.0-0' }}</strong> total anggaran</span>
@@ -171,6 +175,56 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="mobile-groups" *ngIf="!loading && hasData">
+      <ng-container *ngFor="let g of grouped; trackBy: trackByGroup">
+        <section class="mobile-group" *ngIf="g.items?.length">
+          <div class="mobile-group-title">{{ getCategoryLabel(g.category) }}</div>
+          <article class="mobile-program-card" *ngFor="let item of g.items; let idx = index; trackBy: trackByProgram">
+            <div class="mobile-card-header">
+              <div>
+                <div class="mobile-order">#{{ g.startIndex + idx + 1 }}</div>
+                <h3>{{ item.title }}</h3>
+              </div>
+              <div class="item-meta mobile-meta-top">
+                <span class="type-chip">{{ item.type || 'Kegiatan' }}</span>
+                <span class="status-chip" [class.done]="item.status === 'DONE'">{{ getStatusLabel(item.status) }}</span>
+              </div>
+            </div>
+
+            <div class="mobile-purpose">{{ item.purpose || '-' }}</div>
+
+            <div class="mobile-section">
+              <div class="mobile-section-title">Detail</div>
+              <div class="mobile-meta-grid">
+                <div class="mobile-meta-item" *ngFor="let field of mobileMetaFields; trackBy: trackByMetaField">
+                  <span>{{ field.label }}</span>
+                  <strong>{{ getDisplayValue(item, field.key) }}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="mobile-section">
+              <div class="mobile-section-title">Anggaran</div>
+              <div class="mobile-budget-grid">
+                <div class="mobile-budget-card">
+                  <span>Lokal</span>
+                  <strong>{{ item.budgetLocal ? (item.budgetLocal | number:'1.0-0') : '-' }}</strong>
+                </div>
+                <div class="mobile-budget-card">
+                  <span>Subsidi</span>
+                  <strong>{{ item.budgetSubsidy ? (item.budgetSubsidy | number:'1.0-0') : '-' }}</strong>
+                </div>
+                <div class="mobile-budget-card total">
+                  <span>Total</span>
+                  <strong>{{ item.budgetTotal ? (item.budgetTotal | number:'1.0-0') : '-' }}</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </ng-container>
     </div>
 
     <div *ngIf="!loading && !hasData" class="empty-state">

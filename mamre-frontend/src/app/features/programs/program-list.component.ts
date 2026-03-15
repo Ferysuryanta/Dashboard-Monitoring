@@ -33,7 +33,7 @@ export class ProgramListComponent implements OnInit {
   q = '';
   filter: any = { status: '', type: '', category: '' };
   categories: string[] = ['A - BIDANG UMUM & SEKRETARIAT', 'B - BIDANG PERSEKUTUAN', 'C - BIDANG KESAKSIAN', 'D - BIDANG PELAYANAN', 'E - BIDANG DANA & USAHA'];
-lt;  readonly statusOptions = [
+  readonly statusOptions = [
     { value: '', label: 'Semua status' },
     { value: 'PLANNED', label: 'Direncanakan' },
     { value: 'DONE', label: 'Selesai' }
@@ -42,6 +42,13 @@ lt;  readonly statusOptions = [
     { value: '', label: 'Semua tipe' },
     { value: 'Kegiatan', label: 'Kegiatan' },
     { value: 'Program', label: 'Program' }
+  ];
+  readonly mobileMetaFields = [
+    { label: 'Tempat', key: 'place' },
+    { label: 'Pelaksana', key: 'executor' },
+    { label: 'Jadwal', key: 'scheduleText' },
+    { label: 'Target fisik', key: 'targetPhysical' },
+    { label: 'Keterangan', key: 'notes' }
   ];
 
   // track current subscription so we can cancel when switching mode
@@ -124,8 +131,16 @@ lt;  readonly statusOptions = [
     }
   }
 
+  getDisplayValue(item: any, key: string): string {
+    const value = item?.[key];
+    if (value === null || value === undefined || value === '') return '-';
+    if (key === 'targetPhysical') return String(value);
+    return String(value);
+  }
+
   trackByGroup = (_: number, group: any) => group.category;
   trackByProgram = (_: number, item: any) => item.id ?? `${item.title}-${item.scheduleText}-${item.place}`;
+  trackByMetaField = (_: number, field: { label: string; key: string }) => field.key;
 
   search() { this.reload(); }
 
