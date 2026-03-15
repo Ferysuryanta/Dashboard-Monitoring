@@ -19,6 +19,27 @@
             </div>
         </div>
 
+        <div class="widget-toolbar">
+            <div class="widget-toolbar-title">
+                <mat-icon>dashboard_customize</mat-icon>
+                <span>Widget Aktif: {{ getVisibleWidgetCount() }}/{{ widgetDefinitions.length }}</span>
+            </div>
+            <div class="widget-toggle-list">
+                <button mat-stroked-button type="button" *ngFor="let widget of widgetDefinitions"
+                        (click)="toggleWidget(widget.id)"
+                        [class.inactive]="!isWidgetVisible(widget.id)">
+                    {{ widget.id === 'bibleReadingChart' ? 'Baca Alkitab' :
+                       widget.id === 'sectorDistributionChart' ? 'Distribusi Sektor' :
+                       widget.id === 'attendanceChart' ? 'Kehadiran' :
+                       widget.id === 'genderChart' ? 'Gender' :
+                       widget.id === 'statusChart' ? 'Status' :
+                       widget.id === 'birthdayWidget' ? 'Ulang Tahun' :
+                       widget.id === 'calendarEventsWidget' ? 'Calendar Events' :
+                       widget.id === 'recentMembersWidget' ? 'Anggota Terbaru' : 'Statistik Ringkas' }}
+                </button>
+            </div>
+        </div>
+
         <div class="quick-nav-actions">
             <div class="nav-card primary" (click)="goMembers()">
                 <div class="nav-icon-wrap">
@@ -118,7 +139,7 @@
         </div>
 
         <div class="charts-row">
-            <mat-card class="chart-card">
+            <mat-card class="chart-card" *ngIf="isWidgetVisible('bibleReadingChart')">
                 <div class="card-header">
                     <div class="card-title">📖 Persentase Baca Alkitab per Sektor</div>
                     <button mat-icon-button matTooltip="Lihat Laporan Lengkap" routerLink="/app/bible-reading-report" class="chart-action-btn">
@@ -140,7 +161,7 @@
                 </div>
             </mat-card>
 
-            <mat-card class="chart-card">
+            <mat-card class="chart-card" *ngIf="isWidgetVisible('sectorDistributionChart')">
                 <div class="card-title">Distribusi Sektor</div>
                 <div class="chart-area">
                     <ng-container *ngIf="!loading && hasChartData(pieChartData); else skeletonPie">
@@ -157,7 +178,7 @@
                 </div>
             </mat-card>
 
-            <mat-card class="chart-card" *ngIf="attendanceSummary && summary.totalMembers > 0">
+            <mat-card class="chart-card" *ngIf="isWidgetVisible('attendanceChart') && attendanceSummary && summary.totalMembers > 0">
                 <div class="card-header">
                     <div class="card-title">Kehadiran ({{ attendanceSummary.month }})</div>
                     <button mat-icon-button matTooltip="Kelola Kehadiran" routerLink="/app/attendance" class="chart-action-btn">
@@ -185,7 +206,7 @@
 
         <!-- Row 2: Gender & Status Distribution -->
         <div class="charts-row-secondary">
-            <mat-card class="chart-card-small">
+            <mat-card class="chart-card-small" *ngIf="isWidgetVisible('genderChart')">
                 <div class="card-title">Distribusi Gender</div>
                 <div class="chart-area-small">
                     <ng-container *ngIf="!loading && hasChartData(genderChartData); else skeletonGender">
@@ -202,7 +223,7 @@
                 </div>
             </mat-card>
 
-            <mat-card class="chart-card-small">
+            <mat-card class="chart-card-small" *ngIf="isWidgetVisible('statusChart')">
                 <div class="card-title">Distribusi Status</div>
                 <div class="chart-area-small">
                     <ng-container *ngIf="!loading && hasChartData(statusChartData); else skeletonStatus">
@@ -219,7 +240,7 @@
                 </div>
             </mat-card>
 
-            <mat-card class="birthday-card">
+            <mat-card class="birthday-card" *ngIf="isWidgetVisible('birthdayWidget')">
                 <div class="card-title">
                     <mat-icon class="title-icon">cake</mat-icon>
                     Ulang Tahun Mendatang
@@ -247,8 +268,43 @@
             </mat-card>
         </div>
 
+        <div class="calendar-row" *ngIf="isWidgetVisible('calendarEventsWidget')">
+            <mat-card class="calendar-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <mat-icon class="title-icon">event_note</mat-icon>
+                        Calendar Events
+                    </div>
+                    <button mat-icon-button matTooltip="Lihat semua kegiatan" routerLink="/app/programs" class="chart-action-btn">
+                        <mat-icon>open_in_new</mat-icon>
+                    </button>
+                </div>
+                <mat-divider></mat-divider>
+
+                <div class="calendar-list" *ngIf="upcomingPrograms.length > 0; else emptyPrograms">
+                    <button type="button" class="calendar-item" *ngFor="let program of upcomingPrograms" (click)="openProgram(program)">
+                        <div class="calendar-item-date">
+                            <mat-icon>event</mat-icon>
+                        </div>
+                        <div class="calendar-item-content">
+                            <div class="calendar-item-title">{{ program.title }}</div>
+                            <div class="calendar-item-meta">{{ formatProgramSchedule(program) }}</div>
+                            <div class="calendar-item-type">{{ program.type || 'Kegiatan' }} • {{ program.status || 'Terjadwal' }}</div>
+                        </div>
+                    </button>
+                </div>
+
+                <ng-template #emptyPrograms>
+                    <div class="placeholder-text">
+                        <mat-icon>event_busy</mat-icon>
+                        <p>Belum ada event terjadwal</p>
+                    </div>
+                </ng-template>
+            </mat-card>
+        </div>
+
         <div class="recent-row">
-            <mat-card class="recent-card">
+            <mat-card class="recent-card" *ngIf="isWidgetVisible('recentMembersWidget')">
                 <div class="card-title">
                     <mat-icon class="title-icon">group_add</mat-icon>
                     Anggota Terbaru
@@ -291,7 +347,7 @@
                 </div>
             </mat-card>
 
-            <mat-card class="activity-card">
+            <mat-card class="activity-card" *ngIf="isWidgetVisible('quickStatsWidget')">
                 <div class="card-title">
                     <mat-icon class="title-icon">analytics</mat-icon>
                     Statistik Ringkas

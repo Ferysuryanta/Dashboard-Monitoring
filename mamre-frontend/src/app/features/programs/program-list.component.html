@@ -1,99 +1,168 @@
 <div class="program-list-root">
-  <div class="header">
-    <div class="title">
-      <div class="icon">📅</div>
-      <div>
-        <h1>Kegiatan & Program Mamre</h1>
-        <div class="subtitle">Jadwal kegiatan Mamre, dokumentasi, dan status pelaksanaan</div>
+  <div class="header-card">
+    <div class="header-main">
+      <div class="title">
+        <div class="icon" aria-hidden="true">📅</div>
+        <div>
+          <h1>Kegiatan & Program Mamre</h1>
+          <div class="subtitle">Jadwal kegiatan Mamre, dokumentasi, dan status pelaksanaan</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button mat-flat-button color="primary" (click)="openCreate()" aria-label="Tambah kegiatan atau program baru">
+          <mat-icon>add</mat-icon>
+          Tambah
+        </button>
+        <button mat-stroked-button (click)="exportTable()" [disabled]="loading || !total" aria-label="Export data kegiatan ke CSV">
+          <mat-icon>download</mat-icon>
+          CSV
+        </button>
+        <button mat-stroked-button (click)="printTable()" [disabled]="loading || !total" aria-label="Cetak daftar kegiatan">
+          <mat-icon>print</mat-icon>
+          Print
+        </button>
       </div>
     </div>
 
-    <div class="controls">
+    <div class="filters-panel">
       <mat-form-field appearance="outline" class="search">
-        <input matInput placeholder="Cari kegiatan" [(ngModel)]="q" (keydown.enter)="onFilterChange()" />
+        <mat-label>Cari kegiatan</mat-label>
+        <input matInput placeholder="Nama kegiatan, tempat, tujuan..." [(ngModel)]="q" (keydown.enter)="onFilterChange()" />
+        <button *ngIf="q" matSuffix mat-icon-button type="button" aria-label="Hapus kata pencarian" (click)="q=''; onFilterChange()">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="small">
-        <mat-select [(ngModel)]="filter.status" (selectionChange)="onFilterChange()" placeholder="Status">
-          <mat-option [value]="''">Semua</mat-option>
-          <mat-option value="PLANNED">Planned</mat-option>
-          <mat-option value="DONE">Done</mat-option>
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="filter.status" (selectionChange)="onFilterChange()">
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="small">
-        <mat-select [(ngModel)]="filter.type" (selectionChange)="onFilterChange()" placeholder="Tipe">
-          <mat-option [value]="''">Semua</mat-option>
-          <mat-option value="Kegiatan">Kegiatan</mat-option>
-          <mat-option value="Program">Program</mat-option>
+        <mat-label>Tipe</mat-label>
+        <mat-select [(ngModel)]="filter.type" (selectionChange)="onFilterChange()">
+          <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="small">
-        <mat-select [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" placeholder="Bidang" panelClass="category-panel" appAutoWidthSelect>
-          <mat-option [value]="''">Semua</mat-option>
+      <mat-form-field appearance="outline" class="small category-field">
+        <mat-label>Bidang</mat-label>
+        <mat-select [(ngModel)]="filter.category" (selectionChange)="onFilterChange()" panelClass="category-panel" appAutoWidthSelect>
+          <mat-option [value]="''">Semua bidang</mat-option>
           <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" (click)="openCreate()">+ Tambah</button>
-      <button mat-icon-button (click)="exportTable()" title="Export CSV"><mat-icon>file_download</mat-icon></button>
-      <button mat-icon-button (click)="printTable()" title="Print"><mat-icon>print</mat-icon></button>
+      <button mat-button type="button" class="clear-btn" (click)="clearFilters()" [disabled]="!activeFilterCount">
+        Reset filter
+      </button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card accent-primary">
+        <div class="stat-label">Total item</div>
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-helper">{{ totalGroupsWithItems }} bidang aktif</div>
+      </div>
+      <div class="stat-card accent-success">
+        <div class="stat-label">Selesai</div>
+        <div class="stat-value">{{ completedCount }}</div>
+        <div class="stat-helper">Status pelaksanaan selesai</div>
+      </div>
+      <div class="stat-card accent-warning">
+        <div class="stat-label">Direncanakan</div>
+        <div class="stat-value">{{ plannedCount }}</div>
+        <div class="stat-helper">Masih dalam perencanaan</div>
+      </div>
+      <div class="stat-card accent-neutral">
+        <div class="stat-label">Total anggaran</div>
+        <div class="stat-value">{{ pageBudgetTotal | number:'1.0-0' }}</div>
+        <div class="stat-helper">Akumulasi data yang tampil</div>
+      </div>
     </div>
   </div>
 
-  <mat-card>
-    <div class="table-wrap">
+  <mat-card class="table-card">
+    <div class="table-toolbar">
+      <div>
+        <div class="table-title">Daftar program & kegiatan</div>
+        <div class="table-subtitle" *ngIf="activeFilterCount; else noFilterInfo">Filter aktif: {{ activeFilterCount }} • menampilkan {{ total }} item</div>
+        <ng-template #noFilterInfo>
+          <div class="table-subtitle">Menampilkan seluruh data program dan kegiatan</div>
+        </ng-template>
+      </div>
+    </div>
 
-      <div class="summary">Total items: {{ total }} &nbsp; Jumlah Anggaran: {{ pageBudgetTotal | number:'1.0-0' }}</div>
+    <div *ngIf="loading" class="loading-state">
+      <mat-spinner diameter="30"></mat-spinner>
+      <div>
+        <div class="loading-title">Memuat data kegiatan...</div>
+        <div class="loading-subtitle">Tunggu sebentar, daftar program sedang disiapkan.</div>
+      </div>
+    </div>
 
-      <!-- Printable-style table matching the provided design -->
-      <table class="print-full-table" *ngIf="!loading">
+    <div class="table-wrap" *ngIf="!loading && hasData">
+      <div class="summary-bar">
+        <span><strong>{{ total }}</strong> item</span>
+        <span><strong>{{ pageBudgetTotal | number:'1.0-0' }}</strong> total anggaran</span>
+      </div>
+
+      <table class="print-full-table">
         <thead>
           <tr>
             <th rowspan="2">No</th>
-            <th rowspan="2">KEGIATAN</th>
-            <th rowspan="2">TEMPAT</th>
-            <th rowspan="2">TUJUAN</th>
-            <th rowspan="2">TARGET FISIK</th>
-            <th colspan="3">ANGGARAN</th>
-            <th rowspan="2">PELAKSANA</th>
-            <th rowspan="2">JADWAL</th>
-            <th rowspan="2">KETERANGAN</th>
+            <th rowspan="2">Kegiatan</th>
+            <th rowspan="2">Tempat</th>
+            <th rowspan="2">Tujuan</th>
+            <th rowspan="2">Target Fisik</th>
+            <th colspan="3">Anggaran</th>
+            <th rowspan="2">Pelaksana</th>
+            <th rowspan="2">Jadwal</th>
+            <th rowspan="2">Keterangan</th>
           </tr>
           <tr class="head-sub">
-            <th>LOKAL</th>
-            <th>SUBSIDI</th>
-            <th>TOTAL</th>
+            <th>Lokal</th>
+            <th>Subsidi</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let g of grouped">
-            <tr class="group-row"><td colspan="11">{{ g.category }}</td></tr>
-            <tr *ngFor="let item of g.items; let idx = index">
-              <td>{{ g.startIndex + idx + 1 }}</td>
-              <td class="col-title">{{ item.title }}</td>
-              <td>{{ item.place || '' }}</td>
-              <td class="col-tujuan">{{ item.purpose }}</td>
-              <td class="col-center">{{ item.targetPhysical || '-' }}</td>
-              <td class="col-right">{{ item.budgetLocal ? (item.budgetLocal | number:'1.0-0') : '-' }}</td>
-              <td class="col-right">{{ item.budgetSubsidy ? (item.budgetSubsidy | number:'1.0-0') : '-' }}</td>
-              <td class="col-right">{{ item.budgetTotal ? (item.budgetTotal | number:'1.0-0') : '-' }}</td>
-              <td>{{ item.executor || '' }}</td>
-              <td>{{ item.scheduleText || '' }}</td>
-              <td class="col-note">{{ item.notes || '' }}</td>
-            </tr>
-            <tr class="group-footer">
-              <td colspan="5">Total {{ g.items.length }} item</td>
-              <td class="col-right">{{ g.totals.local | number:'1.0-0' }}</td>
-              <td class="col-right">{{ g.totals.subsidy | number:'1.0-0' }}</td>
-              <td class="col-right">{{ g.totals.total | number:'1.0-0' }}</td>
-              <td colspan="3"></td>
-            </tr>
+          <ng-container *ngFor="let g of grouped; trackBy: trackByGroup">
+            <ng-container *ngIf="g.items?.length">
+              <tr class="group-row"><td colspan="11">{{ getCategoryLabel(g.category) }}</td></tr>
+              <tr *ngFor="let item of g.items; let idx = index; trackBy: trackByProgram">
+                <td>{{ g.startIndex + idx + 1 }}</td>
+                <td class="col-title">
+                  <div class="title-main">{{ item.title }}</div>
+                  <div class="item-meta">
+                    <span class="type-chip">{{ item.type || 'Kegiatan' }}</span>
+                    <span class="status-chip" [class.done]="item.status === 'DONE'">{{ getStatusLabel(item.status) }}</span>
+                  </div>
+                </td>
+                <td>{{ item.place || '-' }}</td>
+                <td class="col-tujuan">{{ item.purpose || '-' }}</td>
+                <td class="col-center">{{ item.targetPhysical || '-' }}</td>
+                <td class="col-right">{{ item.budgetLocal ? (item.budgetLocal | number:'1.0-0') : '-' }}</td>
+                <td class="col-right">{{ item.budgetSubsidy ? (item.budgetSubsidy | number:'1.0-0') : '-' }}</td>
+                <td class="col-right">{{ item.budgetTotal ? (item.budgetTotal | number:'1.0-0') : '-' }}</td>
+                <td>{{ item.executor || '-' }}</td>
+                <td>{{ item.scheduleText || '-' }}</td>
+                <td class="col-note">{{ item.notes || '-' }}</td>
+              </tr>
+              <tr class="group-footer">
+                <td colspan="5">Total {{ g.items.length }} item</td>
+                <td class="col-right">{{ g.totals.local | number:'1.0-0' }}</td>
+                <td class="col-right">{{ g.totals.subsidy | number:'1.0-0' }}</td>
+                <td class="col-right">{{ g.totals.total | number:'1.0-0' }}</td>
+                <td colspan="3"></td>
+              </tr>
+            </ng-container>
           </ng-container>
 
-          <!-- Overall totals row -->
-          <tr class="group-footer">
+          <tr class="group-footer overall-footer">
             <td colspan="5"><strong>Total {{ total }} item</strong></td>
             <td class="col-right"><strong>{{ pageBudgetTotal | number:'1.0-0' }}</strong></td>
             <td class="col-right">-</td>
@@ -102,12 +171,16 @@
           </tr>
         </tbody>
       </table>
+    </div>
 
-      <div *ngIf="loading" class="loading-skeleton">
-        <mat-spinner diameter="30"></mat-spinner>
+    <div *ngIf="!loading && !hasData" class="empty-state">
+      <div class="empty-icon" aria-hidden="true">🗂️</div>
+      <div class="empty-title">Belum ada data yang cocok</div>
+      <div class="empty-subtitle">Coba ubah filter atau tambahkan kegiatan baru agar daftar program lebih lengkap.</div>
+      <div class="empty-actions">
+        <button mat-flat-button color="primary" (click)="openCreate()">Tambah kegiatan</button>
+        <button mat-button type="button" (click)="clearFilters()" [disabled]="!activeFilterCount">Reset filter</button>
       </div>
-
-      <div *ngIf="!loading && (!grouped || grouped.length === 0)" class="empty">Belum ada kegiatan</div>
     </div>
   </mat-card>
 </div>

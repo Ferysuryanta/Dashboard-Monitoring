@@ -33,6 +33,16 @@ export class ProgramListComponent implements OnInit {
   q = '';
   filter: any = { status: '', type: '', category: '' };
   categories: string[] = ['A - BIDANG UMUM & SEKRETARIAT', 'B - BIDANG PERSEKUTUAN', 'C - BIDANG KESAKSIAN', 'D - BIDANG PELAYANAN', 'E - BIDANG DANA & USAHA'];
+lt;  readonly statusOptions = [
+    { value: '', label: 'Semua status' },
+    { value: 'PLANNED', label: 'Direncanakan' },
+    { value: 'DONE', label: 'Selesai' }
+  ];
+  readonly typeOptions = [
+    { value: '', label: 'Semua tipe' },
+    { value: 'Kegiatan', label: 'Kegiatan' },
+    { value: 'Program', label: 'Program' }
+  ];
 
   // track current subscription so we can cancel when switching mode
   private currentReq?: Subscription;
@@ -72,6 +82,50 @@ export class ProgramListComponent implements OnInit {
   onFilterChange() {
     this.reload();
   }
+
+  clearFilters() {
+    this.q = '';
+    this.filter = { status: '', type: '', category: '' };
+    this.reload();
+  }
+
+  get activeFilterCount(): number {
+    return [this.q, this.filter.status, this.filter.type, this.filter.category].filter(value => !!value).length;
+  }
+
+  get completedCount(): number {
+    return this.data.filter(item => item.status === 'DONE').length;
+  }
+
+  get plannedCount(): number {
+    return this.data.filter(item => item.status === 'PLANNED').length;
+  }
+
+  get totalGroupsWithItems(): number {
+    return this.grouped.filter(group => Array.isArray(group.items) && group.items.length > 0).length;
+  }
+
+  get hasData(): boolean {
+    return Array.isArray(this.grouped) && this.grouped.some(group => group.items?.length);
+  }
+
+  getCategoryLabel(category: string | null | undefined): string {
+    return category?.trim() || 'Tanpa bidang';
+  }
+
+  getStatusLabel(status: string | null | undefined): string {
+    switch (status) {
+      case 'DONE':
+        return 'Selesai';
+      case 'PLANNED':
+        return 'Direncanakan';
+      default:
+        return status?.trim() || '-';
+    }
+  }
+
+  trackByGroup = (_: number, group: any) => group.category;
+  trackByProgram = (_: number, item: any) => item.id ?? `${item.title}-${item.scheduleText}-${item.place}`;
 
   search() { this.reload(); }
 

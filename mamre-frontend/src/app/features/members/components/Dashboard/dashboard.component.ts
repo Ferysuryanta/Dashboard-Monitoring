@@ -28,6 +28,9 @@ import {AttendanceSummaryDto} from "../../models/attendance.summary.model";
 import {SectorApiResult} from "../../models/sector.response.model";
 import { BaseChartDirective } from 'ng2-charts';
 import { CountUpPipe } from 'src/app/shared/pipes/count-up.pipe';
+import ProgramService from 'src/app/features/programs/program.service';
+import { Program } from 'src/app/features/programs/program.model';
+import { DashboardPreferencesService, DashboardWidgetPreference } from 'src/app/core/services/dashboard-preferences.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -59,20 +62,35 @@ import { CountUpPipe } from 'src/app/shared/pipes/count-up.pipe';
     ]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-    private svc = inject(DashboardService);
-    private themeService = inject(ThemeService);
-    protected router = inject(Router);
-    private themeSubscription?: Subscription;
-    isDarkMode = false;
-    loading = true;
-    today = new Date();
-    summary = { totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 };
-    recent: any[] = [];
-    trendLabels: string[] = [];
-    trendData: number[] = [];
-    sectorLabels: string[] = [];
-    sectorData: number[] = [];
-    currentYear = new Date().getFullYear();
+     private svc = inject(DashboardService);
+     private themeService = inject(ThemeService);
+     private programService = inject(ProgramService);
+     private dashboardPreferences = inject(DashboardPreferencesService);
+     protected router = inject(Router);
+     private themeSubscription?: Subscription;
+     isDarkMode = false;
+     loading = true;
+     today = new Date();
+     summary = { totalMembers: 0, activeMembers: 0, sectors: 0, positions: 0 };
+     recent: any[] = [];
+     trendLabels: string[] = [];
+     trendData: number[] = [];
+     sectorLabels: string[] = [];
+     sectorData: number[] = [];
+     currentYear = new Date().getFullYear();
+     readonly widgetDefinitions: DashboardWidgetPreference[] = [
+        { id: 'bibleReadingChart', visible: true },
+        { id: 'sectorDistributionChart', visible: true },
+        { id: 'attendanceChart', visible: true },
+        { id: 'genderChart', visible: true },
+        { id: 'statusChart', visible: true },
+        { id: 'birthdayWidget', visible: true },
+        { id: 'calendarEventsWidget', visible: true },
+        { id: 'recentMembersWidget', visible: true },
+        { id: 'quickStatsWidget', visible: true }
+    ];
+    widgetVisibility: Record<string, boolean> = {};
+    upcomingPrograms: Program[] = [];
 
     // ViewChild references for charts (ng2-charts BaseChartDirective)
     @ViewChild('lineChart') public lineChart?: BaseChartDirective;
@@ -419,7 +437,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     constructor() {
-        // PENTING: Inisialisasi nilai default untuk chart data dan labels
+        this.widgetVisibility = this.dashboardPreferences.getVisibilityMap(this.widgetDefinitions);
+         // PENTING: Inisialisasi nilai default untuk chart data dan labels
         this.lineChartData.labels = [];
         this.lineChartData.datasets[0].data = [];
 
@@ -443,6 +462,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.updateChartColors(isDark);
         });
         this.loadAll();
+        this.loadUpcomingPrograms();
     }
 
     ngOnDestroy(): void {
@@ -716,6 +736,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }, err => console.error('birthdays err', err));
     }
 
+    private loadUpcomingPrograms(): void {
+        this.programService.getAllNoPaging().subscribe(programs => {
+            const now = new Date();
+            this.upcomingPrograms = (programs || [])
+                .filter(program => !!program.nextSchedule)
+                .filter(program => {
+                    const scheduledAt = new Date(program.nextSchedule as string);
+                    return !Number.isNaN(scheduledAt.getTime()) && scheduledAt >= now;
+                })
+                .sort((a, b) => new Date(a.nextSchedule as string).getTime() - new Date(b.nextSchedule as string).getTime())
+                .slice(0, 5);
+        });
+    }
+
     goSectors() { this.router.navigateByUrl('/app/sectors'); }
     goPositions() { this.router.navigateByUrl('/app/positions'); }
     goMembers() { this.router.navigateByUrl('/app/members'); }
@@ -735,6 +769,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (daysUntil <= 3) return 'birthday-soon';
         if (daysUntil <= 7) return 'birthday-week';
         return 'birthday-later';
+    }
+
+    isWidgetVisible(widgetId: string): boolean {
+        return this.widgetVisibility[widgetId] !== false;
+    }
+
+    toggleWidget(widgetId: string): void {
+        this.widgetVisibility = {
+            ...this.widgetVisibility,
+            [widgetId]: !this.isWidgetVisible(widgetId)
+        };
+        this.dashboardPreferences.saveVisibilityMap(this.widgetVisibility);
+        this.refreshCharts();
+    }
+
+    getVisibleWidgetCount(): number {
+        return Object.values(this.widgetVisibility).filter(value => value !== false).length;
+    }
+
+    formatProgramSchedule(program: Program): string {
+        if (!program.nextSchedule) {
+            return program.jadwalText || 'Jadwal belum tersedia';
+        }
+
+        const scheduledAt = new Date(program.nextSchedule);
+        if (Number.isNaN(scheduledAt.getTime())) {
+            return program.jadwalText || 'Jadwal belum tersedia';
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(scheduledAt);
+    }
+
+    openProgram(program: Program): void {
+        if (!program.id) {
+            this.router.navigateByUrl('/app/programs');
+            return;
+        }
+        this.router.navigateByUrl(`/app/programs/${program.id}`);
     }
 
     getLineChartLegendLabel(): string {

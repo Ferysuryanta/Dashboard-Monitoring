@@ -1708,3 +1708,126 @@ mat-divider {
 .nav-card .nav-icon-wrap mat-icon {
   font-size: 22px;
 }
+
+.widget-toolbar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba($border-color, 0.55);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.widget-toolbar-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: $text-dark;
+  font-weight: 700;
+  font-size: 14px;
+
+  mat-icon {
+    color: $primary;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.widget-toggle-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.widget-toggle-list button {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.widget-toggle-list button.inactive {
+  opacity: 0.48;
+  text-decoration: line-through;
+}
+
+.calendar-row {
+  margin-bottom: 24px;
+}
+
+.calendar-card {
+  padding: 20px;
+  background: $bg-card;
+  border: 1px solid rgba($border-color, 0.6);
+  box-shadow: $shadow-sm;
+}
+
+.calendar-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.calendar-item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba($border-color, 0.7);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba($primary, 0.05), rgba($secondary, 0.04));
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.calendar-item:hover {
+  transform: translateY(-2px);
+  box-shadow: $shadow-md;
+  border-color: rgba($primary, 0.35);
+}
+
+.calendar-item-date {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, $primary, $primary-light);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.calendar-item-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calendar-item-title {
+  font-weight: 700;
+  color: $text-dark;
+  font-size: 14px;
+}
+
+.calendar-item-meta {
+  color: $text-base;
+  font-size: 13px;
+}
+
+.calendar-item-type {
+  color: $text-muted;
+  font-size: 12px;
+}
