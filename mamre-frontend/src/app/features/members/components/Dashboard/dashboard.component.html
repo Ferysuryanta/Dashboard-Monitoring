@@ -7,6 +7,7 @@
                     <span class="greeting-wave">👋</span>
                 </div>
                 <h1 class="header-title">Dashboard <span class="brand-text">Mamre GBKP</span></h1>
+                <p class="header-subtitle">Pantau pertumbuhan anggota, aktivitas sektor, kehadiran, dan agenda pelayanan dalam satu tampilan yang lebih ringkas.</p>
             </div>
 
             <div class="header-right">
@@ -20,22 +21,19 @@
         </div>
 
         <div class="widget-toolbar">
-            <div class="widget-toolbar-title">
-                <mat-icon>dashboard_customize</mat-icon>
-                <span>Widget Aktif: {{ getVisibleWidgetCount() }}/{{ widgetDefinitions.length }}</span>
+            <div class="widget-toolbar-header">
+                <div class="widget-toolbar-title">
+                    <mat-icon>dashboard_customize</mat-icon>
+                    <span>Widget Aktif: {{ getVisibleWidgetCount() }}/{{ widgetDefinitions.length }}</span>
+                </div>
+                <div class="widget-toolbar-caption">Klik chip untuk menampilkan atau menyembunyikan widget dashboard.</div>
             </div>
             <div class="widget-toggle-list">
                 <button mat-stroked-button type="button" *ngFor="let widget of widgetDefinitions"
                         (click)="toggleWidget(widget.id)"
-                        [class.inactive]="!isWidgetVisible(widget.id)">
-                    {{ widget.id === 'bibleReadingChart' ? 'Baca Alkitab' :
-                       widget.id === 'sectorDistributionChart' ? 'Distribusi Sektor' :
-                       widget.id === 'attendanceChart' ? 'Kehadiran' :
-                       widget.id === 'genderChart' ? 'Gender' :
-                       widget.id === 'statusChart' ? 'Status' :
-                       widget.id === 'birthdayWidget' ? 'Ulang Tahun' :
-                       widget.id === 'calendarEventsWidget' ? 'Calendar Events' :
-                       widget.id === 'recentMembersWidget' ? 'Anggota Terbaru' : 'Statistik Ringkas' }}
+                        [class.inactive]="!isWidgetVisible(widget.id)"
+                        [attr.aria-pressed]="isWidgetVisible(widget.id)">
+                    {{ getWidgetLabel(widget.id) }}
                 </button>
             </div>
         </div>
@@ -49,7 +47,9 @@
                     <span class="nav-title">Anggota</span>
                     <span class="nav-subtitle">Kelola data anggota</span>
                 </div>
-                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                <div class="nav-arrow-wrap">
+                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                </div>
             </div>
             <div class="nav-card secondary" (click)="goSectors()">
                 <div class="nav-icon-wrap">
@@ -59,7 +59,9 @@
                     <span class="nav-title">Sektor</span>
                     <span class="nav-subtitle">Atur pembagian</span>
                 </div>
-                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                <div class="nav-arrow-wrap">
+                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                </div>
             </div>
             <div class="nav-card tertiary" (click)="goPositions()">
                 <div class="nav-icon-wrap">
@@ -69,7 +71,9 @@
                     <span class="nav-title">Jabatan</span>
                     <span class="nav-subtitle">Struktur organisasi</span>
                 </div>
-                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                <div class="nav-arrow-wrap">
+                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                </div>
             </div>
             <div class="nav-card programs" (click)="router.navigateByUrl('/app/programs')">
                 <div class="nav-icon-wrap">
@@ -79,7 +83,9 @@
                     <span class="nav-title">Kegiatan & Program</span>
                     <span class="nav-subtitle">Jadwal kegiatan Mamre, dokumentasi, dan status pelaksanaan</span>
                 </div>
-                <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                <div class="nav-arrow-wrap">
+                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+                </div>
             </div>
         </div>
     </div>
@@ -91,7 +97,7 @@
     </ng-template>
 
     <div *ngIf="!loading; else loadingTpl" @fadeIn>
-        <div class="summary-grid">
+        <div class="summary-grid modern-summary-grid">
             <mat-card class="stat-card">
                 <div class="stat-left">
                     <div class="stat-label">Total Anggota</div>

@@ -89,6 +89,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         { id: 'recentMembersWidget', visible: true },
         { id: 'quickStatsWidget', visible: true }
     ];
+    readonly widgetLabels: Record<string, string> = {
+        bibleReadingChart: 'Baca Alkitab',
+        sectorDistributionChart: 'Distribusi Sektor',
+        attendanceChart: 'Kehadiran',
+        genderChart: 'Gender',
+        statusChart: 'Status',
+        birthdayWidget: 'Ulang Tahun',
+        calendarEventsWidget: 'Calendar Events',
+        recentMembersWidget: 'Anggota Terbaru',
+        quickStatsWidget: 'Statistik Ringkas'
+    };
     widgetVisibility: Record<string, boolean> = {};
     upcomingPrograms: Program[] = [];
 
@@ -414,6 +425,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (hour >= 11 && hour < 15) return 'Selamat Siang';
         if (hour >= 15 && hour < 18) return 'Selamat Sore';
         return 'Selamat Malam';
+    }
+
+    getWidgetLabel(widgetId: string): string {
+        return this.widgetLabels[widgetId] || widgetId;
     }
 
     private getDoughnutTooltipLabel(context: any): string[] {
