@@ -104,19 +104,9 @@ public class AppUser implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
     public boolean isAccountNonLocked() {
         if (lockedUntil == null) return true;
         return OffsetDateTime.now().isAfter(lockedUntil);
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
     }
 
     @Override
