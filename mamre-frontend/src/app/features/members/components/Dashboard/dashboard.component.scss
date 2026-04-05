@@ -22,6 +22,46 @@ mat-card {
   color: inherit;
 }
 
+.hero-date-card,
+.hero-metric,
+.focus-card,
+.widget-toolbar,
+.quick-actions-panel,
+.section-block,
+.summary-card,
+.chart-card,
+.support-card,
+.recent-card,
+.activity-card {
+  --card-accent: #6366f1;
+}
+
+.hero-date-card--today { --card-accent: #60a5fa; }
+.hero-metric--members { --card-accent: #3b82f6; }
+.hero-metric--attendance,
+.focus-card--attendance,
+.summary-card--cyan,
+.chart-card--attendance,
+.section-block--activity { --card-accent: #14b8a6; }
+.hero-metric--programs,
+.summary-card--amber,
+.chart-card--status { --card-accent: #f59e0b; }
+.hero-metric--widgets,
+.widget-toolbar--controls,
+.activity-card--stats,
+.chart-card--reading,
+.section-block--analytics { --card-accent: #8b5cf6; }
+.quick-actions-panel--navigation,
+.summary-card--primary,
+.chart-card--sector,
+.recent-card--members,
+.section-block--summary { --card-accent: #3b82f6; }
+.summary-card--success { --card-accent: #06b6d4; }
+.summary-card--rose,
+.chart-card--gender,
+.support-card--birthday { --card-accent: #ec4899; }
+.support-card--calendar { --card-accent: #6366f1; }
+
 .hero-shell,
 .control-surface,
 .support-grid,
@@ -533,11 +573,11 @@ mat-card {
   color: var(--text-primary);
 }
 
-.summary-card--primary { --accent: #2563eb; }
-.summary-card--success { --accent: #06b6d4; }
-.summary-card--amber { --accent: #f59e0b; }
-.summary-card--rose { --accent: #ec4899; }
-.summary-card--cyan { --accent: #14b8a6; }
+.summary-card--primary { --accent: #2563eb; --card-accent: #2563eb; }
+.summary-card--success { --accent: #06b6d4; --card-accent: #06b6d4; }
+.summary-card--amber { --accent: #f59e0b; --card-accent: #f59e0b; }
+.summary-card--rose { --accent: #ec4899; --card-accent: #ec4899; }
+.summary-card--cyan { --accent: #14b8a6; --card-accent: #14b8a6; }
 
 .analytics-grid {
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -992,14 +1032,40 @@ mat-card {
 
 :host-context([data-theme='dark']) .hero-date-card,
 :host-context([data-theme='dark']) .hero-metric,
-:host-context([data-theme='dark']) .greeting-row {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.84));
-  border-color: rgba(96, 165, 250, 0.28);
+:host-context([data-theme='dark']) .focus-card,
+:host-context([data-theme='dark']) .widget-toolbar,
+:host-context([data-theme='dark']) .quick-actions-panel,
+:host-context([data-theme='dark']) .section-block,
+:host-context([data-theme='dark']) .summary-card,
+:host-context([data-theme='dark']) .chart-card,
+:host-context([data-theme='dark']) .support-card,
+:host-context([data-theme='dark']) .recent-card,
+:host-context([data-theme='dark']) .activity-card {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-accent) 20%, #334155) 0%,
+      color-mix(in srgb, var(--card-accent) 12%, #1e293b) 44%,
+      #0f172a 100%
+    );
+  border-color: color-mix(in srgb, var(--card-accent) 34%, #475569);
   box-shadow: 0 16px 30px rgba(2, 6, 23, 0.24);
+}
+
+:host-context([data-theme='dark']) .greeting-row {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.34), rgba(30, 41, 59, 0.92));
+  border-color: rgba(129, 140, 248, 0.32);
+  box-shadow: 0 16px 30px rgba(2, 6, 23, 0.24);
+}
+
+:host-context([data-theme='dark']) .summary-card,
+:host-context([data-theme='dark']) .q-item-modern {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 14px 28px rgba(2, 6, 23, 0.18);
 }
 
 :host-context([data-theme='dark']) .hero-date-card strong,
 :host-context([data-theme='dark']) .hero-metric strong,
+:host-context([data-theme='dark']) .focus-head h2,
 :host-context([data-theme='dark']) .summary-value,
 :host-context([data-theme='dark']) .q-value-modern {
   color: #f8fbff;
@@ -1030,32 +1096,53 @@ mat-card {
 :host-context([data-theme='dark']) .section-pill,
 :host-context([data-theme='dark']) .badge-count,
 :host-context([data-theme='dark']) .birthday-badge {
-  color: #c4b5fd;
-  background: rgba(99, 102, 241, 0.18);
+  color: color-mix(in srgb, var(--card-accent) 62%, #ffffff);
+  background: color-mix(in srgb, var(--card-accent) 18%, #1e293b);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 24%, #475569);
 }
 
 :host-context([data-theme='dark']) .chart-action-btn,
 :host-context([data-theme='dark']) .action-btn-modern {
-  background: rgba(99, 102, 241, 0.18);
+  background: color-mix(in srgb, var(--card-accent) 18%, #1e293b);
+  color: color-mix(in srgb, var(--card-accent) 70%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 24%, #475569);
 }
 
 :host-context([data-theme='dark']) .action-btn-modern.edit {
-  background: rgba(6, 182, 212, 0.18);
+  background: color-mix(in srgb, #06b6d4 18%, #1e293b);
+  color: color-mix(in srgb, #06b6d4 72%, #ffffff);
 }
 
-:host-context([data-theme='dark']) .summary-card,
 :host-context([data-theme='dark']) .birthday-item,
 :host-context([data-theme='dark']) .calendar-item,
-:host-context([data-theme='dark']) .member-item-modern,
-:host-context([data-theme='dark']) .q-item-modern {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.94));
-  border-color: rgba(96, 165, 250, 0.18);
+:host-context([data-theme='dark']) .member-item-modern {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-accent) 16%, #334155) 0%,
+      color-mix(in srgb, var(--card-accent) 8%, #0f172a) 100%
+    );
+  border-color: color-mix(in srgb, var(--card-accent) 26%, #475569);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 14px 28px rgba(2, 6, 23, 0.18);
+}
+
+:host-context([data-theme='dark']) .q-item-modern {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tile-accent) 18%, #334155) 0%,
+      color-mix(in srgb, var(--tile-accent) 10%, #0f172a) 100%
+    );
+  border-color: color-mix(in srgb, var(--tile-accent) 32%, #475569);
 }
 
 :host-context([data-theme='dark']) .summary-card-top mat-icon,
 :host-context([data-theme='dark']) .q-icon-wrap {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--card-accent) 18%, #ffffff);
+}
+
+:host-context([data-theme='dark']) .q-icon-wrap {
+  background: color-mix(in srgb, var(--tile-accent) 22%, #ffffff);
 }
 
 :host-context([data-theme='dark']) .hero-date-card mat-icon,
@@ -1065,12 +1152,41 @@ mat-card {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+:host-context([data-theme='dark']) .calendar-card .calendar-item-date,
+:host-context([data-theme='dark']) .recent-card--members .sector-badge,
+:host-context([data-theme='dark']) .recent-card--members .join-date {
+  background: color-mix(in srgb, var(--card-accent) 18%, #1e293b);
+  color: color-mix(in srgb, var(--card-accent) 72%, #ffffff);
+}
+
 :host-context([data-theme='dark']) .sector-badge,
 :host-context([data-theme='dark']) .join-date,
 :host-context([data-theme='dark']) .legend-mobile button,
 :host-context([data-theme='dark']) .widget-toggle-list button {
-  background: rgba(30, 41, 59, 0.72);
-  border-color: rgba(96, 165, 250, 0.2);
+  background: color-mix(in srgb, var(--card-accent) 12%, #1e293b);
+  border-color: color-mix(in srgb, var(--card-accent) 22%, #475569);
+}
+
+:host-context([data-theme='dark']) .widget-toolbar--controls .widget-toggle-list button {
+  color: #e5e7eb;
+}
+
+:host-context([data-theme='dark']) .chart-card .card-meta,
+:host-context([data-theme='dark']) .focus-card .focus-badge,
+:host-context([data-theme='dark']) .widget-toolbar .toolbar-badge,
+:host-context([data-theme='dark']) .section-block .section-pill,
+:host-context([data-theme='dark']) .recent-card .badge-count {
+  color: color-mix(in srgb, var(--card-accent) 62%, #ffffff);
+  background: color-mix(in srgb, var(--card-accent) 18%, #1e293b);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 24%, #475569);
+}
+
+:host-context([data-theme='dark']) .card-title .title-icon,
+:host-context([data-theme='dark']) .birthday-card .title-icon,
+:host-context([data-theme='dark']) .calendar-card .title-icon,
+:host-context([data-theme='dark']) .recent-card--members .title-icon,
+:host-context([data-theme='dark']) .activity-card--stats .title-icon {
+  color: color-mix(in srgb, var(--card-accent) 70%, #ffffff);
 }
 
 @media (max-width: 1400px) {

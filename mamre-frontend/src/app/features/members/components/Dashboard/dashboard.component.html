@@ -15,7 +15,7 @@
                     </p>
                 </div>
 
-                <div class="hero-date-card">
+                <div class="hero-date-card hero-date-card--today">
                     <mat-icon>calendar_today</mat-icon>
                     <div>
                         <span class="date-label">Hari ini</span>
@@ -25,22 +25,22 @@
             </div>
 
             <div class="hero-metrics">
-                <div class="hero-metric">
+                <div class="hero-metric hero-metric--members">
                     <span class="metric-label">Anggota aktif</span>
                     <strong>{{ getActiveMemberRatio() }}%</strong>
                     <span class="metric-caption">{{ summary.activeMembers | countUp }} dari {{ summary.totalMembers | countUp }} anggota</span>
                 </div>
-                <div class="hero-metric">
+                <div class="hero-metric hero-metric--attendance">
                     <span class="metric-label">Kehadiran bulan ini</span>
                     <strong>{{ getAttendanceRate() }}%</strong>
                     <span class="metric-caption">{{ attendanceSummary?.uniqueMembers | countUp }} anggota unik tercatat</span>
                 </div>
-                <div class="hero-metric">
+                <div class="hero-metric hero-metric--programs">
                     <span class="metric-label">Agenda terjadwal</span>
                     <strong>{{ upcomingPrograms.length | countUp }}</strong>
                     <span class="metric-caption">Program berikutnya siap dipantau</span>
                 </div>
-                <div class="hero-metric">
+                <div class="hero-metric hero-metric--widgets">
                     <span class="metric-label">Widget aktif</span>
                     <strong>{{ getVisibleWidgetCount() | countUp }}</strong>
                     <span class="metric-caption">{{ getWidgetCoverageRatio() }}% panel sedang ditampilkan</span>
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <mat-card class="focus-card">
+        <mat-card class="focus-card focus-card--attendance">
             <div class="focus-head">
                 <div>
                     <span class="focus-kicker">Fokus hari ini</span>
@@ -98,7 +98,7 @@
     </section>
 
     <section class="control-surface">
-        <div class="widget-toolbar">
+        <div class="widget-toolbar widget-toolbar--controls">
             <div class="widget-toolbar-header">
                 <div>
                     <p class="toolbar-eyebrow">Kustomisasi tampilan</p>
@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <div class="quick-actions-panel">
+        <div class="quick-actions-panel quick-actions-panel--navigation">
             <div class="quick-actions-header">
                 <p class="toolbar-eyebrow">Akses cepat</p>
                 <h2>Navigasi utama</h2>
@@ -167,7 +167,7 @@
 
     @if (!loading) {
         <div class="dashboard-body" @fadeIn>
-            <section class="section-block">
+            <section class="section-block section-block--summary">
                 <div class="section-header">
                     <div>
                         <p class="section-eyebrow">Ringkasan jemaat</p>
@@ -227,7 +227,7 @@
                 </div>
             </section>
 
-            <section class="section-block">
+            <section class="section-block section-block--analytics">
                 <div class="section-header">
                     <div>
                         <p class="section-eyebrow">Analitik & distribusi</p>
@@ -238,7 +238,7 @@
 
                 <div class="analytics-grid">
                     @if (isWidgetVisible('bibleReadingChart')) {
-                        <mat-card class="chart-card chart-card--wide">
+                        <mat-card class="chart-card chart-card--wide chart-card--reading">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">📖 Persentase Baca Alkitab per Sektor</div>
@@ -269,7 +269,7 @@
                     }
 
                     @if (isWidgetVisible('sectorDistributionChart')) {
-                        <mat-card class="chart-card chart-card--panel">
+                        <mat-card class="chart-card chart-card--panel chart-card--sector">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">Distribusi Sektor</div>
@@ -299,7 +299,7 @@
                     }
 
                     @if (isWidgetVisible('attendanceChart') && attendanceSummary && summary.totalMembers > 0) {
-                        <mat-card class="chart-card chart-card--third">
+                        <mat-card class="chart-card chart-card--third chart-card--attendance">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">Kehadiran {{ getAttendanceMonthLabel() }}</div>
@@ -329,7 +329,7 @@
                     }
 
                     @if (isWidgetVisible('genderChart')) {
-                        <mat-card class="chart-card chart-card--third">
+                        <mat-card class="chart-card chart-card--third chart-card--gender">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">Distribusi Gender</div>
@@ -359,7 +359,7 @@
                     }
 
                     @if (isWidgetVisible('statusChart')) {
-                        <mat-card class="chart-card chart-card--third">
+                        <mat-card class="chart-card chart-card--third chart-card--status">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">Distribusi Status</div>
@@ -390,7 +390,7 @@
                 </div>
             </section>
 
-            <section class="section-block">
+            <section class="section-block section-block--activity">
                 <div class="section-header">
                     <div>
                         <p class="section-eyebrow">Agenda & aktivitas</p>
@@ -401,7 +401,7 @@
 
                 <div class="support-grid">
                     @if (isWidgetVisible('birthdayWidget')) {
-                        <mat-card class="support-card birthday-card">
+                        <mat-card class="support-card birthday-card support-card--birthday">
                             <div class="card-header compact">
                                 <div>
                                     <div class="card-title"><mat-icon class="title-icon">cake</mat-icon>Ulang Tahun Mendatang</div>
@@ -431,7 +431,7 @@
                     }
 
                     @if (isWidgetVisible('calendarEventsWidget')) {
-                        <mat-card class="support-card calendar-card">
+                        <mat-card class="support-card calendar-card support-card--calendar">
                             <div class="card-header compact">
                                 <div>
                                     <div class="card-title"><mat-icon class="title-icon">event_note</mat-icon>Agenda Pelayanan</div>
@@ -469,7 +469,7 @@
 
                 <div class="activity-grid">
                     @if (isWidgetVisible('recentMembersWidget')) {
-                        <mat-card class="recent-card">
+                        <mat-card class="recent-card recent-card--members">
                             <div class="card-header compact">
                                 <div>
                                     <div class="card-title"><mat-icon class="title-icon">group_add</mat-icon>Anggota Terbaru</div>
@@ -523,7 +523,7 @@
                     }
 
                     @if (isWidgetVisible('quickStatsWidget')) {
-                        <mat-card class="activity-card">
+                        <mat-card class="activity-card activity-card--stats">
                             <div class="card-header compact">
                                 <div>
                                     <div class="card-title"><mat-icon class="title-icon">analytics</mat-icon>Statistik Ringkas</div>
