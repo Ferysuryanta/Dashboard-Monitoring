@@ -1,6 +1,7 @@
 package com.mamregbkp.service.impl;
 
 import com.mamregbkp.dto.ProgramDto;
+import com.mamregbkp.exception.ResourceNotFoundException;
 import com.mamregbkp.model.Program;
 import com.mamregbkp.repository.ProgramRepository;
 import com.mamregbkp.service.ProgramService;
@@ -73,7 +74,9 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ProgramDto findById(Long id) {
-        return repo.findById(id).map(this::toDto).orElse(null);
+        return repo.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Program tidak ditemukan: " + id));
     }
 
     @Override
@@ -88,15 +91,19 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ProgramDto update(Long id, ProgramDto dto) {
-        return repo.findById(id).map(existing -> {
-            applyDtoToEntity(existing, dto);
-            Program saved = repo.save(existing);
-            return toDto(saved);
-        }).orElse(null);
+        Program existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Program tidak ditemukan: " + id));
+
+        applyDtoToEntity(existing, dto);
+        Program saved = repo.save(existing);
+        return toDto(saved);
     }
 
     @Override
     public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new ResourceNotFoundException("Program tidak ditemukan: " + id);
+        }
         repo.deleteById(id);
     }
 

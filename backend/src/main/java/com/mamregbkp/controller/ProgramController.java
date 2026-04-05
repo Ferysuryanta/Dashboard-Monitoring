@@ -1,6 +1,8 @@
 package com.mamregbkp.controller;
 
 import com.mamregbkp.dto.ProgramDto;
+import com.mamregbkp.exception.BadRequestException;
+import com.mamregbkp.exception.ResourceNotFoundException;
 import com.mamregbkp.service.ProgramService;
 import com.mamregbkp.repository.ProgramRepository;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +45,7 @@ public class ProgramController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProgramDto> one(@PathVariable Long id) {
-        ProgramDto dto = svc.findById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(svc.findById(id));
     }
 
     @PostMapping
@@ -56,9 +56,7 @@ public class ProgramController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProgramDto> update(@PathVariable Long id, @RequestBody ProgramDto dto) {
-        ProgramDto updated = svc.update(id, dto);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(svc.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
@@ -76,7 +74,12 @@ public class ProgramController {
 
     // Documents
     @PostMapping("/{id}/documents")
-    public ResponseEntity<?> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<ProgramDocument> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        svc.findById(id);
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File dokumen wajib diunggah");
+        }
+
         Path stored = storage.store(file, "programs/" + id);
         ProgramDocument doc = new ProgramDocument();
         doc.setProgramId(id);
@@ -90,15 +93,19 @@ public class ProgramController {
 
     @GetMapping("/{id}/documents")
     public ResponseEntity<List<ProgramDocument>> listDocs(@PathVariable Long id) {
+        svc.findById(id);
         return ResponseEntity.ok(docRepo.findByProgramId(id));
     }
 
     @GetMapping("/documents/download/{docId}")
-    public ResponseEntity<Resource> download(@PathVariable Long docId) throws Exception {
-        ProgramDocument d = docRepo.findById(docId).orElse(null);
-        if (d == null) return ResponseEntity.notFound().build();
-        // load resource
+    public ResponseEntity<Resource> download(@PathVariable Long docId) {
+        ProgramDocument d = docRepo.findById(docId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dokumen program tidak ditemukan: " + docId));
+
         Resource res = storage.loadAsResource(Paths.get(d.getStoragePath()).getFileName().toString());
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(d.getMimeType() == null ? MediaType.APPLICATION_OCTET_STREAM_VALUE : d.getMimeType())).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + d.getFilename() + "\"").body(res);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(d.getMimeType() == null ? MediaType.APPLICATION_OCTET_STREAM_VALUE : d.getMimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + d.getFilename() + "\"")
+                .body(res);
     }
 }

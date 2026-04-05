@@ -6,6 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 
 public interface FileStorageService {
-    Path store(MultipartFile file, String subdir) throws Exception;
-    Resource loadAsResource(String filename) throws Exception;
+    Path store(MultipartFile file, String subdir);
+    Resource loadAsResource(String filename);
 }

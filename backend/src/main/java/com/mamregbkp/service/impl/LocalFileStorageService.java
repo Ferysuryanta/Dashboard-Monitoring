@@ -1,5 +1,7 @@
 package com.mamregbkp.service.impl;
 
+import com.mamregbkp.exception.BadRequestException;
+import com.mamregbkp.exception.ResourceNotFoundException;
 import com.mamregbkp.service.FileStorageService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -21,26 +23,58 @@ public class LocalFileStorageService implements FileStorageService {
     }
 
     @Override
-    public Path store(MultipartFile file, String subdir) throws Exception {
-        Path dir = root;
-        if (subdir != null && !subdir.isEmpty()) dir = root.resolve(subdir);
-        if (!Files.exists(dir)) Files.createDirectories(dir);
-        String ext = "";
-        String original = file.getOriginalFilename();
-        if (original != null && original.contains(".")) {
-            ext = original.substring(original.lastIndexOf('.'));
+    public Path store(MultipartFile file, String subdir) {
+        try {
+            Path dir = root;
+            if (subdir != null && !subdir.isEmpty()) {
+                dir = root.resolve(subdir).normalize();
+            }
+
+            if (!dir.startsWith(root)) {
+                throw new BadRequestException("Lokasi penyimpanan file tidak valid");
+            }
+
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+
+            String ext = "";
+            String original = file.getOriginalFilename();
+            if (original != null && original.contains(".")) {
+                ext = original.substring(original.lastIndexOf('.'));
+            }
+
+            String filename = UUID.randomUUID() + ext;
+            Path target = dir.resolve(filename).normalize();
+            Files.copy(file.getInputStream(), target);
+            return target;
+        } catch (IOException ex) {
+            throw new BadRequestException("Gagal menyimpan file", ex);
         }
-        String filename = UUID.randomUUID().toString() + ext;
-        Path target = dir.resolve(filename);
-        Files.copy(file.getInputStream(), target);
-        return target;
     }
 
     @Override
-    public Resource loadAsResource(String filename) throws Exception {
-        Path f = root.resolve(filename);
-        if (!Files.exists(f)) throw new IOException("File not found: " + filename);
-        return new FileSystemResource(f.toFile());
+    public Resource loadAsResource(String filename) {
+        try {
+            if (filename == null || filename.isBlank()) {
+                throw new BadRequestException("Nama file tidak valid");
+            }
+
+            Path filePath = root.resolve(filename).normalize();
+            if (!filePath.startsWith(root)) {
+                throw new BadRequestException("Path file tidak valid");
+            }
+
+            if (!Files.exists(filePath)) {
+                throw new ResourceNotFoundException("File tidak ditemukan: " + filename);
+            }
+
+            return new FileSystemResource(filePath.toFile());
+        } catch (BadRequestException | ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new BadRequestException("Gagal membaca file", ex);
+        }
     }
 }
 
