@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -21,9 +21,13 @@ import { AutoWidthSelectDirective } from 'src/app/shared/directives/auto-width-s
   templateUrl: './program-list.component.html',
   styleUrls: ['./program-list.component.scss']
 })
-export class ProgramListComponent implements OnInit {
+export class ProgramListComponent implements OnInit, AfterViewInit, OnDestroy {
   private svc = inject(ProgramService);
   private router = inject(Router);
+
+  @ViewChild('summaryBar') private summaryBarRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('headRow') private headRowRef?: ElementRef<HTMLTableRowElement>;
+  @ViewChild('subHeadRow') private subHeadRowRef?: ElementRef<HTMLTableRowElement>;
 
   data: any[] = [];
   grouped: any[] = [];
@@ -53,9 +57,37 @@ export class ProgramListComponent implements OnInit {
 
   // track current subscription so we can cancel when switching mode
   private currentReq?: Subscription;
+  stickyStyles: Record<string, string> = {
+    '--pl-sticky-summary': '0px',
+    '--pl-sticky-head': '53px',
+    '--pl-sticky-subhead': '95px',
+    '--pl-sticky-group': '137px'
+  };
+  private stickySyncHandle: number | null = null;
 
   ngOnInit(): void {
     this.reload();
+  }
+
+  ngAfterViewInit(): void {
+    this.scheduleStickySync();
+  }
+
+  ngOnDestroy(): void {
+    if (this.currentReq) {
+      this.currentReq.unsubscribe();
+      this.currentReq = undefined;
+    }
+
+    if (this.stickySyncHandle !== null) {
+      window.cancelAnimationFrame(this.stickySyncHandle);
+      this.stickySyncHandle = null;
+    }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.scheduleStickySync();
   }
 
   reload() {
@@ -76,13 +108,45 @@ export class ProgramListComponent implements OnInit {
         this.pageBudgetTotal = res.pageBudgetTotal;
         this.loading = false;
         this.currentReq = undefined;
+        this.scheduleStickySync();
       },
       error: err => {
         console.error('ProgramList: getAllAggregate error (temporary)', err);
         this.loading = false;
         this.currentReq = undefined;
+        this.scheduleStickySync();
       }
     });
+  }
+
+  private scheduleStickySync(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (this.stickySyncHandle !== null) {
+      window.cancelAnimationFrame(this.stickySyncHandle);
+    }
+
+    this.stickySyncHandle = window.requestAnimationFrame(() => {
+      this.stickySyncHandle = window.requestAnimationFrame(() => {
+        this.syncStickyOffsets();
+        this.stickySyncHandle = null;
+      });
+    });
+  }
+
+  private syncStickyOffsets(): void {
+    const summaryHeight = this.summaryBarRef?.nativeElement.getBoundingClientRect().height ?? 0;
+    const headHeight = this.headRowRef?.nativeElement.getBoundingClientRect().height ?? 0;
+    const subHeadHeight = this.subHeadRowRef?.nativeElement.getBoundingClientRect().height ?? 0;
+
+    this.stickyStyles = {
+      '--pl-sticky-summary': '0px',
+      '--pl-sticky-head': `${Math.ceil(summaryHeight)}px`,
+      '--pl-sticky-subhead': `${Math.ceil(summaryHeight + headHeight)}px`,
+      '--pl-sticky-group': `${Math.ceil(summaryHeight + headHeight + subHeadHeight)}px`
+    };
   }
 
   // handler for filter changes

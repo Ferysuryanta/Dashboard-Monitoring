@@ -108,15 +108,15 @@
       </div>
     </div>
 
-    <div class="table-wrap desktop-table" *ngIf="!loading && hasData">
-      <div class="summary-bar">
+    <div class="table-wrap desktop-table" *ngIf="!loading && hasData" [ngStyle]="stickyStyles">
+      <div class="summary-bar" #summaryBar>
         <span><strong>{{ total }}</strong> item</span>
         <span><strong>{{ pageBudgetTotal | number:'1.0-0' }}</strong> total anggaran</span>
       </div>
 
       <table class="print-full-table">
         <thead>
-          <tr>
+          <tr #headRow>
             <th rowspan="2">No</th>
             <th rowspan="2">Kegiatan</th>
             <th rowspan="2">Tempat</th>
@@ -127,7 +127,7 @@
             <th rowspan="2">Jadwal</th>
             <th rowspan="2">Keterangan</th>
           </tr>
-          <tr class="head-sub">
+          <tr class="head-sub" #subHeadRow>
             <th>Lokal</th>
             <th>Subsidi</th>
             <th>Total</th>
@@ -136,7 +136,14 @@
         <tbody>
           <ng-container *ngFor="let g of grouped; trackBy: trackByGroup">
             <ng-container *ngIf="g.items?.length">
-              <tr class="group-row"><td colspan="11">{{ getCategoryLabel(g.category) }}</td></tr>
+              <tr class="group-row">
+                <td colspan="11">
+                  <div class="group-row-content">
+                    <span class="group-row-label">{{ getCategoryLabel(g.category) }}</span>
+                    <span class="group-row-summary">{{ g.items.length }} item</span>
+                  </div>
+                </td>
+              </tr>
               <tr *ngFor="let item of g.items; let idx = index; trackBy: trackByProgram">
                 <td>{{ g.startIndex + idx + 1 }}</td>
                 <td class="col-title">
