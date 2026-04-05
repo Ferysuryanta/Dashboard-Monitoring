@@ -14,6 +14,8 @@ import java.util.List;
 public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program> {
     Page<Program> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
+    long countByStatusIgnoreCase(String status);
+
     @Query("select distinct p.category from Program p where p.category is not null")
     List<String> findDistinctCategories();
 }

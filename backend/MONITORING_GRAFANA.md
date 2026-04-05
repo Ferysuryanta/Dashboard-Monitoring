@@ -166,6 +166,13 @@ Panel awal yang sudah tersedia:
 6. Threads & Uptime
 7. HTTP Requests by Status
 8. Top Endpoint Request Rate
+9. System CPU
+10. HTTP Request Count
+11. JVM Memory by Area
+12. Top Endpoint Max Latency
+13. Anggota Aktif
+14. Kehadiran Bulan Ini
+15. Status Program Mamre
 
 ---
 
@@ -205,6 +212,16 @@ sum(rate(http_server_requests_seconds_count[5m])) by (uri)
 ### Kesehatan service
 
 - `up{job="mamre-backend"}`
+
+### Metric bisnis Mamre
+
+- `mamre_members`
+- `mamre_members_active`
+- `mamre_attendance_unique_members_current_month`
+- `mamre_attendance_total_current_month`
+- `mamre_programs`
+- `mamre_programs_status{status="PLANNED"}`
+- `mamre_programs_status{status="DONE"}`
 
 ---
 
@@ -272,5 +289,5 @@ Spring Boot Backend
   -> queried by Grafana
 ```
 
-Jika Anda ingin, langkah berikutnya yang paling natural adalah menambahkan metric bisnis khusus Mamre seperti anggota aktif, kehadiran, dan status program agar dashboard Grafana bukan hanya menampilkan metric teknis backend.
+Dashboard sekarang juga sudah memuat metric bisnis dasar Mamre seperti anggota aktif, kehadiran bulan ini, dan status program. Langkah berikutnya yang paling natural adalah menambahkan metric bisnis lanjutan seperti distribusi sektor, progres baca Alkitab, atau attendance rate per sektor.
 
