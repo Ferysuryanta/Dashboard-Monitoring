@@ -51,3 +51,8 @@ server:
     include-binding-errors: never
     include-stacktrace: never
     include-exception: false
+
+monitoring:
+  prometheus:
+    public: ${MONITORING_PROMETHEUS_PUBLIC:false}
+

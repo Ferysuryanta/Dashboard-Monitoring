@@ -38,3 +38,28 @@ jwt:
 
 server:
   port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,prometheus}
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: ${MANAGEMENT_METRICS_TAG_APPLICATION:mamre-backend}
+      environment: ${MANAGEMENT_METRICS_TAG_ENVIRONMENT:${spring.profiles.active:default}}
+
+monitoring:
+  prometheus:
+    public: ${MONITORING_PROMETHEUS_PUBLIC:false}
+

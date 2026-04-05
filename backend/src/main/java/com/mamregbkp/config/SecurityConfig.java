@@ -38,6 +38,9 @@ public class SecurityConfig {
     @Value("${app.security.enabled:true}")
     private boolean securityEnabled;
 
+    @Value("${monitoring.prometheus.public:false}")
+    private boolean prometheusPublic;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
@@ -78,6 +81,7 @@ public class SecurityConfig {
             http.authorizeHttpRequests(auth -> auth
                     // Public endpoints
                     .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     // Allow all API endpoints in dev mode
@@ -91,6 +95,11 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                     // Public dashboard stats for login page
                     .requestMatchers("/api/dashboard/summary-stats").permitAll()
+                    .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
+                    .requestMatchers("/actuator/prometheus").access((authentication, context) ->
+                            new org.springframework.security.authorization.AuthorizationDecision(
+                                    prometheusPublic || (authentication.get() != null && authentication.get().isAuthenticated())
+                            ))
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                     // Swagger should be disabled or protected in production

@@ -22,3 +22,8 @@ logging:
     com.mamregbkp: DEBUG
     org.springframework.security: DEBUG
     AUDIT: INFO
+
+monitoring:
+  prometheus:
+    public: true
+

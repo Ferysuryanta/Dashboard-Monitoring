@@ -44,6 +44,19 @@ LOG_PATH=/var/log/mamre
 SECURITY_ENABLED=true
 ```
 
+### Monitoring / Prometheus
+```bash
+# Expose /actuator/prometheus publicly only if Prometheus scrapes from a trusted network
+MONITORING_PROMETHEUS_PUBLIC=false
+
+# Default actuator exposure used by this project
+MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus
+
+# Optional tags for Grafana dashboards
+MANAGEMENT_METRICS_TAG_APPLICATION=mamre-backend
+MANAGEMENT_METRICS_TAG_ENVIRONMENT=prod
+```
+
 ### Flyway Database Migration
 ```bash
 FLYWAY_ENABLED=true
@@ -79,6 +92,7 @@ Before deploying to production, ensure:
 - [ ] `JWT_SECRET` is set with at least 256-bit random string (base64 encoded)
 - [ ] `CORS_ORIGINS` only contains your production domain(s)
 - [ ] `SECURITY_ENABLED=true` is set (default)
+- [ ] `MONITORING_PROMETHEUS_PUBLIC=false` unless endpoint is protected by private network / reverse proxy
 - [ ] HTTPS is enabled on your server/load balancer
 - [ ] Swagger UI is disabled or protected (not accessible publicly)
 - [ ] Database credentials are not hardcoded anywhere

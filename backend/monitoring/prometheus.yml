@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: mamre-backend
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # Jika Prometheus jalan di Docker Desktop pada Windows/Mac
+      - targets: ['host.docker.internal:8080']
+
+    # Jika Prometheus dijalankan langsung di host (bukan Docker),
+    # ganti target di atas menjadi:
+    # static_configs:
+    #   - targets: ['localhost:8080']
+

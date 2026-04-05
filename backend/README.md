@@ -8,9 +8,17 @@ What I fixed:
  - Member.status stored as VARCHAR to avoid PostgreSQL enum casting issues
 
 How to run:
- 1. Update src/main/resources/application.yml with DB credentials.
- 2. Create tables manually in the DB (SQL not included).
- 3. mvn spring-boot:run
+ 1. Update `src/main/resources/application.yml` or set env vars for DB credentials.
+ 2. Run backend with Maven:
+	```
+    mvn "-Dspring-boot.run.profiles=dev" spring-boot:run
+	```
 
-Uploaded image file (local path):
-file:///mnt/data/defa49b1-1306-4fd5-97a9-ec28f6a8e880.png
+Monitoring & Grafana:
+ - Project-specific Grafana / Prometheus setup ada di `backend/MONITORING_GRAFANA.md`.
+ - Sample config files tersedia di folder `backend/monitoring/`.
+ - Cara termudah untuk monitoring lokal sekarang adalah:
+   ```
+   cd backend/monitoring
+   docker compose up -d
+   ```
