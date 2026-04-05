@@ -1,423 +1,605 @@
 <div class="dashboard-root">
-    <div class="header-section-modern">
-        <div class="header-top">
-            <div class="header-left">
-                <div class="greeting-row">
-                    <span class="greeting-text">{{ getGreeting() }}</span>
-                    <span class="greeting-wave">👋</span>
+    <section class="hero-shell">
+        <div class="hero-panel">
+            <div class="hero-kicker">Dashboard Utama</div>
+
+            <div class="hero-heading-row">
+                <div class="hero-copy">
+                    <div class="greeting-row">
+                        <span class="greeting-text">{{ getGreeting() }}</span>
+                        <span class="greeting-wave">👋</span>
+                    </div>
+                    <h1 class="hero-title">Dashboard <span>Mamre GBKP</span></h1>
+                    <p class="hero-subtitle">
+                        Pantau pertumbuhan anggota, kesehatan kehadiran, distribusi sektor, dan agenda pelayanan dari satu layar yang lebih rapi, lapang, dan mudah dipindai.
+                    </p>
                 </div>
-                <h1 class="header-title">Dashboard <span class="brand-text">Mamre GBKP</span></h1>
-                <p class="header-subtitle">Pantau pertumbuhan anggota, aktivitas sektor, kehadiran, dan agenda pelayanan dalam satu tampilan yang lebih ringkas.</p>
+
+                <div class="hero-date-card">
+                    <mat-icon>calendar_today</mat-icon>
+                    <div>
+                        <span class="date-label">Hari ini</span>
+                        <strong>{{ today | date:'EEEE, dd MMMM yyyy' }}</strong>
+                    </div>
+                </div>
             </div>
 
-            <div class="header-right">
-                <div class="header-date">
-                    <div class="date-badge">
-                        <mat-icon>calendar_today</mat-icon>
-                        <span>{{ today | date:'EEEE, dd MMMM yyyy' }}</span>
-                    </div>
+            <div class="hero-metrics">
+                <div class="hero-metric">
+                    <span class="metric-label">Anggota aktif</span>
+                    <strong>{{ getActiveMemberRatio() }}%</strong>
+                    <span class="metric-caption">{{ summary.activeMembers | countUp }} dari {{ summary.totalMembers | countUp }} anggota</span>
+                </div>
+                <div class="hero-metric">
+                    <span class="metric-label">Kehadiran bulan ini</span>
+                    <strong>{{ getAttendanceRate() }}%</strong>
+                    <span class="metric-caption">{{ attendanceSummary?.uniqueMembers | countUp }} anggota unik tercatat</span>
+                </div>
+                <div class="hero-metric">
+                    <span class="metric-label">Agenda terjadwal</span>
+                    <strong>{{ upcomingPrograms.length | countUp }}</strong>
+                    <span class="metric-caption">Program berikutnya siap dipantau</span>
+                </div>
+                <div class="hero-metric">
+                    <span class="metric-label">Widget aktif</span>
+                    <strong>{{ getVisibleWidgetCount() | countUp }}</strong>
+                    <span class="metric-caption">{{ getWidgetCoverageRatio() }}% panel sedang ditampilkan</span>
                 </div>
             </div>
         </div>
 
+        <mat-card class="focus-card">
+            <div class="focus-head">
+                <div>
+                    <span class="focus-kicker">Fokus hari ini</span>
+                    <h2>{{ getAttendanceMonthLabel() }}</h2>
+                </div>
+                <div class="focus-badge">
+                    <mat-icon>insights</mat-icon>
+                    <span>Ringkas</span>
+                </div>
+            </div>
+
+            <p class="focus-copy">{{ getFocusMessage() }}</p>
+
+            <div class="progress-cluster">
+                <div class="progress-item">
+                    <div class="progress-meta">
+                        <span>Kehadiran unik</span>
+                        <strong>{{ getAttendanceRate() }}%</strong>
+                    </div>
+                    <div class="progress-track"><span [style.width.%]="getAttendanceRate()"></span></div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-meta">
+                        <span>Anggota aktif</span>
+                        <strong>{{ getActiveMemberRatio() }}%</strong>
+                    </div>
+                    <div class="progress-track accent-secondary"><span [style.width.%]="getActiveMemberRatio()"></span></div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-meta">
+                        <span>Widget terlihat</span>
+                        <strong>{{ getWidgetCoverageRatio() }}%</strong>
+                    </div>
+                    <div class="progress-track accent-warm"><span [style.width.%]="getWidgetCoverageRatio()"></span></div>
+                </div>
+            </div>
+
+            <div class="focus-note">{{ getNextProgramSummary() }}</div>
+
+            <div class="focus-actions">
+                <button mat-flat-button color="primary" type="button" (click)="goPrograms()">Buka Agenda</button>
+                <button mat-stroked-button type="button" (click)="goMembers()">Data Anggota</button>
+            </div>
+        </mat-card>
+    </section>
+
+    <section class="control-surface">
         <div class="widget-toolbar">
             <div class="widget-toolbar-header">
-                <div class="widget-toolbar-title">
-                    <mat-icon>dashboard_customize</mat-icon>
-                    <span>Widget Aktif: {{ getVisibleWidgetCount() }}/{{ widgetDefinitions.length }}</span>
+                <div>
+                    <p class="toolbar-eyebrow">Kustomisasi tampilan</p>
+                    <h2>Widget dashboard</h2>
                 </div>
-                <div class="widget-toolbar-caption">Klik chip untuk menampilkan atau menyembunyikan widget dashboard.</div>
+                <div class="toolbar-badge">{{ getVisibleWidgetCount() }}/{{ widgetDefinitions.length }} aktif</div>
             </div>
+
+            <p class="widget-toolbar-caption">Klik chip untuk menampilkan atau menyembunyikan panel sesuai fokus kerja Anda saat ini.</p>
+
             <div class="widget-toggle-list">
-                <button mat-stroked-button type="button" *ngFor="let widget of widgetDefinitions"
+                @for (widget of widgetDefinitions; track widget.id) {
+                    <button
+                        mat-stroked-button
+                        type="button"
                         (click)="toggleWidget(widget.id)"
                         [class.inactive]="!isWidgetVisible(widget.id)"
                         [attr.aria-pressed]="isWidgetVisible(widget.id)">
-                    {{ getWidgetLabel(widget.id) }}
+                        {{ getWidgetLabel(widget.id) }}
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="quick-actions-panel">
+            <div class="quick-actions-header">
+                <p class="toolbar-eyebrow">Akses cepat</p>
+                <h2>Navigasi utama</h2>
+            </div>
+
+            <div class="quick-actions-grid">
+                <button type="button" class="action-tile primary" (click)="goMembers()">
+                    <div class="action-icon"><mat-icon>groups</mat-icon></div>
+                    <div class="action-content">
+                        <strong>Anggota</strong>
+                        <span>Kelola profil jemaat dan data utama</span>
+                    </div>
+                </button>
+
+                <button type="button" class="action-tile secondary" (click)="goAttendance()">
+                    <div class="action-icon"><mat-icon>event_available</mat-icon></div>
+                    <div class="action-content">
+                        <strong>Kehadiran</strong>
+                        <span>Catat hadir dan pantau partisipasi</span>
+                    </div>
+                </button>
+
+                <button type="button" class="action-tile warm" (click)="goBibleReadingReport()">
+                    <div class="action-icon"><mat-icon>menu_book</mat-icon></div>
+                    <div class="action-content">
+                        <strong>Laporan Baca</strong>
+                        <span>Lihat performa pembacaan Alkitab</span>
+                    </div>
+                </button>
+
+                <button type="button" class="action-tile accent" (click)="goPrograms()">
+                    <div class="action-icon"><mat-icon>event_note</mat-icon></div>
+                    <div class="action-content">
+                        <strong>Program</strong>
+                        <span>Susun agenda, jadwal, dan tindak lanjut</span>
+                    </div>
                 </button>
             </div>
         </div>
+    </section>
 
-        <div class="quick-nav-actions">
-            <div class="nav-card primary" (click)="goMembers()">
-                <div class="nav-icon-wrap">
-                    <mat-icon>groups</mat-icon>
+    @if (!loading) {
+        <div class="dashboard-body" @fadeIn>
+            <section class="section-block">
+                <div class="section-header">
+                    <div>
+                        <p class="section-eyebrow">Ringkasan jemaat</p>
+                        <h2>Snapshot utama pelayanan</h2>
+                        <p>Angka inti yang paling sering dipakai untuk mengecek kapasitas pelayanan dan pertumbuhan database anggota.</p>
+                    </div>
+                    <div class="section-pill">Diperbarui {{ today | date:'dd MMM yyyy' }}</div>
                 </div>
-                <div class="nav-content">
-                    <span class="nav-title">Anggota</span>
-                    <span class="nav-subtitle">Kelola data anggota</span>
+
+                <div class="summary-grid">
+                    <mat-card class="summary-card summary-card--primary">
+                        <div class="summary-card-top">
+                            <span class="summary-label">Total Anggota</span>
+                            <mat-icon>groups</mat-icon>
+                        </div>
+                        <div class="summary-value">{{ summary.totalMembers | countUp }}</div>
+                        <p class="summary-note">Basis utama seluruh statistik dashboard dan distribusi sektor.</p>
+                    </mat-card>
+
+                    <mat-card class="summary-card summary-card--success">
+                        <div class="summary-card-top">
+                            <span class="summary-label">Anggota Aktif</span>
+                            <mat-icon>verified</mat-icon>
+                        </div>
+                        <div class="summary-value">{{ summary.activeMembers | countUp }}</div>
+                        <p class="summary-note">{{ getActiveMemberRatio() }}% dari total anggota tercatat aktif.</p>
+                    </mat-card>
+
+                    <mat-card class="summary-card summary-card--amber">
+                        <div class="summary-card-top">
+                            <span class="summary-label">Sektor</span>
+                            <mat-icon>account_tree</mat-icon>
+                        </div>
+                        <div class="summary-value">{{ summary.sectors | countUp }}</div>
+                        <p class="summary-note">Rata-rata {{ getAverageMembersPerSector() | countUp }} anggota per sektor.</p>
+                    </mat-card>
+
+                    <mat-card class="summary-card summary-card--rose">
+                        <div class="summary-card-top">
+                            <span class="summary-label">Jabatan</span>
+                            <mat-icon>work</mat-icon>
+                        </div>
+                        <div class="summary-value">{{ summary.positions | countUp }}</div>
+                        <p class="summary-note">Struktur pelayanan dapat dipantau dari modul jabatan.</p>
+                    </mat-card>
+
+                    @if (attendanceSummary) {
+                        <mat-card class="summary-card summary-card--cyan">
+                            <div class="summary-card-top">
+                                <span class="summary-label">Kehadiran {{ getAttendanceMonthLabel() }}</span>
+                                <mat-icon>how_to_reg</mat-icon>
+                            </div>
+                            <div class="summary-value">{{ attendanceSummary.totalAttendances | countUp }}</div>
+                            <p class="summary-note">{{ attendanceSummary.uniqueMembers | countUp }} anggota unik sudah tercatat hadir.</p>
+                        </mat-card>
+                    }
                 </div>
-                <div class="nav-arrow-wrap">
-                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+            </section>
+
+            <section class="section-block">
+                <div class="section-header">
+                    <div>
+                        <p class="section-eyebrow">Analitik & distribusi</p>
+                        <h2>Visual utama dashboard</h2>
+                        <p>Grafik dirancang ulang agar proporsi, hierarki informasi, dan fokus tindakan terasa lebih jelas di layar lebar maupun laptop.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="nav-card secondary" (click)="goSectors()">
-                <div class="nav-icon-wrap">
-                    <mat-icon>account_tree</mat-icon>
+
+                <div class="analytics-grid">
+                    @if (isWidgetVisible('bibleReadingChart')) {
+                        <mat-card class="chart-card chart-card--wide">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">📖 Persentase Baca Alkitab per Sektor</div>
+                                    <p class="card-description">Perbandingan kesehatan pembacaan Alkitab tiap sektor berdasarkan persentase anggota yang aktif membaca.</p>
+                                </div>
+                                <button mat-icon-button matTooltip="Lihat laporan lengkap" routerLink="/app/bible-reading-report" class="chart-action-btn">
+                                    <mat-icon>open_in_new</mat-icon>
+                                </button>
+                            </div>
+                            <div class="card-meta">{{ sectorBibleReadingData.length | countUp }} sektor termonitor</div>
+                            <div class="chart-area chart-area--wide" [ngStyle]="{ '--chart-height': getHorizontalChartHeight(sectorBibleReadingData.length, 'wide') + 'px' }">
+                                @if (!loading && hasChartData(lineChartData)) {
+                                    <ng-container>
+                                        <canvas baseChart #lineChart="base-chart" [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
+                                        @if (isMobile && lineChartData?.labels?.length) {
+                                            <div class="legend-mobile">
+                                                <button (click)="toggleDataset(0, lineChart)" [class.hidden]="isDatasetHidden(0, lineChart)">{{ getLineChartLegendLabel() }}</button>
+                                            </div>
+                                        }
+                                    </ng-container>
+                                } @else {
+                                    <div class="chart-skeleton chart-skeleton-bar" role="status" aria-label="Memuat grafik">
+                                        <span class="sr-only">Memuat grafik persentase baca Alkitab</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('sectorDistributionChart')) {
+                        <mat-card class="chart-card chart-card--panel">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Distribusi Sektor</div>
+                                    <p class="card-description">Membantu melihat konsentrasi anggota antar sektor secara cepat.</p>
+                                </div>
+                            </div>
+                            <div class="card-meta">{{ summary.totalMembers | countUp }} anggota tersebar</div>
+                            <div class="chart-area chart-area--panel" [ngStyle]="{ '--chart-height': getDoughnutChartHeight('panel') + 'px' }">
+                                @if (!loading && hasChartData(pieChartData)) {
+                                    <ng-container>
+                                        <canvas baseChart #pieChart="base-chart" [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
+                                        @if (isMobile && pieChartData?.labels?.length) {
+                                            <div class="legend-mobile">
+                                                @for (lbl of pieChartData.labels; track $index; let i = $index) {
+                                                    <button (click)="toggleDataset(i, pieChart)" [class.hidden]="isDatasetHidden(i, pieChart)">{{ lbl }}</button>
+                                                }
+                                            </div>
+                                        }
+                                    </ng-container>
+                                } @else {
+                                    <div class="chart-skeleton chart-skeleton-donut" role="status" aria-label="Memuat grafik">
+                                        <span class="sr-only">Memuat grafik distribusi sektor</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('attendanceChart') && attendanceSummary && summary.totalMembers > 0) {
+                        <mat-card class="chart-card chart-card--third">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Kehadiran {{ getAttendanceMonthLabel() }}</div>
+                                    <p class="card-description">Porsi anggota yang sudah tercatat hadir dibandingkan dengan total anggota.</p>
+                                </div>
+                                <button mat-icon-button matTooltip="Kelola kehadiran" routerLink="/app/attendance" class="chart-action-btn">
+                                    <mat-icon>open_in_new</mat-icon>
+                                </button>
+                            </div>
+                            <div class="card-meta">{{ getAttendanceGap() | countUp }} anggota belum tercatat hadir</div>
+                            <div class="chart-area chart-area--compact" [ngStyle]="{ '--chart-height': getDoughnutChartHeight('compact') + 'px' }">
+                                @if (!loading && hasChartData(attendanceChartData)) {
+                                    <canvas baseChart #attendanceChart="base-chart"
+                                            id="attendanceChartCanvas"
+                                            [data]="attendanceChartData"
+                                            [options]="attendanceChartOptions"
+                                            [type]="attendanceChartType"
+                                            [plugins]="attendanceChartPlugins">
+                                    </canvas>
+                                } @else {
+                                    <div class="chart-skeleton chart-skeleton-donut chart-skeleton-compact" role="status" aria-label="Memuat grafik">
+                                        <span class="sr-only">Memuat grafik kehadiran</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('genderChart')) {
+                        <mat-card class="chart-card chart-card--third">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Distribusi Gender</div>
+                                    <p class="card-description">Komposisi anggota berdasarkan gender yang tercatat di database.</p>
+                                </div>
+                            </div>
+                            <div class="card-meta">{{ genderData.length | countUp }} kategori tercatat</div>
+                            <div class="chart-area chart-area--compact" [ngStyle]="{ '--chart-height': getDoughnutChartHeight('compact') + 'px' }">
+                                @if (!loading && hasChartData(genderChartData)) {
+                                    <ng-container>
+                                        <canvas baseChart #genderChart="base-chart" [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
+                                        @if (isMobile && genderChartData?.labels?.length) {
+                                            <div class="legend-mobile">
+                                                @for (lbl of genderChartData.labels; track $index; let i = $index) {
+                                                    <button (click)="toggleDataset(i, genderChart)" [class.hidden]="isDatasetHidden(i, genderChart)">{{ lbl }}</button>
+                                                }
+                                            </div>
+                                        }
+                                    </ng-container>
+                                } @else {
+                                    <div class="chart-skeleton chart-skeleton-donut chart-skeleton-compact" role="status" aria-label="Memuat grafik">
+                                        <span class="sr-only">Memuat grafik distribusi gender</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('statusChart')) {
+                        <mat-card class="chart-card chart-card--third">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Distribusi Status</div>
+                                    <p class="card-description">Memudahkan identifikasi anggota aktif, tidak aktif, prospek, atau status lain.</p>
+                                </div>
+                            </div>
+                            <div class="card-meta">{{ statusData.length | countUp }} status terkelompok</div>
+                            <div class="chart-area chart-area--compact" [ngStyle]="{ '--chart-height': getHorizontalChartHeight(statusData.length, 'compact') + 'px' }">
+                                @if (!loading && hasChartData(statusChartData)) {
+                                    <ng-container>
+                                        <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
+                                        @if (isMobile && statusChartData?.labels?.length) {
+                                            <div class="legend-mobile">
+                                                @for (lbl of statusChartData.labels; track $index; let i = $index) {
+                                                    <button (click)="toggleDataset(i, statusChart)" [class.hidden]="isDatasetHidden(i, statusChart)">{{ lbl }}</button>
+                                                }
+                                            </div>
+                                        }
+                                    </ng-container>
+                                } @else {
+                                    <div class="chart-skeleton chart-skeleton-bar chart-skeleton-compact" role="status" aria-label="Memuat grafik">
+                                        <span class="sr-only">Memuat grafik distribusi status</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
                 </div>
-                <div class="nav-content">
-                    <span class="nav-title">Sektor</span>
-                    <span class="nav-subtitle">Atur pembagian</span>
+            </section>
+
+            <section class="section-block">
+                <div class="section-header">
+                    <div>
+                        <p class="section-eyebrow">Agenda & aktivitas</p>
+                        <h2>Hal yang perlu ditindaklanjuti</h2>
+                        <p>Bagian ini menonjolkan ulang tahun terdekat, agenda pelayanan, anggota baru, dan statistik operasional yang paling sering dipakai.</p>
+                    </div>
                 </div>
-                <div class="nav-arrow-wrap">
-                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
+
+                <div class="support-grid">
+                    @if (isWidgetVisible('birthdayWidget')) {
+                        <mat-card class="support-card birthday-card">
+                            <div class="card-header compact">
+                                <div>
+                                    <div class="card-title"><mat-icon class="title-icon">cake</mat-icon>Ulang Tahun Mendatang</div>
+                                    <p class="card-description">Pantau anggota yang perlu disapa dalam 30 hari ke depan.</p>
+                                </div>
+                            </div>
+                            @if (upcomingBirthdays.length > 0) {
+                                <div class="birthday-list">
+                                    @for (b of upcomingBirthdays; track b.id) {
+                                        <div class="birthday-item" [ngClass]="getBirthdayClass(b.daysUntil)">
+                                            <div class="birthday-avatar">{{ b.name?.[0] || '?' }}</div>
+                                            <div class="birthday-info">
+                                                <div class="birthday-name">{{ b.name }}</div>
+                                                <div class="birthday-meta">{{ b.birthDate | date:'dd MMM' }} • {{ b.sectorName || 'Tanpa Sektor' }}</div>
+                                            </div>
+                                            <div class="birthday-badge">{{ getBirthdayLabel(b.daysUntil) }}</div>
+                                        </div>
+                                    }
+                                </div>
+                            } @else {
+                                <div class="placeholder-text">
+                                    <mat-icon>event_busy</mat-icon>
+                                    <p>Tidak ada ulang tahun dalam 30 hari ke depan.</p>
+                                </div>
+                            }
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('calendarEventsWidget')) {
+                        <mat-card class="support-card calendar-card">
+                            <div class="card-header compact">
+                                <div>
+                                    <div class="card-title"><mat-icon class="title-icon">event_note</mat-icon>Agenda Pelayanan</div>
+                                    <p class="card-description">Program terdekat yang membutuhkan perhatian tim pelayanan.</p>
+                                </div>
+                                <button mat-icon-button matTooltip="Lihat semua kegiatan" routerLink="/app/programs" class="chart-action-btn">
+                                    <mat-icon>open_in_new</mat-icon>
+                                </button>
+                            </div>
+
+                            @if (upcomingPrograms.length > 0) {
+                                <div class="calendar-list">
+                                    @for (program of upcomingPrograms; track program.id ?? $index) {
+                                        <button type="button" class="calendar-item" (click)="openProgram(program)">
+                                            <div class="calendar-item-date">
+                                                <mat-icon>event</mat-icon>
+                                            </div>
+                                            <div class="calendar-item-content">
+                                                <div class="calendar-item-title">{{ program.title }}</div>
+                                                <div class="calendar-item-meta">{{ formatProgramSchedule(program) }}</div>
+                                                <div class="calendar-item-type">{{ program.type || 'Kegiatan' }} • {{ program.status || 'Terjadwal' }}</div>
+                                            </div>
+                                        </button>
+                                    }
+                                </div>
+                            } @else {
+                                <div class="placeholder-text">
+                                    <mat-icon>event_busy</mat-icon>
+                                    <p>Belum ada event terjadwal.</p>
+                                </div>
+                            }
+                        </mat-card>
+                    }
                 </div>
-            </div>
-            <div class="nav-card tertiary" (click)="goPositions()">
-                <div class="nav-icon-wrap">
-                    <mat-icon>work</mat-icon>
+
+                <div class="activity-grid">
+                    @if (isWidgetVisible('recentMembersWidget')) {
+                        <mat-card class="recent-card">
+                            <div class="card-header compact">
+                                <div>
+                                    <div class="card-title"><mat-icon class="title-icon">group_add</mat-icon>Anggota Terbaru</div>
+                                    <p class="card-description">Member baru yang paling baru masuk ke sistem.</p>
+                                </div>
+                                @if (recent.length > 0) {
+                                    <div class="badge-count">{{ recent.length }}</div>
+                                }
+                            </div>
+
+                            <div class="member-list-modern">
+                                @if (recent.length > 0) {
+                                    @for (r of recent; track r.id; let i = $index) {
+                                        <div class="member-item-modern">
+                                            <div class="avatar-modern" [ngClass]="'avatar-color-' + (i % 5)">
+                                                <span class="avatar-letter">{{ r.name?.[0] || '?' }}</span>
+                                                <div class="avatar-status online"></div>
+                                            </div>
+                                            <div class="member-content">
+                                                <div class="member-name-modern">{{ r.name }}</div>
+                                                <div class="member-details">
+                                                    <span class="sector-badge">
+                                                        <mat-icon>location_on</mat-icon>
+                                                        {{ r.sector || 'Tanpa Sektor' }}
+                                                    </span>
+                                                    <span class="join-date">
+                                                        <mat-icon>event</mat-icon>
+                                                        {{ r.joinedDate | date:'dd MMM yyyy' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="member-actions">
+                                                <button mat-icon-button class="action-btn-modern" matTooltip="Lihat detail" (click)="router.navigateByUrl('/app/members/' + r.id)">
+                                                    <mat-icon>visibility</mat-icon>
+                                                </button>
+                                                <button mat-icon-button class="action-btn-modern edit" matTooltip="Edit" (click)="router.navigateByUrl('/app/members/' + r.id + '/edit')">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                } @else {
+                                    <div class="empty-state-modern">
+                                        <mat-icon>person_add_disabled</mat-icon>
+                                        <p>Belum ada anggota baru</p>
+                                        <span>Anggota baru akan muncul di sini.</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card>
+                    }
+
+                    @if (isWidgetVisible('quickStatsWidget')) {
+                        <mat-card class="activity-card">
+                            <div class="card-header compact">
+                                <div>
+                                    <div class="card-title"><mat-icon class="title-icon">analytics</mat-icon>Statistik Ringkas</div>
+                                    <p class="card-description">Kartu ringkas untuk membaca kondisi dashboard dalam hitungan detik.</p>
+                                </div>
+                            </div>
+
+                            <div class="quick-grid-modern">
+                                <div class="q-item-modern total">
+                                    <div class="q-icon-wrap"><mat-icon>groups</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ summary.totalMembers | countUp }}</div>
+                                        <div class="q-label-modern">Total Anggota</div>
+                                    </div>
+                                </div>
+                                <div class="q-item-modern active">
+                                    <div class="q-icon-wrap"><mat-icon>verified</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ summary.activeMembers | countUp }}</div>
+                                        <div class="q-label-modern">Anggota Aktif</div>
+                                    </div>
+                                </div>
+                                <div class="q-item-modern sectors">
+                                    <div class="q-icon-wrap"><mat-icon>account_tree</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ summary.sectors | countUp }}</div>
+                                        <div class="q-label-modern">Jumlah Sektor</div>
+                                    </div>
+                                </div>
+                                <div class="q-item-modern positions">
+                                    <div class="q-icon-wrap"><mat-icon>work</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ summary.positions | countUp }}</div>
+                                        <div class="q-label-modern">Jumlah Jabatan</div>
+                                    </div>
+                                </div>
+                                @if (attendanceSummary) {
+                                    <div class="q-item-modern attendance">
+                                        <div class="q-icon-wrap"><mat-icon>how_to_reg</mat-icon></div>
+                                        <div class="q-content">
+                                            <div class="q-value-modern">{{ attendanceSummary.uniqueMembers | countUp }}</div>
+                                            <div class="q-label-modern">Anggota Hadir</div>
+                                        </div>
+                                    </div>
+                                    <div class="q-item-modern monthly">
+                                        <div class="q-icon-wrap"><mat-icon>calendar_month</mat-icon></div>
+                                        <div class="q-content">
+                                            <div class="q-value-modern">{{ attendanceSummary.totalAttendances | countUp }}</div>
+                                            <div class="q-label-modern">Kehadiran {{ getAttendanceMonthLabel() }}</div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="q-item-modern muted">
+                                    <div class="q-icon-wrap"><mat-icon>person_off</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ getInactiveMembers() | countUp }}</div>
+                                        <div class="q-label-modern">Perlu Follow-up</div>
+                                    </div>
+                                </div>
+                                <div class="q-item-modern widgets">
+                                    <div class="q-icon-wrap"><mat-icon>dashboard_customize</mat-icon></div>
+                                    <div class="q-content">
+                                        <div class="q-value-modern">{{ getVisibleWidgetCount() | countUp }}</div>
+                                        <div class="q-label-modern">Widget Aktif</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card>
+                    }
                 </div>
-                <div class="nav-content">
-                    <span class="nav-title">Jabatan</span>
-                    <span class="nav-subtitle">Struktur organisasi</span>
-                </div>
-                <div class="nav-arrow-wrap">
-                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
-                </div>
-            </div>
-            <div class="nav-card programs" (click)="router.navigateByUrl('/app/programs')">
-                <div class="nav-icon-wrap">
-                    <mat-icon>event_note</mat-icon>
-                </div>
-                <div class="nav-content">
-                    <span class="nav-title">Kegiatan & Program</span>
-                    <span class="nav-subtitle">Jadwal kegiatan Mamre, dokumentasi, dan status pelaksanaan</span>
-                </div>
-                <div class="nav-arrow-wrap">
-                    <mat-icon class="nav-arrow">arrow_forward</mat-icon>
-                </div>
-            </div>
+            </section>
         </div>
-    </div>
-
-    <ng-template #loadingTpl>
+    } @else {
         <div class="loading-wrap">
             <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
         </div>
-    </ng-template>
-
-    <div *ngIf="!loading; else loadingTpl" @fadeIn>
-        <div class="summary-grid modern-summary-grid">
-            <mat-card class="stat-card">
-                <div class="stat-left">
-                    <div class="stat-label">Total Anggota</div>
-                    <div class="stat-value">{{ summary.totalMembers | countUp }}</div>
-                </div>
-                <mat-icon class="stat-icon-overlay total">groups</mat-icon>
-                <mat-icon class="stat-icon-bg total">groups</mat-icon>
-            </mat-card>
-
-            <mat-card class="stat-card">
-                <div class="stat-left">
-                    <div class="stat-label">Aktif</div>
-                    <div class="stat-value">{{ summary.activeMembers | countUp }}</div>
-                </div>
-                <mat-icon class="stat-icon-overlay active">check_circle</mat-icon>
-                <mat-icon class="stat-icon-bg active">check_circle</mat-icon>
-            </mat-card>
-
-            <mat-card class="stat-card">
-                <div class="stat-left">
-                    <div class="stat-label">Sektor</div>
-                    <div class="stat-value">{{ summary.sectors | countUp }}</div>
-                </div>
-                <mat-icon class="stat-icon-overlay sectors">account_tree</mat-icon>
-                <mat-icon class="stat-icon-bg sectors">account_tree</mat-icon>
-            </mat-card>
-
-            <mat-card class="stat-card">
-                <div class="stat-left">
-                    <div class="stat-label">Jabatan</div>
-                    <div class="stat-value">{{ summary.positions | countUp }}</div>
-                </div>
-                <mat-icon class="stat-icon-overlay positions">work</mat-icon>
-                <mat-icon class="stat-icon-bg positions">work</mat-icon>
-            </mat-card>
-
-            <mat-card class="stat-card" *ngIf="attendanceSummary">
-                <div class="stat-left">
-                    <div class="stat-label">Total Kehadiran</div>
-                    <div class="stat-value">{{ attendanceSummary.totalAttendances | countUp }}</div>
-                </div>
-                <mat-icon class="stat-icon-overlay attendance">event_available</mat-icon>
-                <mat-icon class="stat-icon-bg attendance">event_available</mat-icon>
-            </mat-card>
-        </div>
-
-        <div class="charts-row">
-            <mat-card class="chart-card" *ngIf="isWidgetVisible('bibleReadingChart')">
-                <div class="card-header">
-                    <div class="card-title">📖 Persentase Baca Alkitab per Sektor</div>
-                    <button mat-icon-button matTooltip="Lihat Laporan Lengkap" routerLink="/app/bible-reading-report" class="chart-action-btn">
-                        <mat-icon>open_in_new</mat-icon>
-                    </button>
-                </div>
-                <div class="chart-area">
-                    <ng-container *ngIf="!loading && hasChartData(lineChartData); else skeletonLine">
-                        <canvas baseChart #lineChart="base-chart" [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType" [plugins]="barChartPlugins"></canvas>
-                        <div class="legend-mobile" *ngIf="isMobile && lineChartData?.labels?.length">
-                            <button (click)="toggleDataset(0, lineChart)" [class.hidden]="isDatasetHidden(0, lineChart)">{{ getLineChartLegendLabel() }}</button>
-                        </div>
-                    </ng-container>
-                    <ng-template #skeletonLine>
-                        <div class="chart-skeleton chart-skeleton-bar" role="status" aria-label="Memuat grafik">
-                            <span class="sr-only">Memuat grafik persentase baca Alkitab</span>
-                        </div>
-                    </ng-template>
-                </div>
-            </mat-card>
-
-            <mat-card class="chart-card" *ngIf="isWidgetVisible('sectorDistributionChart')">
-                <div class="card-title">Distribusi Sektor</div>
-                <div class="chart-area">
-                    <ng-container *ngIf="!loading && hasChartData(pieChartData); else skeletonPie">
-                        <canvas baseChart #pieChart="base-chart" [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
-                        <div class="legend-mobile" *ngIf="isMobile && pieChartData?.labels?.length">
-                            <button *ngFor="let lbl of pieChartData.labels; let i = index" (click)="toggleDataset(i, pieChart)" [class.hidden]="isDatasetHidden(i, pieChart)">{{ lbl }}</button>
-                        </div>
-                    </ng-container>
-                    <ng-template #skeletonPie>
-                        <div class="chart-skeleton chart-skeleton-donut" role="status" aria-label="Memuat grafik">
-                            <span class="sr-only">Memuat grafik distribusi sektor</span>
-                        </div>
-                    </ng-template>
-                </div>
-            </mat-card>
-
-            <mat-card class="chart-card" *ngIf="isWidgetVisible('attendanceChart') && attendanceSummary && summary.totalMembers > 0">
-                <div class="card-header">
-                    <div class="card-title">Kehadiran ({{ attendanceSummary.month }})</div>
-                    <button mat-icon-button matTooltip="Kelola Kehadiran" routerLink="/app/attendance" class="chart-action-btn">
-                        <mat-icon>open_in_new</mat-icon>
-                    </button>
-                </div>
-                <div class="chart-area">
-                    <ng-container *ngIf="!loading && hasChartData(attendanceChartData); else skeletonAttendance">
-                        <canvas baseChart #attendanceChart="base-chart"
-                                 id="attendanceChartCanvas"
-                                 [data]="attendanceChartData"
-                                 [options]="attendanceChartOptions"
-                                 [type]="attendanceChartType"
-                                 [plugins]="attendanceChartPlugins">
-                        </canvas>
-                    </ng-container>
-                    <ng-template #skeletonAttendance>
-                        <div class="chart-skeleton chart-skeleton-donut" role="status" aria-label="Memuat grafik">
-                            <span class="sr-only">Memuat grafik kehadiran</span>
-                        </div>
-                    </ng-template>
-                </div>
-            </mat-card>
-        </div>
-
-        <!-- Row 2: Gender & Status Distribution -->
-        <div class="charts-row-secondary">
-            <mat-card class="chart-card-small" *ngIf="isWidgetVisible('genderChart')">
-                <div class="card-title">Distribusi Gender</div>
-                <div class="chart-area-small">
-                    <ng-container *ngIf="!loading && hasChartData(genderChartData); else skeletonGender">
-                        <canvas baseChart #genderChart="base-chart" [data]="genderChartData" [options]="genderChartOptions" [type]="genderChartType"></canvas>
-                        <div class="legend-mobile" *ngIf="isMobile && genderChartData?.labels?.length">
-                            <button *ngFor="let lbl of genderChartData.labels; let i = index" (click)="toggleDataset(i, genderChart)" [class.hidden]="isDatasetHidden(i, genderChart)">{{ lbl }}</button>
-                        </div>
-                    </ng-container>
-                    <ng-template #skeletonGender>
-                        <div class="chart-skeleton chart-skeleton-donut chart-skeleton-compact" role="status" aria-label="Memuat grafik">
-                            <span class="sr-only">Memuat grafik distribusi gender</span>
-                        </div>
-                    </ng-template>
-                </div>
-            </mat-card>
-
-            <mat-card class="chart-card-small" *ngIf="isWidgetVisible('statusChart')">
-                <div class="card-title">Distribusi Status</div>
-                <div class="chart-area-small">
-                    <ng-container *ngIf="!loading && hasChartData(statusChartData); else skeletonStatus">
-                        <canvas baseChart #statusChart="base-chart" [data]="statusChartData" [options]="statusChartOptions" [type]="statusChartType"></canvas>
-                        <div class="legend-mobile" *ngIf="isMobile && statusChartData?.labels?.length">
-                            <button *ngFor="let lbl of statusChartData.labels; let i = index" (click)="toggleDataset(i, statusChart)" [class.hidden]="isDatasetHidden(i, statusChart)">{{ lbl }}</button>
-                        </div>
-                    </ng-container>
-                    <ng-template #skeletonStatus>
-                        <div class="chart-skeleton chart-skeleton-bar chart-skeleton-compact" role="status" aria-label="Memuat grafik">
-                            <span class="sr-only">Memuat grafik distribusi status</span>
-                        </div>
-                    </ng-template>
-                </div>
-            </mat-card>
-
-            <mat-card class="birthday-card" *ngIf="isWidgetVisible('birthdayWidget')">
-                <div class="card-title">
-                    <mat-icon class="title-icon">cake</mat-icon>
-                    Ulang Tahun Mendatang
-                </div>
-                <mat-divider></mat-divider>
-                <div class="birthday-list" *ngIf="upcomingBirthdays.length > 0">
-                    <div class="birthday-item" *ngFor="let b of upcomingBirthdays" [ngClass]="getBirthdayClass(b.daysUntil)">
-                        <div class="birthday-avatar">{{ b.name?.[0] || '?' }}</div>
-                        <div class="birthday-info">
-                            <div class="birthday-name">{{ b.name }}</div>
-                            <div class="birthday-meta">
-
-                               {{ b.birthDate | date:'dd MMM' }} • {{ b.sectorName || 'Tanpa Sektor' }}
-                            </div>
-                        </div>
-                        <div class="birthday-badge">
-                            {{ getBirthdayLabel(b.daysUntil) }}
-                        </div>
-                    </div>
-                </div>
-                <div *ngIf="upcomingBirthdays.length === 0" class="placeholder-text">
-                    <mat-icon>event_busy</mat-icon>
-                    <p>Tidak ada ulang tahun dalam 30 hari ke depan</p>
-                </div>
-            </mat-card>
-        </div>
-
-        <div class="calendar-row" *ngIf="isWidgetVisible('calendarEventsWidget')">
-            <mat-card class="calendar-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <mat-icon class="title-icon">event_note</mat-icon>
-                        Calendar Events
-                    </div>
-                    <button mat-icon-button matTooltip="Lihat semua kegiatan" routerLink="/app/programs" class="chart-action-btn">
-                        <mat-icon>open_in_new</mat-icon>
-                    </button>
-                </div>
-                <mat-divider></mat-divider>
-
-                <div class="calendar-list" *ngIf="upcomingPrograms.length > 0; else emptyPrograms">
-                    <button type="button" class="calendar-item" *ngFor="let program of upcomingPrograms" (click)="openProgram(program)">
-                        <div class="calendar-item-date">
-                            <mat-icon>event</mat-icon>
-                        </div>
-                        <div class="calendar-item-content">
-                            <div class="calendar-item-title">{{ program.title }}</div>
-                            <div class="calendar-item-meta">{{ formatProgramSchedule(program) }}</div>
-                            <div class="calendar-item-type">{{ program.type || 'Kegiatan' }} • {{ program.status || 'Terjadwal' }}</div>
-                        </div>
-                    </button>
-                </div>
-
-                <ng-template #emptyPrograms>
-                    <div class="placeholder-text">
-                        <mat-icon>event_busy</mat-icon>
-                        <p>Belum ada event terjadwal</p>
-                    </div>
-                </ng-template>
-            </mat-card>
-        </div>
-
-        <div class="recent-row">
-            <mat-card class="recent-card" *ngIf="isWidgetVisible('recentMembersWidget')">
-                <div class="card-title">
-                    <mat-icon class="title-icon">group_add</mat-icon>
-                    Anggota Terbaru
-                    <span class="badge-count" *ngIf="recent.length > 0">{{ recent.length }}</span>
-                </div>
-                <mat-divider></mat-divider>
-                <div class="member-list-modern">
-                    <div class="member-item-modern" *ngFor="let r of recent; let i = index">
-                        <div class="avatar-modern" [ngClass]="'avatar-color-' + (i % 5)">
-                            <span class="avatar-letter">{{ r.name?.[0] || '?' }}</span>
-                            <div class="avatar-status online"></div>
-                        </div>
-                        <div class="member-content">
-                            <div class="member-name-modern">{{ r.name }}</div>
-                            <div class="member-details">
-                                <span class="sector-badge">
-                                    <mat-icon>location_on</mat-icon>
-                                    {{ r.sector || 'Tanpa Sektor' }}
-                                </span>
-                                <span class="join-date">
-                                    <mat-icon>event</mat-icon>
-                                    {{ r.joinedDate | date:'dd MMM yyyy' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="member-actions">
-                            <button mat-icon-button class="action-btn-modern" matTooltip="Lihat Detail" (click)="router.navigateByUrl('/app/members/' + r.id)">
-                                <mat-icon>visibility</mat-icon>
-                            </button>
-                            <button mat-icon-button class="action-btn-modern edit" matTooltip="Edit" (click)="router.navigateByUrl('/app/members/' + r.id + '/edit')">
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                        </div>
-                    </div>
-                    <div *ngIf="recent.length === 0" class="empty-state-modern">
-                        <mat-icon>person_add_disabled</mat-icon>
-                        <p>Belum ada anggota baru</p>
-                        <span>Anggota baru akan muncul di sini</span>
-                    </div>
-                </div>
-            </mat-card>
-
-            <mat-card class="activity-card" *ngIf="isWidgetVisible('quickStatsWidget')">
-                <div class="card-title">
-                    <mat-icon class="title-icon">analytics</mat-icon>
-                    Statistik Ringkas
-                </div>
-                <mat-divider></mat-divider>
-                <div class="quick-grid-modern">
-                    <div class="q-item-modern total">
-                        <div class="q-icon-wrap">
-                            <mat-icon>groups</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ summary.totalMembers | countUp }}</div>
-                            <div class="q-label-modern">Total Anggota</div>
-                        </div>
-                    </div>
-                    <div class="q-item-modern active">
-                        <div class="q-icon-wrap">
-                            <mat-icon>verified</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ summary.activeMembers | countUp }}</div>
-                            <div class="q-label-modern">Anggota Aktif</div>
-                        </div>
-                    </div>
-                    <div class="q-item-modern sectors">
-                        <div class="q-icon-wrap">
-                            <mat-icon>account_tree</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ summary.sectors | countUp }}</div>
-                            <div class="q-label-modern">Jumlah Sektor</div>
-                        </div>
-                    </div>
-                    <div class="q-item-modern positions">
-                        <div class="q-icon-wrap">
-                            <mat-icon>work</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ summary.positions | countUp }}</div>
-                            <div class="q-label-modern">Jumlah Jabatan</div>
-                        </div>
-                    </div>
-
-                    <div class="q-item-modern attendance" *ngIf="attendanceSummary">
-                        <div class="q-icon-wrap">
-                            <mat-icon>how_to_reg</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ attendanceSummary.uniqueMembers | countUp }}</div>
-                            <div class="q-label-modern">Anggota Hadir</div>
-                        </div>
-                    </div>
-                    <div class="q-item-modern monthly" *ngIf="attendanceSummary">
-                        <div class="q-icon-wrap">
-                            <mat-icon>calendar_month</mat-icon>
-                        </div>
-                        <div class="q-content">
-                            <div class="q-value-modern">{{ attendanceSummary.totalAttendances | countUp }}</div>
-                            <div class="q-label-modern">Kehadiran ({{ attendanceSummary.month }})</div>
-                        </div>
-                    </div>
-                </div>
-            </mat-card>
-        </div>
-    </div>
+    }
 </div>
 

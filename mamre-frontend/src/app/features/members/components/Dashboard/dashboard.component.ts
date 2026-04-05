@@ -123,10 +123,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         indexAxis: 'y', // Horizontal bar chart
         layout: {
             padding: {
-                left: 48,
-                right: 15,
-                top: 10,
-                bottom: 10
+                left: 32,
+                right: 12,
+                top: 6,
+                bottom: 6
             }
         },
         plugins: {
@@ -218,6 +218,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 backgroundColor: [],
                 hoverBackgroundColor: [],
                 borderRadius: 6,
+                maxBarThickness: 28,
                 barPercentage: 0.7,
                 categoryPercentage: 0.8
             }
@@ -239,7 +240,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     font: { family: 'Poppins' },
                     usePointStyle: true,
                     pointStyle: 'circle',
-                    padding: 12
+                    padding: 10
                 }
             },
             tooltip: {
@@ -372,6 +373,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: 'y',
+        layout: {
+            padding: {
+                top: 4,
+                right: 10,
+                bottom: 4,
+                left: 0
+            }
+        },
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -404,6 +413,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             label: 'Members',
             backgroundColor: ['#20c997', '#e63946', '#ffb703', '#9ca3af'],
             borderRadius: 6,
+            maxBarThickness: 24,
             barPercentage: 0.6
         }]
     };
@@ -654,6 +664,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     backgroundColor: this.sectorBibleReadingData.map(x => getColorByCategory(x.category)),
                     hoverBackgroundColor: this.sectorBibleReadingData.map(x => getHoverColorByCategory(x.category)),
                     borderRadius: 6,
+                    maxBarThickness: 28,
                     barPercentage: 0.7,
                     categoryPercentage: 0.8
                 }
@@ -741,6 +752,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 label: 'Members',
                 backgroundColor: arr.map(x => statusColors[x.status] || '#9ca3af'),
                 borderRadius: 6,
+                maxBarThickness: 24,
                 barPercentage: 0.6
             }];
         }, err => console.error('status err', err));
@@ -770,6 +782,99 @@ export class DashboardComponent implements OnInit, OnDestroy {
     goMembers() { this.router.navigateByUrl('/app/members'); }
     // Navigate to Programs/Kegiatan page
     goPrograms() { this.router.navigateByUrl('/app/programs'); }
+    goAttendance() { this.router.navigateByUrl('/app/attendance'); }
+    goBibleReadingReport() { this.router.navigateByUrl('/app/bible-reading-report'); }
+
+    getInactiveMembers(): number {
+        return Math.max((this.summary.totalMembers || 0) - (this.summary.activeMembers || 0), 0);
+    }
+
+    getActiveMemberRatio(): number {
+        if (!this.summary.totalMembers) {
+            return 0;
+        }
+        return Math.round((this.summary.activeMembers / this.summary.totalMembers) * 100);
+    }
+
+    getAttendanceRate(): number {
+        if (!this.attendanceSummary || !this.summary.totalMembers) {
+            return 0;
+        }
+        return Math.round((this.attendanceSummary.uniqueMembers / this.summary.totalMembers) * 100);
+    }
+
+    getAttendanceGap(): number {
+        if (!this.attendanceSummary || !this.summary.totalMembers) {
+            return 0;
+        }
+        return Math.max(this.summary.totalMembers - this.attendanceSummary.uniqueMembers, 0);
+    }
+
+    getAverageMembersPerSector(): number {
+        if (!this.summary.sectors) {
+            return 0;
+        }
+        return Math.round(this.summary.totalMembers / this.summary.sectors);
+    }
+
+    getWidgetCoverageRatio(): number {
+        if (!this.widgetDefinitions.length) {
+            return 0;
+        }
+        return Math.round((this.getVisibleWidgetCount() / this.widgetDefinitions.length) * 100);
+    }
+
+    formatMonthLabel(month?: string | null): string {
+        if (!month) {
+            return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date());
+        }
+
+        const match = /^(\d{4})-(\d{2})$/.exec(month);
+        if (!match) {
+            return month;
+        }
+
+        const year = Number(match[1]);
+        const monthIndex = Number(match[2]) - 1;
+        const date = new Date(year, monthIndex, 1);
+        if (Number.isNaN(date.getTime())) {
+            return month;
+        }
+
+        return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(date);
+    }
+
+    getAttendanceMonthLabel(): string {
+        return this.formatMonthLabel(this.attendanceSummary?.month);
+    }
+
+    getNextProgramSummary(): string {
+        if (!this.upcomingPrograms.length) {
+            return 'Belum ada agenda pelayanan terjadwal. Tambahkan program baru agar kalender dashboard tetap hidup.';
+        }
+
+        const nextProgram = this.upcomingPrograms[0];
+        return `Agenda terdekat: ${nextProgram.title} • ${this.formatProgramSchedule(nextProgram)}`;
+    }
+
+    getFocusMessage(): string {
+        const attendanceRate = this.getAttendanceRate();
+        const upcomingCount = this.upcomingPrograms.length;
+
+        if (attendanceRate >= 80) {
+            return `Partisipasi jemaat sedang kuat di ${this.getAttendanceMonthLabel()}. Jaga momentum dengan ${upcomingCount || 'beberapa'} agenda pelayanan yang sudah tersusun.`;
+        }
+
+        if (attendanceRate >= 60) {
+            return `Kehadiran bulan ini cukup stabil, tetapi masih ada ${this.getAttendanceGap()} anggota yang belum tercatat hadir. Prioritaskan follow-up sektor dan agenda terdekat.`;
+        }
+
+        if (this.summary.totalMembers > 0) {
+            return `Dashboard menunjukkan ruang tindak lanjut yang besar: ${this.getAttendanceGap()} anggota belum tercatat hadir. Gunakan agenda dan laporan untuk mendorong keterlibatan.`;
+        }
+
+        return 'Data dashboard akan menjadi pusat pemantauan setelah ringkasan anggota dan aktivitas mulai terisi.';
+    }
 
     // Helper untuk menentukan label hari ulang tahun
     getBirthdayLabel(daysUntil: number): string {
@@ -834,6 +939,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const seriesLabel = this.lineChartData?.datasets?.[0]?.label || 'Series';
         const itemCount = this.lineChartData?.labels?.length || 0;
         return `${seriesLabel} (${itemCount} sektor)`;
+    }
+
+    getHorizontalChartHeight(itemCount: number, variant: 'wide' | 'compact' = 'wide'): number {
+        const totalItems = Math.max(itemCount || 0, 1);
+        const isStackedLayout = window.innerWidth <= 900;
+
+        if (variant === 'compact') {
+            const height = 72 + totalItems * 36;
+            return Math.min(Math.max(height, isStackedLayout ? 200 : 180), isStackedLayout ? 280 : 240);
+        }
+
+        const height = 72 + totalItems * 40;
+        return Math.min(Math.max(height, isStackedLayout ? 240 : 200), isStackedLayout ? 340 : 280);
+    }
+
+    getDoughnutChartHeight(variant: 'panel' | 'compact' = 'panel'): number {
+        const isStackedLayout = window.innerWidth <= 900;
+
+        if (variant === 'compact') {
+            return isStackedLayout ? 260 : 232;
+        }
+
+        return isStackedLayout ? 320 : 288;
     }
 
     // ------------------ CHART UTIL HELPERS ------------------
