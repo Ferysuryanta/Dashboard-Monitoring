@@ -33,6 +33,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] READ_ROLES = {
+            "VIEWER",
+            "USER",
+            "PENGURUS",
+            "ADMIN",
+            "SUPER_ADMIN"
+    };
+
+    private static final String[] OPERATIONAL_ROLES = {
+            "PENGURUS",
+            "ADMIN",
+            "SUPER_ADMIN"
+    };
+
+    private static final String[] ADMIN_ROLES = {
+            "ADMIN",
+            "SUPER_ADMIN"
+    };
+
     private static final String[] PUBLIC_AUTH_ENDPOINTS = {
             "/api/auth/login",
             "/api/auth/register"
@@ -53,7 +72,41 @@ public class SecurityConfig {
     private static final String[] AUTHENTICATED_AUTH_ENDPOINTS = {
             "/api/auth/me",
             "/api/auth/change-password",
-            "/api/auth/profile"
+            "/api/auth/profile",
+            "/api/auth/logout"
+    };
+
+    private static final String[] PUBLIC_DASHBOARD_ENDPOINTS = {
+            "/api/dashboard/summary-stats"
+    };
+
+    private static final String[] READ_ONLY_ENDPOINTS = {
+            "/api/dashboard/**",
+            "/api/members/**",
+            "/api/attendance/**",
+            "/api/bible-reading/**",
+            "/api/programs/**",
+            "/api/sectors/**",
+            "/api/positions/**"
+    };
+
+    private static final String[] EXPORT_ENDPOINTS = {
+            "/api/export/**",
+            "/api/members/export"
+    };
+
+    private static final String[] ADMIN_MANAGED_ENDPOINTS = {
+            "/api/finance/**",
+            "/api/sectors/**",
+            "/api/positions/**"
+    };
+
+    private static final String[] OPERATIONAL_WRITE_ENDPOINTS = {
+            "/api/members/**",
+            "/api/attendance/**",
+            "/api/bible-reading/**",
+            "/api/programs/**",
+            "/api/programs/*/documents"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -151,14 +204,30 @@ public class SecurityConfig {
     private void configureProductionAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
-                .requestMatchers("/api/dashboard/summary-stats").permitAll()
+                .requestMatchers(PUBLIC_DASHBOARD_ENDPOINTS).permitAll()
                 .requestMatchers(PUBLIC_ACTUATOR_ENDPOINTS).permitAll()
                 .requestMatchers("/actuator/prometheus").access((authentication, context) ->
                         new AuthorizationDecision(
                                 prometheusPublic || (authentication.get() != null && authentication.get().isAuthenticated())
                         ))
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(SWAGGER_ENDPOINTS).hasAnyRole(ADMIN_ROLES)
                 .requestMatchers(AUTHENTICATED_AUTH_ENDPOINTS).authenticated()
+
+                .requestMatchers(HttpMethod.GET, EXPORT_ENDPOINTS).hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.GET, "/api/finance/**").hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.POST, "/api/finance/**").hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.PUT, ADMIN_MANAGED_ENDPOINTS).hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.PATCH, ADMIN_MANAGED_ENDPOINTS).hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.POST, "/api/sectors/**", "/api/positions/**").hasAnyRole(ADMIN_ROLES)
+                .requestMatchers(HttpMethod.DELETE, ADMIN_MANAGED_ENDPOINTS).hasAnyRole(ADMIN_ROLES)
+
+                .requestMatchers(HttpMethod.POST, OPERATIONAL_WRITE_ENDPOINTS).hasAnyRole(OPERATIONAL_ROLES)
+                .requestMatchers(HttpMethod.PUT, OPERATIONAL_WRITE_ENDPOINTS).hasAnyRole(OPERATIONAL_ROLES)
+                .requestMatchers(HttpMethod.PATCH, OPERATIONAL_WRITE_ENDPOINTS).hasAnyRole(OPERATIONAL_ROLES)
+                .requestMatchers(HttpMethod.DELETE, "/api/members/**", "/api/attendance/**", "/api/bible-reading/**", "/api/programs/**").hasAnyRole(ADMIN_ROLES)
+
+                .requestMatchers(HttpMethod.GET, READ_ONLY_ENDPOINTS).hasAnyRole(READ_ROLES)
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().denyAll()
         );
