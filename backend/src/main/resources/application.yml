@@ -26,9 +26,13 @@ spring:
 
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://localhost:4201,http://127.0.0.1:4200,http://localhost:3000}
+    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
+    allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,X-Requested-With,Origin}
+    exposed-headers: ${CORS_EXPOSED_HEADERS:Authorization,Location,Content-Disposition}
   security:
     enabled: ${SECURITY_ENABLED:true}
+    csp: "${SECURITY_CSP:default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' http://localhost:4200 http://localhost:4201 http://127.0.0.1:4200 http://localhost:3000 http://localhost:8080;}"
 
 # JWT Configuration
 jwt:

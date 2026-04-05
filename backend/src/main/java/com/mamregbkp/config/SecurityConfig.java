@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +33,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] PUBLIC_AUTH_ENDPOINTS = {
+            "/api/auth/login",
+            "/api/auth/register"
+    };
+
+    private static final String[] PUBLIC_ACTUATOR_ENDPOINTS = {
+            "/actuator/health",
+            "/actuator/health/**",
+            "/actuator/info"
+    };
+
+    private static final String[] SWAGGER_ENDPOINTS = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html"
+    };
+
+    private static final String[] AUTHENTICATED_AUTH_ENDPOINTS = {
+            "/api/auth/me",
+            "/api/auth/change-password",
+            "/api/auth/profile"
+    };
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -41,79 +67,29 @@ public class SecurityConfig {
     @Value("${monitoring.prometheus.public:false}")
     private boolean prometheusPublic;
 
+    @Value("${app.cors.allowed-origins:http://localhost:4200,http://localhost:4201,http://127.0.0.1:4200,http://localhost:3000}")
+    private String allowedOrigins;
+
+    @Value("${app.cors.allowed-methods:GET,POST,PUT,PATCH,DELETE,OPTIONS}")
+    private String allowedMethods;
+
+    @Value("${app.cors.allowed-headers:Authorization,Content-Type,Accept,X-Requested-With,Origin}")
+    private String allowedHeaders;
+
+    @Value("${app.cors.exposed-headers:Authorization,Location,Content-Disposition}")
+    private String exposedHeaders;
+
+    @Value("${app.security.csp:default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' http://localhost:4200 http://localhost:4201 http://127.0.0.1:4200 http://localhost:3000 http://localhost:8080;}")
+    private String contentSecurityPolicy;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-                // Security Headers Configuration
-                .headers(headers -> headers
-                        // Prevent clickjacking attacks
-                        .frameOptions(org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig::deny)
-                        // Prevent MIME type sniffing
-                        .contentTypeOptions(contentTypeOptions -> {})
-                        // XSS Protection (legacy browsers)
-                        .xssProtection(xss -> xss.headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
-                        // Referrer Policy
-                        .referrerPolicy(referrer -> referrer.policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
-                        // Content Security Policy
-                        .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; " +
-                                "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                                "font-src 'self' https://fonts.gstatic.com; " +
-                                "img-src 'self' data: https: blob:; " +
-                                "connect-src 'self' http://localhost:4200 http://localhost:8080;"
-                        ))
-                        // HTTP Strict Transport Security (HSTS) - enable in production
-                        .httpStrictTransportSecurity(hsts -> hsts
-                                .includeSubDomains(true)
-                                .maxAgeInSeconds(31536000)
-                                .preload(true))
-                );
-
-        // Configure authorization based on environment
-        if (isDevProfile || !securityEnabled) {
-            // Development mode - more permissive for testing
-            http.authorizeHttpRequests(auth -> auth
-                    // Public endpoints
-                    .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                    .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // Allow all API endpoints in dev mode
-                    .requestMatchers("/api/**").permitAll()
-                    .anyRequest().permitAll()
-            );
-        } else {
-            // Production mode - strict security
-            http.authorizeHttpRequests(auth -> auth
-                    // Public endpoints - only auth
-                    .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                    // Public dashboard stats for login page
-                    .requestMatchers("/api/dashboard/summary-stats").permitAll()
-                    .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
-                    .requestMatchers("/actuator/prometheus").access((authentication, context) ->
-                            new org.springframework.security.authorization.AuthorizationDecision(
-                                    prometheusPublic || (authentication.get() != null && authentication.get().isAuthenticated())
-                            ))
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                    // Swagger should be disabled or protected in production
-                    // .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-
-                    // Protected user endpoints
-                    .requestMatchers("/api/auth/me", "/api/auth/change-password", "/api/auth/profile").authenticated()
-
-                    // All other API endpoints require authentication
-                    .requestMatchers("/api/**").authenticated()
-
-                    .anyRequest().denyAll()
-            );
-        }
+        configureSecurityHeaders(http);
+        configureAuthorization(http);
 
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -125,16 +101,83 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowedOrigins(parseCommaSeparatedValues(allowedOrigins));
+        configuration.setAllowedMethods(parseCommaSeparatedValues(allowedMethods));
+        configuration.setAllowedHeaders(parseCommaSeparatedValues(allowedHeaders));
+        configuration.setExposedHeaders(parseCommaSeparatedValues(exposedHeaders));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void configureSecurityHeaders(HttpSecurity http) throws Exception {
+        http.headers(headers -> headers
+                .frameOptions(org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig::deny)
+                .contentTypeOptions(contentTypeOptions -> {})
+                .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                .contentSecurityPolicy(csp -> csp.policyDirectives(contentSecurityPolicy))
+                .httpStrictTransportSecurity(hsts -> hsts
+                        .includeSubDomains(true)
+                        .maxAgeInSeconds(31536000)
+                        .preload(true))
+        );
+    }
+
+    private void configureAuthorization(HttpSecurity http) throws Exception {
+        if (isDevMode() || !securityEnabled) {
+            configureDevelopmentAuthorization(http);
+            return;
+        }
+
+        configureProductionAuthorization(http);
+    }
+
+    private void configureDevelopmentAuthorization(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
+                .requestMatchers(PUBLIC_ACTUATOR_ENDPOINTS).permitAll()
+                .requestMatchers("/actuator/prometheus").permitAll()
+                .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
+                .anyRequest().permitAll()
+        );
+    }
+
+    private void configureProductionAuthorization(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
+                .requestMatchers("/api/dashboard/summary-stats").permitAll()
+                .requestMatchers(PUBLIC_ACTUATOR_ENDPOINTS).permitAll()
+                .requestMatchers("/actuator/prometheus").access((authentication, context) ->
+                        new AuthorizationDecision(
+                                prometheusPublic || (authentication.get() != null && authentication.get().isAuthenticated())
+                        ))
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(AUTHENTICATED_AUTH_ENDPOINTS).authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().denyAll()
+        );
+    }
+
+    private boolean isDevMode() {
+        return environment.matchesProfiles("dev");
+    }
+
+    private List<String> parseCommaSeparatedValues(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(entry -> !entry.isEmpty())
+                .distinct()
+                .toList();
     }
 
     @Bean

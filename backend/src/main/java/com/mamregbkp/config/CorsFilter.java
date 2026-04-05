@@ -10,7 +10,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * CORS Filter - handles cross-origin requests at the earliest stage.
@@ -20,16 +21,17 @@ import java.util.Set;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-    // Whitelist of allowed origins - only specific trusted origins
-    private static final Set<String> ALLOWED_ORIGINS = Set.of(
-            "http://localhost:4200",
-            "http://localhost:4201",
-            "http://127.0.0.1:4200",
-            "http://localhost:3000"
-    );
+    @Value("${app.cors.allowed-origins:http://localhost:4200,http://localhost:4201,http://127.0.0.1:4200,http://localhost:3000}")
+    private String allowedOrigins;
 
-    @Value("${app.cors.allowed-origins:}")
-    private String additionalOrigins;
+    @Value("${app.cors.allowed-methods:GET,POST,PUT,PATCH,DELETE,OPTIONS}")
+    private String allowedMethods;
+
+    @Value("${app.cors.allowed-headers:Authorization,Content-Type,Accept,X-Requested-With,Origin}")
+    private String allowedHeaders;
+
+    @Value("${app.cors.exposed-headers:Authorization,Location,Content-Disposition}")
+    private String exposedHeaders;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -43,9 +45,9 @@ public class CorsFilter implements Filter {
         // Check if origin is in whitelist
         if (origin != null && isAllowedOrigin(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With, Origin");
-            response.setHeader("Access-Control-Expose-Headers", "Location, Content-Disposition");
+            response.setHeader("Access-Control-Allow-Methods", normalizeHeaderValue(allowedMethods));
+            response.setHeader("Access-Control-Allow-Headers", normalizeHeaderValue(allowedHeaders));
+            response.setHeader("Access-Control-Expose-Headers", normalizeHeaderValue(exposedHeaders));
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Max-Age", "3600");
         }
@@ -60,21 +62,22 @@ public class CorsFilter implements Filter {
     }
 
     private boolean isAllowedOrigin(String origin) {
-        // Check static whitelist
-        if (ALLOWED_ORIGINS.contains(origin)) {
-            return true;
+        return parseCommaSeparatedValues(allowedOrigins).contains(origin);
+    }
+
+    private String normalizeHeaderValue(String value) {
+        return String.join(", ", parseCommaSeparatedValues(value));
+    }
+
+    private List<String> parseCommaSeparatedValues(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
         }
 
-        // Check additional origins from configuration
-        if (additionalOrigins != null && !additionalOrigins.isBlank()) {
-            String[] configOrigins = additionalOrigins.split(",");
-            for (String configOrigin : configOrigins) {
-                if (configOrigin.trim().equals(origin)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(entry -> !entry.isEmpty())
+                .distinct()
+                .toList();
     }
 }
