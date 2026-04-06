@@ -72,6 +72,12 @@ Login Grafana default:
 - user: `admin`
 - password: `admin`
 
+Penting:
+
+- kredensial `GF_SECURITY_ADMIN_USER` dan `GF_SECURITY_ADMIN_PASSWORD` hanya dipakai saat Grafana pertama kali menginisialisasi data internalnya
+- jika container `mamre-grafana` sudah pernah berjalan sebelumnya, password lama bisa tetap tersimpan walaupun file `docker-compose.yml` masih menulis `admin/admin`
+- akibatnya, login bisa gagal meskipun konfigurasi environment terlihat benar
+
 Datasource dan dashboard awal akan otomatis muncul.
 
 Untuk mematikan stack:
@@ -79,6 +85,32 @@ Untuk mematikan stack:
 ```powershell
 Set-Location "E:\Development\monitoring\Dashboard-Monitoring\backend\monitoring"
 docker compose down
+```
+
+### Troubleshooting login Grafana gagal
+
+Jika `admin/admin` tidak bisa dipakai:
+
+1. pastikan Anda membuka instance yang benar: `http://localhost:3001`
+2. cek container yang aktif memang `mamre-grafana`
+3. reset password admin secara langsung di container:
+
+```powershell
+docker exec mamre-grafana grafana cli admin reset-admin-password admin
+```
+
+4. setelah itu login lagi dengan:
+
+- user: `admin`
+- password: `admin`
+
+Jika masih ingin start benar-benar bersih, hapus container lalu jalankan ulang stack monitoring:
+
+```powershell
+Set-Location "E:\Development\monitoring\Dashboard-Monitoring\backend\monitoring"
+docker compose down
+docker rm -f mamre-grafana
+docker compose up -d
 ```
 
 ---

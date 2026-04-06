@@ -1,6 +1,7 @@
 package com.mamregbkp.service;
 
 import com.mamregbkp.dto.AttendanceDto;
+import com.mamregbkp.exception.BadRequestException;
 import com.mamregbkp.model.Attendance;
 import com.mamregbkp.model.Member;
 import com.mamregbkp.repository.AttendanceRepository;
@@ -18,7 +19,6 @@ import com.mamregbkp.service.spec.AttendanceSpecification;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
@@ -62,15 +62,8 @@ public class AttendanceServiceImpl implements AttendanceService {
         a.setPresent(dto.getPresent() == null || dto.getPresent());
         a.setKolpiAmount(dto.getKolpiAmount());
         a.setNote(dto.getNote());
-        attendanceRepository.save(a);
-        dto.setId(a.getId());
-        // echo resolved memberName back to client as full name
-        if (m != null) {
-            String firstName = Optional.ofNullable(m.getFirstName()).orElse("");
-            String lastName = Optional.ofNullable(m.getLastName()).orElse("");
-            dto.setMemberName((firstName + " " + lastName).trim());
-        }
-        return dto;
+        Attendance saved = attendanceRepository.save(a);
+        return toDto(saved);
     }
 
     @Override
@@ -97,6 +90,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public void delete(Long id) {
+        if (!attendanceRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Data kehadiran tidak ditemukan: " + id);
+        }
         attendanceRepository.deleteById(id);
     }
 
@@ -116,6 +112,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional(readOnly = true)
     public Page<AttendanceDto> list(int page, int size, String member, LocalDate from, LocalDate to, Long sectorId, String sectorName) {
+        validateListRequest(page, size, from, to);
+
         PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "attendDate"));
 
         Specification<Attendance> spec = AttendanceSpecification.withFilters(
@@ -128,7 +126,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Page<Attendance> pageData = attendanceRepository.findAll(spec, pr);
 
-        List<AttendanceDto> dtoList = pageData.getContent().stream().map(this::toDto).collect(Collectors.toList());
+        List<AttendanceDto> dtoList = pageData.getContent().stream().map(this::toDto).toList();
         return new PageImpl<>(dtoList, pr, pageData.getTotalElements());
     }
 
@@ -136,22 +134,22 @@ public class AttendanceServiceImpl implements AttendanceService {
     // ---------------- helper methods ----------------
 
     private Member resolveMemberForDto(AttendanceDto dto) {
+        if (dto == null) {
+            throw new BadRequestException("Data kehadiran wajib diisi");
+        }
 
-        // then try memberName (email or name)
         String name = dto.getMemberName();
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("memberId or memberName is required");
+            throw new BadRequestException("Nama member wajib diisi");
         }
         name = name.trim();
 
-        // if looks like email
         if (name.contains("@")) {
             String finalName = name;
             return memberRepository.findByEmailIgnoreCase(name)
-                    .orElseThrow(() -> new ResourceNotFoundException("Member not found with email: " + finalName));
+                    .orElseThrow(() -> new ResourceNotFoundException("Member tidak ditemukan dengan email: " + finalName));
         }
 
-        // if contains space -> try exact first+last
         String[] parts = name.split("\\s+");
         if (parts.length >= 2) {
             String first = parts[0];
@@ -159,40 +157,32 @@ public class AttendanceServiceImpl implements AttendanceService {
             List<Member> exact = memberRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(first, last);
             if (exact.size() == 1) return exact.getFirst();
             if (exact.size() > 1) {
-                throw new IllegalStateException("Multiple members found with name: " + name + ". Please be more specific (use email).");
+                throw new BadRequestException("Ditemukan lebih dari satu member dengan nama '" + name + "'. Gunakan email agar lebih spesifik.");
             }
         }
 
-        // partial search (first or last contains)
         List<Member> partial = memberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
-        if (partial.size() == 1) return partial.getFirst();
-        if (partial.isEmpty()) throw new ResourceNotFoundException("Member not found with name or partial: " + name);
+        if (partial.size() == 1) {
+            return partial.getFirst();
+        }
+        if (partial.isEmpty()) {
+            throw new ResourceNotFoundException("Member tidak ditemukan dengan nama: " + name);
+        }
 
-        // ambiguous
-        throw new IllegalStateException("Multiple members matched for '" + name + "'. Please specify email or full name.");
+        throw new BadRequestException("Ditemukan lebih dari satu member untuk pencarian '" + name + "'. Gunakan email atau nama lengkap.");
     }
 
-    private List<Member> resolveMembersByNameOrEmail(String q) {
-        q = q.trim();
-        if (q.contains("@")) {
-            Optional<Member> byEmail = memberRepository.findByEmailIgnoreCase(q);
-            return byEmail.map(Collections::singletonList).orElse(Collections.emptyList());
+    private void validateListRequest(int page, int size, LocalDate from, LocalDate to) {
+        if (page < 0) {
+            throw new BadRequestException("Parameter page tidak boleh negatif");
         }
-        String[] parts = q.split("\\s+");
-        if (parts.length >= 2) {
-            String first = parts[0];
-            String last = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
-            List<Member> exact = memberRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(first, last);
-            if (!exact.isEmpty()) return exact;
-        }
-        return memberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(q, q);
-    }
 
-    private UUID tryParseUUID(String s) {
-        try {
-            return UUID.fromString(s);
-        } catch (Exception ex) {
-            return null;
+        if (size <= 0) {
+            throw new BadRequestException("Parameter size harus lebih besar dari 0");
+        }
+
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("Tanggal mulai tidak boleh lebih besar dari tanggal akhir");
         }
     }
 }

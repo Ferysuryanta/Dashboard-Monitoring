@@ -47,7 +47,7 @@ public class LocalFileStorageService implements FileStorageService {
             String filename = UUID.randomUUID() + ext;
             Path target = dir.resolve(filename).normalize();
             Files.copy(file.getInputStream(), target);
-            return target;
+            return root.relativize(target);
         } catch (IOException ex) {
             throw new BadRequestException("Gagal menyimpan file", ex);
         }
@@ -60,7 +60,11 @@ public class LocalFileStorageService implements FileStorageService {
                 throw new BadRequestException("Nama file tidak valid");
             }
 
-            Path filePath = root.resolve(filename).normalize();
+            Path requestedPath = Paths.get(filename);
+            Path filePath = requestedPath.isAbsolute()
+                    ? requestedPath.normalize()
+                    : root.resolve(requestedPath).normalize();
+
             if (!filePath.startsWith(root)) {
                 throw new BadRequestException("Path file tidak valid");
             }

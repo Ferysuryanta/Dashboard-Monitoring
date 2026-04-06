@@ -20,7 +20,6 @@ import com.mamregbkp.model.ProgramDocument;
 import com.mamregbkp.repository.ProgramDocumentRepository;
 import com.mamregbkp.service.FileStorageService;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 
 @RestController
@@ -83,8 +82,8 @@ public class ProgramController {
         Path stored = storage.store(file, "programs/" + id);
         ProgramDocument doc = new ProgramDocument();
         doc.setProgramId(id);
-        doc.setFilename(file.getOriginalFilename());
-        doc.setStoragePath(stored.toString());
+        doc.setFilename(file.getOriginalFilename() != null ? file.getOriginalFilename() : stored.getFileName().toString());
+        doc.setStoragePath(stored.toString().replace('\\', '/'));
         doc.setMimeType(file.getContentType());
         doc.setUploadedAt(OffsetDateTime.now());
         ProgramDocument saved = docRepo.save(doc);
@@ -102,7 +101,7 @@ public class ProgramController {
         ProgramDocument d = docRepo.findById(docId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dokumen program tidak ditemukan: " + docId));
 
-        Resource res = storage.loadAsResource(Paths.get(d.getStoragePath()).getFileName().toString());
+        Resource res = storage.loadAsResource(d.getStoragePath());
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(d.getMimeType() == null ? MediaType.APPLICATION_OCTET_STREAM_VALUE : d.getMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + d.getFilename() + "\"")
