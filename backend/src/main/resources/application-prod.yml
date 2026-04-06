@@ -25,6 +25,12 @@ app:
     enabled: true
   cors:
     allowed-origins: ${CORS_ORIGINS}
+  startup:
+    schema-updater:
+      enabled: false
+  seed:
+    bible-feb2026:
+      enabled: false
 
 # JWT must be provided via environment variable
 jwt:

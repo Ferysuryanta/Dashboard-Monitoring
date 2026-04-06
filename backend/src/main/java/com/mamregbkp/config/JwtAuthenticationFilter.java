@@ -1,5 +1,6 @@
 package com.mamregbkp.config;
 
+import com.mamregbkp.repository.UserSessionRepository;
 import com.mamregbkp.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
     protected void doFilterInternal(
@@ -48,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                if (jwtService.isAccessToken(jwt) && jwtService.isTokenValid(jwt, userDetails) && isSessionActive(jwt)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
@@ -64,5 +68,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isSessionActive(String jwt) {
+        UUID sessionId = jwtService.extractSessionId(jwt);
+        if (sessionId == null) {
+            return true;
+        }
+
+        return userSessionRepository.findByIdAndIsActiveTrue(sessionId)
+                .filter(session -> session.getExpiresAt() != null && session.getExpiresAt().isAfter(OffsetDateTime.now()))
+                .isPresent();
     }
 }

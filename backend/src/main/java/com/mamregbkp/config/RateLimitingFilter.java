@@ -1,9 +1,13 @@
 package com.mamregbkp.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mamregbkp.exception.ErrorResponse;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * Limits requests per IP address within a time window.
  */
 @Component
+@RequiredArgsConstructor
 public class RateLimitingFilter implements Filter {
 
     // Configuration: max 100 requests per minute for general endpoints
@@ -27,6 +32,7 @@ public class RateLimitingFilter implements Filter {
     // Store request counts per IP
     private final Map<String, RequestCounter> requestCounts = new ConcurrentHashMap<>();
     private final Map<String, RequestCounter> loginAttempts = new ConcurrentHashMap<>();
+    private final ObjectMapper objectMapper;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -40,19 +46,15 @@ public class RateLimitingFilter implements Filter {
 
         // Check if this is a login endpoint (more strict rate limiting)
         if (path.contains("/api/auth/login") || path.contains("/api/auth/register")) {
-            if (!isAllowed(clientIP, loginAttempts, MAX_LOGIN_ATTEMPTS_PER_MINUTE)) {
-                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"Too many login attempts. Please try again later.\",\"retryAfter\":60}");
+            if (isAllowed(clientIP, loginAttempts, MAX_LOGIN_ATTEMPTS_PER_MINUTE)) {
+                writeRateLimitResponse(response, request, "TERLALU_BANYAK_LOGIN", "Terlalu banyak percobaan login. Silakan coba lagi dalam 60 detik.");
                 return;
             }
         }
 
         // General rate limiting
-        if (!isAllowed(clientIP, requestCounts, MAX_REQUESTS_PER_MINUTE)) {
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Too many requests. Please slow down.\",\"retryAfter\":60}");
+        if (isAllowed(clientIP, requestCounts, MAX_REQUESTS_PER_MINUTE)) {
+            writeRateLimitResponse(response, request, "RATE_LIMIT_EXCEEDED", "Terlalu banyak permintaan. Mohon perlambat request Anda.");
             return;
         }
 
@@ -81,7 +83,7 @@ public class RateLimitingFilter implements Filter {
         });
 
         RequestCounter counter = counters.get(clientIP);
-        return counter.count <= maxRequests;
+        return counter.count > maxRequests;
     }
 
     private String getClientIP(HttpServletRequest request) {
@@ -98,6 +100,18 @@ public class RateLimitingFilter implements Filter {
         }
 
         return request.getRemoteAddr();
+    }
+
+    private void writeRateLimitResponse(HttpServletResponse response, HttpServletRequest request, String code, String message) throws IOException {
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader("Retry-After", "60");
+        objectMapper.writeValue(response.getWriter(), ErrorResponse.of(
+                HttpStatus.TOO_MANY_REQUESTS,
+                code,
+                message,
+                request.getRequestURI()
+        ));
     }
 
     /**

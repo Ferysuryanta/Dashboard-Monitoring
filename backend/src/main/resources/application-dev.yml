@@ -6,11 +6,23 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/mamre}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:12345}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  flyway:
+    enabled: false
 
 # Security is relaxed in dev mode
 app:
   security:
     enabled: false
+  startup:
+    schema-updater:
+      enabled: false
+  seed:
+    bible-feb2026:
+      enabled: false
+      percent: ${SEED_PERCENT:30}
 
 # JWT Secret for development only (DO NOT use in production)
 jwt:

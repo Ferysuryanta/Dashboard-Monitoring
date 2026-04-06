@@ -3,8 +3,10 @@ package com.mamregbkp.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -13,16 +15,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@Profile("dev")
+@ConditionalOnProperty(prefix = "app.seed.bible-feb2026", name = "enabled", havingValue = "true")
 public class DataSeederRunner implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSeederRunner.class);
 
     private final JdbcTemplate jdbc;
 
-    @Value("${SEED_BIBLE_FEB2026:false}")
+    @Value("${app.seed.bible-feb2026.enabled:${SEED_BIBLE_FEB2026:false}}")
     private boolean seedFlag;
 
-    @Value("${SEED_PERCENT:30}")
+    @Value("${app.seed.bible-feb2026.percent:${SEED_PERCENT:30}}")
     private int seedPercent;
 
     public DataSeederRunner(JdbcTemplate jdbc) {

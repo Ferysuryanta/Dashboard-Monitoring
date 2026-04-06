@@ -62,6 +62,16 @@ MANAGEMENT_METRICS_TAG_ENVIRONMENT=prod
 FLYWAY_ENABLED=true
 ```
 
+### Startup Mutator Flags (default aman / mati)
+```bash
+# Legacy schema updater - biarkan false kecuali benar-benar dibutuhkan saat migrasi lokal
+APP_STARTUP_SCHEMA_UPDATER_ENABLED=false
+
+# Legacy dummy seed Feb 2026 - hanya relevan untuk dev profile
+APP_SEED_BIBLE_FEB2026_ENABLED=false
+APP_SEED_BIBLE_FEB2026_PERCENT=30
+```
+
 ---
 
 ## Running in Production

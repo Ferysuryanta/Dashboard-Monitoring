@@ -1,5 +1,6 @@
 package com.mamregbkp.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.Map;
  * This ensures new columns are added even when Flyway is disabled.
  */
 @Component
+@ConditionalOnProperty(prefix = "app.startup.schema-updater", name = "enabled", havingValue = "true")
 public class DatabaseSchemaUpdater implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseSchemaUpdater.class);

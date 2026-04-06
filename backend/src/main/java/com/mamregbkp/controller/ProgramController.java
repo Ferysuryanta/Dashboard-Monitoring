@@ -66,9 +66,9 @@ public class ProgramController {
 
     // Paged list + search
     @GetMapping(params = {"page","size"})
-    public ResponseEntity<?> paged(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String q, @RequestParam(required = false) String status, @RequestParam(required = false) String type, @RequestParam(required = false) String category) {
+    public ResponseEntity<Page<ProgramDto>> paged(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String q, @RequestParam(required = false) String status, @RequestParam(required = false) String type, @RequestParam(required = false) String category) {
         Page<ProgramDto> p = svc.findPaged(page, size, q, status, type, category);
-        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(p.getTotalElements())).body(p.getContent());
+        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(p.getTotalElements())).body(p);
     }
 
     // Documents

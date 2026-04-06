@@ -1,21 +1,21 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/mamre}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:12345}
+    url: ${DB_URL:}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
     properties:
       hibernate:
         format_sql: true
   flyway:
-    enabled: ${FLYWAY_ENABLED:false}
+    enabled: ${FLYWAY_ENABLED:true}
     baseline-on-migrate: true
     locations: classpath:db/migration
     validate-on-migrate: false
-    clean-disabled: false
+    clean-disabled: true
 
 ---
 spring:
@@ -36,7 +36,7 @@ app:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:ZGV2ZWxvcG1lbnRTZWNyZXRLZXlGb3JUZXN0aW5nT25seU5vdEZvclByb2R1Y3Rpb25Vc2VNdXN0QmVMb25n}
+  secret: ${JWT_SECRET:}
   expiration: ${JWT_EXPIRATION:3600000}      # 1 hour in milliseconds
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # 7 days in milliseconds
 
